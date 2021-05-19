@@ -130,3 +130,4 @@ dmypy.json
 
 coreference/stanford-corenlp-4.1.0
 .DS_Store
+*.json 
