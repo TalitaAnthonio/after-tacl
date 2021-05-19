@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+coreference/stanford-corenlp-4.1.0
+.DS_Store
