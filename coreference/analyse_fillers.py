@@ -2,6 +2,8 @@
 import json 
 import pdb 
 import spacy 
+from tools import count_tags
+from collections import Counter 
 
 MODEL = spacy.load('en_core_web_sm')
 
@@ -64,16 +66,38 @@ class Revisioninstance:
         return tagged_fillers
 
 
+def make_freqdict(list_of_countable_elements): 
+    freq_dict = Counter() 
+    for elem in list_of_countable_elements: 
+        freq_dict[elem] +=1 
+    return dict(freq_dict) 
+
 def main(): 
+
+    all_tags = Counter() 
+
+    total = 0 
     for key, _ in file_with_predictions.items(): 
         revision_object = Revisioninstance(key, file_with_predictions[key])
 
         best_model_predictions = revision_object.best_model_predictions
         all_fillers = revision_object.all_fillers
-        if revision_object.pos_tagged_fillers != revision_object.pos_tagged_fillers_all: 
-           print(revision_object.pos_tagged_fillers, '\n', revision_object.pos_tagged_fillers_all) 
-           print("=======================================================")
+        pos_tags, tokens = count_tags(revision_object.pos_tagged_fillers)
+        freq_dict = make_freqdict(pos_tags)
+        
+        print(freq_dict)
+        for pos, freq in freq_dict.items():
+            if len(pos.split()) == 2:  
+                all_tags[pos] += freq_dict[pos]
+                total +=1 
+
+        print(revision_object.pos_tagged_fillers)
+        
 
 
+    print(all_tags)
+    all_tags_avg = sorted({k:(v/total) for k, v in all_tags.items()}, reverse=True)
+    print("========= average =======")
+    print(all_tags_avg)
 main()
 
