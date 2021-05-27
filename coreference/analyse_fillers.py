@@ -74,24 +74,40 @@ def make_freqdict(list_of_countable_elements):
     return dict(freq_dict) 
 
 
-def filter_tags(tagged_fillers):
+def filter_tags(tagged_fillers, reference_type):
     # check the length 
-    insertion_len = len(tagged_fillers[0])
-
-
     filtered_list = []
-    tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', 'RB', 'VBP', 'CC', 'CD']
-    if insertion_len == 1: 
+    tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', '``', 'RB', 'VBP', 'CC', 'CD']
+    if reference_type == "unigram": 
         for elem in tagged_fillers:
             if elem != []: 
                tag = elem[0][1]
                if tag not in tags_to_exclude_unigrams: 
-
                   filtered_list.append(elem)
+    elif reference_type == "bigram": 
+        for elem in tagged_fillers: 
+            if elem != []: 
+                tags = [x[1] for x in elem]
+                if len(tags) == 2: 
+                    if tags[0] not in tags_to_exclude_unigrams and tags[1] not in tags_to_exclude_unigrams:
+                        filtered_list.append(elem)
+                else: 
+                    if tags[0] not in tags_to_exclude_unigrams: 
+                       filtered_list.append(elem)
+
+    else: 
+        for elem in tagged_fillers: 
+            if elem != []: 
+                tags = [x[1] for x in elem]
+                if len(tags) == 3: 
+                    if tags[0] not in tags_to_exclude_unigrams and tags[1] not in tags_to_exclude_unigrams and tags[2] not in tags_to_exclude_unigrams:
+                        filtered_list.append(elem)
+                else: 
+                    if tags[0] not in tags_to_exclude_unigrams: 
+                       filtered_list.append(elem)
+               
     return filtered_list
         
-
-
 
 def main(): 
 
@@ -103,10 +119,14 @@ def main():
 
         best_model_predictions = revision_object.best_model_predictions
         all_fillers = revision_object.pos_tagged_fillers_all
-        if len(all_fillers[0]) == 1: 
+        #if len(all_fillers[0]) == 1 or len(all_fillers[0]) == 2: 
+
+        if file_with_predictions[key]["reference-type"] == 'trigram': 
+
             print("revised sentence: ", file_with_predictions[key]["RevisedSentence"]) 
             print("reference: ", file_with_predictions[key]["CorrectReference"])
-            filtered = filter_tags(all_fillers)
+            print("all tags:", all_fillers)
+            filtered = filter_tags(all_fillers, file_with_predictions[key]["reference-type"])
             print(filtered)
             print("==============================")
             total_unigrams.append(len(filtered))
