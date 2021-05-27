@@ -73,6 +73,26 @@ def make_freqdict(list_of_countable_elements):
         freq_dict[elem] +=1 
     return dict(freq_dict) 
 
+
+def filter_tags(tagged_fillers):
+    # check the length 
+    insertion_len = len(tagged_fillers[0])
+
+
+    filtered_list = []
+    tags_to_exclude_unigrams = [".", ",", "!", "UH", "XX", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', 'RB', 'VBP', 'CC', 'CD']
+    if insertion_len == 1: 
+        for elem in tagged_fillers:
+            if elem != []: 
+               tag = elem[0][1]
+               if tag not in tags_to_exclude_unigrams: 
+
+                  filtered_list.append(elem)
+    return filtered_list
+        
+
+
+
 def main(): 
 
     all_tags = Counter() 
@@ -82,25 +102,13 @@ def main():
         revision_object = Revisioninstance(key, file_with_predictions[key])
 
         best_model_predictions = revision_object.best_model_predictions
-        all_fillers = revision_object.all_fillers
-        pos_tags, tokens = count_tags(revision_object.pos_tagged_fillers)
-        freq_dict = make_freqdict(pos_tags)
-        
-        print(freq_dict)
-        for pos, freq in freq_dict.items():
-            if len(pos.split()) == 1:  
-                all_tags[pos] += freq_dict[pos]
-                total.append(freq_dict[pos])
-
-        print(revision_object.pos_tagged_fillers)
-        
-
+        all_fillers = revision_object.pos_tagged_fillers_all
+        if len(all_fillers[0]) == 1: 
+            print("revised sentence: ", file_with_predictions[key]["RevisedSentence"]) 
+            print("reference: ", file_with_predictions[key]["CorrectReference"])
+            filtered = filter_tags(all_fillers)
+            print(filtered)
+            print("==============================")
     
-    total_fillers = np.sum(total)
-
-    all_tags_avg = {k:(v/total_fillers) for k, v in all_tags.items()}
-    all_tags_avg = {k: v for k, v in sorted(all_tags_avg.items(), key=lambda item: item[1], reverse=True)}
-    print("========= average =======")
-    print(all_tags_avg)
 main()
 
