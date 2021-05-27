@@ -111,27 +111,26 @@ def filter_tags(tagged_fillers, reference_type):
 
 def main(): 
 
+    # OTHER WAYS: CHECK whether word is in dictionary or not ? 
+
     all_tags = Counter() 
 
-    total_unigrams = []
     for key, _ in file_with_predictions.items(): 
         revision_object = Revisioninstance(key, file_with_predictions[key])
 
         best_model_predictions = revision_object.best_model_predictions
         all_fillers = revision_object.pos_tagged_fillers_all
-        #if len(all_fillers[0]) == 1 or len(all_fillers[0]) == 2: 
-
-        if file_with_predictions[key]["reference-type"] == 'trigram': 
-
-            print("revised sentence: ", file_with_predictions[key]["RevisedSentence"]) 
-            print("reference: ", file_with_predictions[key]["CorrectReference"])
-            print("all tags:", all_fillers)
-            filtered = filter_tags(all_fillers, file_with_predictions[key]["reference-type"])
-            print(filtered)
-            print("==============================")
-            total_unigrams.append(len(filtered))
+        # filter irrelevant fillers out using POS tagging 
+        print(file_with_predictions[key]["RevisedSentence"])
+        filtered = filter_tags(all_fillers, file_with_predictions[key]["reference-type"])        
+        sequences = []
+        print("=================================")
+        for filler in filtered: 
+            filler_tokens =  " ".join([elem[0] for elem in filler])
+            sequences.append(filler_tokens)
     
-    print("Average for unigrams", np.mean(total_unigrams))
+        print(sequences)
+
     
 main()
 
