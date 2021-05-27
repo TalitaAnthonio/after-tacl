@@ -80,7 +80,7 @@ def filter_tags(tagged_fillers):
 
 
     filtered_list = []
-    tags_to_exclude_unigrams = [".", ",", "!", "UH", "XX", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', 'RB', 'VBP', 'CC', 'CD']
+    tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', 'RB', 'VBP', 'CC', 'CD']
     if insertion_len == 1: 
         for elem in tagged_fillers:
             if elem != []: 
@@ -97,7 +97,7 @@ def main():
 
     all_tags = Counter() 
 
-    total = []
+    total_unigrams = []
     for key, _ in file_with_predictions.items(): 
         revision_object = Revisioninstance(key, file_with_predictions[key])
 
@@ -109,6 +109,9 @@ def main():
             filtered = filter_tags(all_fillers)
             print(filtered)
             print("==============================")
+            total_unigrams.append(len(filtered))
+    
+    print("Average for unigrams", np.mean(total_unigrams))
     
 main()
 
