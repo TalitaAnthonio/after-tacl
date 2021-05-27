@@ -4,6 +4,7 @@ import pdb
 import spacy 
 from tools import count_tags
 from collections import Counter 
+import numpy as np 
 
 MODEL = spacy.load('en_core_web_sm')
 
@@ -76,7 +77,7 @@ def main():
 
     all_tags = Counter() 
 
-    total = 0 
+    total = []
     for key, _ in file_with_predictions.items(): 
         revision_object = Revisioninstance(key, file_with_predictions[key])
 
@@ -87,16 +88,18 @@ def main():
         
         print(freq_dict)
         for pos, freq in freq_dict.items():
-            if len(pos.split()) == 2:  
+            if len(pos.split()) == 1:  
                 all_tags[pos] += freq_dict[pos]
-                total +=1 
+                total.append(freq_dict[pos])
 
         print(revision_object.pos_tagged_fillers)
         
 
+    
+    total_fillers = np.sum(total)
 
-    print(all_tags)
-    all_tags_avg = sorted({k:(v/total) for k, v in all_tags.items()}, reverse=True)
+    all_tags_avg = {k:(v/total_fillers) for k, v in all_tags.items()}
+    all_tags_avg = {k: v for k, v in sorted(all_tags_avg.items(), key=lambda item: item[1], reverse=True)}
     print("========= average =======")
     print(all_tags_avg)
 main()
