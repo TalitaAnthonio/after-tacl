@@ -118,6 +118,7 @@ def main():
 
     all_tags = Counter() 
     average_length = []
+    keys_with_fillers_to_keep = {}
     for key, _ in file_with_predictions.items(): 
         revision_object = Revisioninstance(key, file_with_predictions[key])
 
@@ -138,6 +139,13 @@ def main():
         # Check if the word occurs in the dictionary 
         fillers_to_return = [filler for filler in fillers_to_return if ENGLISH_DICTIONARY.check(filler) == True]
         average_length.append(len(fillers_to_return))
+        
+        keys_with_fillers_to_keep[key] = {"filtered_fillers": fillers_to_return} 
+    
     print("average length", np.mean(average_length))
+
+    # save file to use in next step. 
+    with open("dev_set_with_filtered_fillers.json", "w") as json_in: 
+         json.dump(keys_with_fillers_to_keep, json_in)
 main()
 
