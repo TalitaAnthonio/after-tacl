@@ -1,4 +1,5 @@
-# script to analyse the fillers. 
+# Script used to filter the generated fillers from GPT+Paragraph Perplexity in Step 1. 
+
 import json 
 import pdb 
 import spacy 
