@@ -137,7 +137,7 @@ def main():
 
         # Check if the word occurs in the dictionary 
         fillers_to_return = [filler for filler in fillers_to_return if ENGLISH_DICTIONARY.check(filler) == True]
-        
-    
+        average_length.append(len(fillers_to_return))
+    print("average length", np.mean(average_length))
 main()
 
