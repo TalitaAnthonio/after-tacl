@@ -7,10 +7,12 @@ from tools import count_tags
 from collections import Counter 
 import numpy as np 
 import enchant 
+import string 
+
 
 MODEL = spacy.load('en_core_web_sm')
 ENGLISH_DICTIONARY = enchant.Dict("en_US")
-
+PUNCTUATION = string.punctuation + "..." + '(' + ')'
 
 path_to_pred_dir = "/Users/talita/Documents/PhD/tacl/analyse-predictions" 
 path_to_file_with_predictions = '{0}/bestmodels_predictions.json'.format(path_to_pred_dir)
@@ -80,7 +82,7 @@ def make_freqdict(list_of_countable_elements):
 def filter_tags(tagged_fillers, reference_type):
     # check the length 
     filtered_list = []
-    tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', '``', 'RB', 'VBP', 'CC', 'CD']
+    tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", ")", "(", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', '``', 'RB', 'VBP', 'CC', 'CD']
     if reference_type == "unigram": 
         for elem in tagged_fillers:
             if elem != []: 
@@ -137,7 +139,7 @@ def main():
             fillers_to_return.append(filler_tokens)
 
         # Check if the word occurs in the dictionary 
-        fillers_to_return = [filler for filler in fillers_to_return if ENGLISH_DICTIONARY.check(filler) == True]
+        fillers_to_return = [filler for filler in fillers_to_return if ENGLISH_DICTIONARY.check(filler) == True and filler not in PUNCTUATION]
         average_length.append(len(fillers_to_return))
         
         keys_with_fillers_to_keep[key] = {"filtered_fillers": fillers_to_return} 
