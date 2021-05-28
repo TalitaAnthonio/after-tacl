@@ -1,0 +1,6 @@
+x: the first term
+y: the second term
+context_x: the sentence in which x appears (highlighted by x)
+context_y: the sentence in which y appears (highlighted by y)
+semanticrelation: the (directional) semantic relation that holds between x and y: equivalence, forwardentailment, reverse_entailment, alternation, other-related and independence.
+confidence: the relation annotation confidence (percentage of annotators that selected this relation), in a scale of 0-1
