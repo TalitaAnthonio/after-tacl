@@ -114,7 +114,7 @@ def main():
     # OTHER WAYS: CHECK whether word is in dictionary or not ? 
 
     all_tags = Counter() 
-
+    average_length = []
     for key, _ in file_with_predictions.items(): 
         revision_object = Revisioninstance(key, file_with_predictions[key])
 
@@ -129,8 +129,9 @@ def main():
             filler_tokens =  " ".join([elem[0] for elem in filler])
             sequences.append(filler_tokens)
     
-        print(sequences)
+        average_length.append(len(sequences))
 
+    print("average amount of fillers", np.mean(average_length))
     
 main()
 
