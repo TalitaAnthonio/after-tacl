@@ -5,8 +5,10 @@ import spacy
 from tools import count_tags
 from collections import Counter 
 import numpy as np 
+import enchant 
 
 MODEL = spacy.load('en_core_web_sm')
+ENGLISH_DICTIONARY = enchant.Dict("en_US")
 
 
 path_to_pred_dir = "/Users/talita/Documents/PhD/tacl/analyse-predictions" 
@@ -118,20 +120,23 @@ def main():
     for key, _ in file_with_predictions.items(): 
         revision_object = Revisioninstance(key, file_with_predictions[key])
 
+        # RETURN FILTERED 
         best_model_predictions = revision_object.best_model_predictions
         all_fillers = revision_object.pos_tagged_fillers_all
         # filter irrelevant fillers out using POS tagging 
         print(file_with_predictions[key]["RevisedSentence"])
-        filtered = filter_tags(all_fillers, file_with_predictions[key]["reference-type"])        
-        sequences = []
-        print("=================================")
+        filtered = filter_tags(all_fillers, file_with_predictions[key]["reference-type"])  
+        if filtered == []: 
+           filtered = revision_object.pos_tagged_fillers_all      
+        
+        fillers_to_return = []
         for filler in filtered: 
             filler_tokens =  " ".join([elem[0] for elem in filler])
-            sequences.append(filler_tokens)
-    
-        average_length.append(len(sequences))
+            fillers_to_return.append(filler_tokens)
 
-    print("average amount of fillers", np.mean(average_length))
+        # Check if the word occurs in the dictionary 
+        fillers_to_return = [filler for filler in fillers_to_return if ENGLISH_DICTIONARY.check(filler) == True]
+        
     
 main()
 
