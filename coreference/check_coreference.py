@@ -4,8 +4,17 @@ from typing import Type
 from collections import Counter
 import numpy as np 
 
+path_to_pred_dir = "/Users/talita/Documents/PhD/tacl/analyse-predictions" 
+path_to_file_with_predictions = '{0}/bestmodels_predictions.json'.format(path_to_pred_dir)
+
+with open(path_to_file_with_predictions, "r") as json_in: 
+     file_with_predictions = json.load(json_in)
+
 PATH_TO_FILE = "dev_with_coref_for_fillers.json"  
 PATH_TO_FILTERED_SET = "dev_set_with_filtered_fillers.json"
+
+
+
 
 def read_json_lines(path_to_json_lines):
     d = {} 
@@ -40,10 +49,32 @@ def check_if_filler_occurs_in_coref(filler, coref_chains, sentence_length):
                     break 
                 break 
 
+
+def check_if_corefs_are_same(dict_with_corefs): 
+    # dict that counts the lists: 
+    # Counter({'The steak the Steak': 1, 'the steaks the steaks the steaks the steaks': 1, 'the meat the meat': 1, 'the beef the beef': 1, 'The steak the Steak the steak the steak the steak the steak the steak': 1, 'your grill your grill your prepared grill': 1}
+    freq_dict = Counter()
+    d = {}
+    for filler, _ in dict_with_corefs.items(): 
+        print("filler", filler)
+        freq_dict[" ".join(dict_with_corefs[filler])] +=1 
+        d[" ".join(dict_with_corefs[filler])] = filler 
+        
+
+    freq_dict = dict(freq_dict)
+    merged = {}
+    print(freq_dict)
+    for key, _ in freq_dict.items(): 
+        filler_name = d[key]
+        merged[filler_name] = {"counter": freq_dict[key], "coref": key}
+    return merged 
+
+
 def main(): 
     data, num_to_check = read_json_lines(PATH_TO_FILE)
     avg_coref_chain = []
     for key, _ in data.items(): 
+        coref_dict_per_filler = {}
         fillers_with_coref = [filler for filler in data[key].keys() if filler != "id"]
         # Step 1: only take the fillers that we decided to keep 
         specific_fillers = file_with_specific_fillers[key]["filtered_fillers"]
@@ -54,16 +85,22 @@ def main():
 
             # check if the key occurs in the dictionary 
             if filler in fillers_with_coref: 
+                correct_filler  = file_with_predictions[key]["CorrectReference"]
                 references = check_if_filler_occurs_in_coref(filler, data[key][filler]["coref"], len(data[key][filler]["sents"]))
                 print("filler", filler, references)
                 if references != None: 
-                   total_fillers_in_coref_chain +=1 
-        avg_coref_chain.append(total_fillers_in_coref_chain) 
-
-                   
+                    coref_dict_per_filler[filler] = sorted([reference for reference in references if reference != correct_filler])
         
-        print("====================")
+        merged = check_if_corefs_are_same(coref_dict_per_filler)
+        fillers_in_same_coref_chain = []
+        for key, _ in merged.items(): 
+            if merged[key]["counter"] > 1: 
+               references = merged[key]["coref"] 
+               for filler, references in coref_dict_per_filler.items(): 
+                   if " ".join(coref_dict_per_filler[filler]) == " ".join(references): 
+                      fillers_in_same_coref_chain.append(filler)
+        
 
-    print("average with a coreference chain", np.mean(avg_coref_chain))
-
+        final_selected_fillers = [filler for filler in specific_fillers if filler not in fillers_in_same_coref_chain]
+        print("final selected fillers", final_selected_fillers)
 main()
