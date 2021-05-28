@@ -139,12 +139,13 @@ def main():
             fillers_to_return.append(filler_tokens)
 
         # Check if the word occurs in the dictionary 
-        fillers_to_return = [filler for filler in fillers_to_return if ENGLISH_DICTIONARY.check(filler) == True and filler not in PUNCTUATION]
-        average_length.append(len(fillers_to_return))
+        fillers_to_return_new = [filler for filler in fillers_to_return if filler not in string.punctuation]
+        average_length.append(len(fillers_to_return_new))
         
-        keys_with_fillers_to_keep[key] = {"filtered_fillers": fillers_to_return} 
+        keys_with_fillers_to_keep[key] = {"filtered_fillers": fillers_to_return_new} 
+        print("fillers to keep", fillers_to_return)
     
-    print("average length", np.mean(average_length))
+    #print("average length", np.mean(average_length))
 
     # save file to use in next step. 
     with open("dev_set_with_filtered_fillers.json", "w") as json_in: 
