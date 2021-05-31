@@ -56,7 +56,6 @@ def check_if_corefs_are_same(dict_with_corefs):
     freq_dict = Counter()
     d = {}
     for filler, _ in dict_with_corefs.items(): 
-        print("filler", filler)
         freq_dict[" ".join(dict_with_corefs[filler])] +=1 
         d[" ".join(dict_with_corefs[filler])] = filler 
         
@@ -73,6 +72,7 @@ def check_if_corefs_are_same(dict_with_corefs):
 def main(): 
     data, num_to_check = read_json_lines(PATH_TO_FILE)
     avg_coref_chain = []
+    avg_len = []
     for key, _ in data.items(): 
         coref_dict_per_filler = {}
         fillers_with_coref = [filler for filler in data[key].keys() if filler != "id"]
@@ -87,7 +87,6 @@ def main():
             if filler in fillers_with_coref: 
                 correct_filler  = file_with_predictions[key]["CorrectReference"]
                 references = check_if_filler_occurs_in_coref(filler, data[key][filler]["coref"], len(data[key][filler]["sents"]))
-                print("filler", filler, references)
                 if references != None: 
                     coref_dict_per_filler[filler] = sorted([reference for reference in references if reference != correct_filler])
         
@@ -103,4 +102,7 @@ def main():
 
         final_selected_fillers = [filler for filler in specific_fillers if filler not in fillers_in_same_coref_chain]
         print("final selected fillers", final_selected_fillers)
+        avg_len.append(len(final_selected_fillers))
+    
+    print(np.mean(avg_len))
 main()
