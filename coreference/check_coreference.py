@@ -75,9 +75,17 @@ def main():
     avg_len = []
     for key, _ in data.items(): 
         coref_dict_per_filler = {}
+        
+        print("===============================================")
+
+        # remember that these are all the fillers 
         fillers_with_coref = [filler for filler in data[key].keys() if filler != "id"]
         # Step 1: only take the fillers that we decided to keep 
         specific_fillers = file_with_specific_fillers[key]["filtered_fillers"]
+
+        print("first fillers", specific_fillers)
+        print(file_with_predictions[key]["RevisedSentence"])
+
         # Step 2: check whether the filler occured in the context or not according to the coreference chain 
         
         total_fillers_in_coref_chain = 0 
@@ -94,15 +102,15 @@ def main():
         fillers_in_same_coref_chain = []
         for key, _ in merged.items(): 
             if merged[key]["counter"] > 1: 
-               references = merged[key]["coref"] 
-               for filler, references in coref_dict_per_filler.items(): 
-                   if " ".join(coref_dict_per_filler[filler]) == " ".join(references): 
-                      fillers_in_same_coref_chain.append(filler)
+                references = merged[key]["coref"] 
+                for filler, references in coref_dict_per_filler.items(): 
+                    if " ".join(coref_dict_per_filler[filler]) == " ".join(references): 
+                        fillers_in_same_coref_chain.append(filler)
         
 
         final_selected_fillers = [filler for filler in specific_fillers if filler not in fillers_in_same_coref_chain]
         print("final selected fillers", final_selected_fillers)
         avg_len.append(len(final_selected_fillers))
-    
+        
     print(np.mean(avg_len))
 main()
