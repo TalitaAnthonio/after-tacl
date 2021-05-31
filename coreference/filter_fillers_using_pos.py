@@ -83,12 +83,14 @@ def filter_tags(tagged_fillers, reference_type):
     # check the length 
     filtered_list = []
     tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", ")", "(", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', '``', 'RB', 'VBP', 'CC', 'CD']
+    words_to_exclude_unigrams = ["the", "a", "an"]
     if reference_type == "unigram": 
         for elem in tagged_fillers:
             if elem != []: 
                tag = elem[0][1]
                if tag not in tags_to_exclude_unigrams: 
-                  filtered_list.append(elem)
+                  if elem[0][0] not in words_to_exclude_unigrams: 
+                     filtered_list.append(elem)
     elif reference_type == "bigram": 
         for elem in tagged_fillers: 
             if elem != []: 
@@ -121,17 +123,29 @@ def main():
     all_tags = Counter() 
     average_length = []
     keys_with_fillers_to_keep = {}
+    counter = 0 
     for key, _ in file_with_predictions.items(): 
+        counter +=1 
         revision_object = Revisioninstance(key, file_with_predictions[key])
 
         # RETURN FILTERED 
+
+       
         best_model_predictions = revision_object.best_model_predictions
         all_fillers = revision_object.pos_tagged_fillers_all
+
+        print("========================================")
+        print(best_model_predictions)
         # filter irrelevant fillers out using POS tagging 
         print(file_with_predictions[key]["RevisedSentence"])
         filtered = filter_tags(all_fillers, file_with_predictions[key]["reference-type"])  
+
+        print("========== FILTERED ===============")
+        for filler in filtered: 
+            print(filler)
+
         if filtered == []: 
-           filtered = revision_object.pos_tagged_fillers_all      
+            filtered = revision_object.pos_tagged_fillers_all      
         
         fillers_to_return = []
         for filler in filtered: 
@@ -145,7 +159,7 @@ def main():
         keys_with_fillers_to_keep[key] = {"filtered_fillers": fillers_to_return_new} 
         print("fillers to keep", fillers_to_return)
     
-    #print("average length", np.mean(average_length))
+    print("average length", np.mean(average_length))
 
     # save file to use in next step. 
     with open("dev_set_with_filtered_fillers.json", "w") as json_in: 
