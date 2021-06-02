@@ -38,7 +38,12 @@ class RevisionInstance:
 def main(): 
     for key, _ in data.items(): 
         revision_object = RevisionInstance(key, data[key], data[key].keys())
-        print(revision_object.filtered_fillers)
+        filler_in_sent = []
+        for filler in revision_object.filtered_fillers:
+            line = revision_object.revised_untill_insertion + " " + filler + " " + revision_object.revised_after_insertion
+            filler_in_sent.append(line)
+        
+        print(filler_in_sent)
         break 
 
 
