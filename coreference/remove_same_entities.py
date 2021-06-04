@@ -78,10 +78,12 @@ def main():
         
 
            print("before", revision_object.filtered_fillers)
-           print("after", fillers_to_keep)
+           for elem in fillers_to_keep: 
+               print(elem)
         
         else: 
            
-           print(revision_object.filtered_fillers)
+           for filler in revision_object.filtered_fillers: 
+               print(filler)
 
 main()
