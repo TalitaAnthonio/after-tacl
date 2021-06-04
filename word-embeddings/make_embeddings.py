@@ -34,7 +34,7 @@ class RevisionInstance:
         self.key = key 
         self.keys = keys 
         self.left_context = revision_instance["LeftContext"]
-        self.predictions = [prediction.strip() for prediction in revision_instance["GPT+FinetuningPred"]]
+        self.predictions = [prediction.strip() for prediction in revision_instance["GPT+Finetuning+P-perplexityPred"]]
         self.filtered_fillers = filtered_fillers[key]["filtered_fillers"]
         self.revised_after_insertion = revision_instance["revised_after_insertion"]
         self.reference_type = revision_instance["reference-type"]
@@ -48,15 +48,40 @@ class RevisionInstance:
 
     #@property 
     #def dict_with_fillers(self): 
-  
+
+
+def filter_second_step(filtered_fillers): 
+    d = {}
+    for elem in filtered_fillers: 
+
+        if len(elem.split()) == 2: 
+            noun = elem.split()[1]
+        else: 
+            noun = elem 
+        if noun in d.keys(): 
+            d[noun].append(elem) 
+        else: 
+            d[noun] = []
+            d[noun].append(elem)
+
+    return d 
 
 
 def main(): 
     for key, _ in data.items(): 
         revision_object = RevisionInstance(key, data[key], data[key].keys())
         if revision_object.reference_type == "bigram": 
-           print("yes")
-           pdb.set_trace()
+           print("========================")
+           print(key)
+           print("revised sentence", data[key]["RevisedSentence"])
+           print("filtered", revision_object.filtered_fillers)
+           
+           print("========= similar words =====================")
+           filtered = filter_second_step(revision_object.filtered_fillers)
+           fillers_to_keep = [filtered[noun][0] for noun, _ in filtered.items() if noun not in ["the", "a"]]
+           print(fillers_to_keep)
+
+           #print("filtered", filtered)
 
         """        
         filler_repr = []
