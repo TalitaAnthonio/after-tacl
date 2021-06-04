@@ -1,4 +1,17 @@
 import json 
+from load_embeddings import * 
+import numpy as np 
+import pdb 
+
+with open("glove.6B.50d.txt", "r") as word2vecfile:
+    content = word2vecfile.readlines()
+    w2v = {}
+    for line in content: 
+        line = line.strip('\n').split()
+        word = line[0]
+        representation = np.array(list(map(float, line[1:])))
+        w2v[word] = representation 
+    
 
 
 path_to_pred_dir = "/Users/talita/Documents/PhD/tacl/analyse-predictions" 
@@ -24,6 +37,7 @@ class RevisionInstance:
         self.predictions = [prediction.strip() for prediction in revision_instance["GPT+FinetuningPred"]]
         self.filtered_fillers = filtered_fillers[key]["filtered_fillers"]
         self.revised_after_insertion = revision_instance["revised_after_insertion"]
+        self.reference_type = revision_instance["reference-type"]
 
     @property 
     def revised_untill_insertion(self): 
@@ -32,19 +46,34 @@ class RevisionInstance:
         else: 
            return self.revision_instance["revised_until_insertion"]
 
-
+    #@property 
+    #def dict_with_fillers(self): 
+  
 
 
 def main(): 
     for key, _ in data.items(): 
         revision_object = RevisionInstance(key, data[key], data[key].keys())
-        filler_in_sent = []
-        for filler in revision_object.filtered_fillers:
-            line = revision_object.revised_untill_insertion + " " + filler + " " + revision_object.revised_after_insertion
-            filler_in_sent.append(line)
-        
-        print(filler_in_sent)
-        break 
+        if revision_object.reference_type == "bigram": 
+           print("yes")
+           pdb.set_trace()
 
+        """        
+        filler_repr = []
+
+        print(revision_object.filtered_fillers)
+        for filler in revision_object.filtered_fillers:
+            noun = filler.split()[1]
+            line = revision_object.revised_untill_insertion + " " + noun + " " + revision_object.revised_after_insertion
+            vectorizer = MeanEmbeddingVectorizer(w2v, 50)
+            embeddings = vectorizer.transform(line.lower().split())
+            filler_repr.append([line, list(embeddings)[0], filler])
+        
+        sorted_filler_repr = sorted(filler_repr, key=lambda x:x[1], reverse=True)
+        for elem in sorted_filler_repr: 
+            print(elem)
+        
+        break 
+        """ 
 
 main()
