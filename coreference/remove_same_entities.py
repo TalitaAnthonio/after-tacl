@@ -1,18 +1,6 @@
 import json 
-from load_embeddings import * 
 import numpy as np 
 import pdb 
-
-with open("glove.6B.50d.txt", "r") as word2vecfile:
-    content = word2vecfile.readlines()
-    w2v = {}
-    for line in content: 
-        line = line.strip('\n').split()
-        word = line[0]
-        representation = np.array(list(map(float, line[1:])))
-        w2v[word] = representation 
-    
-
 
 path_to_pred_dir = "/Users/talita/Documents/PhD/tacl/analyse-predictions" 
 path_to_file_with_predictions = '{0}/bestmodels_predictions.json'.format(path_to_pred_dir)
@@ -52,10 +40,12 @@ class RevisionInstance:
 
 def filter_second_step(filtered_fillers): 
     d = {}
-    for elem in filtered_fillers: 
 
+    for elem in filtered_fillers: 
         if len(elem.split()) == 2: 
             noun = elem.split()[1]
+        elif len(elem.split()) == 3: 
+            noun = elem.split()[2]
         else: 
             noun = elem 
         if noun in d.keys(): 
@@ -68,37 +58,30 @@ def filter_second_step(filtered_fillers):
 
 
 def main(): 
+
+    avg_len = []
     for key, _ in data.items(): 
         revision_object = RevisionInstance(key, data[key], data[key].keys())
-        if revision_object.reference_type == "bigram": 
-           print("========================")
-           print(key)
-           print("revised sentence", data[key]["RevisedSentence"])
-           print("filtered", revision_object.filtered_fillers)
-           
-           print("========= similar words =====================")
+        print("================================")
+        print(data[key]["RevisedSentence"])
+
+        if revision_object.reference_type == "trigram" or revision_object.reference_type == "bigram": 
            filtered = filter_second_step(revision_object.filtered_fillers)
-           fillers_to_keep = [filtered[noun][0] for noun, _ in filtered.items() if noun not in ["the", "a"]]
-           print(fillers_to_keep)
 
-           #print("filtered", filtered)
-
-        """        
-        filler_repr = []
-
-        print(revision_object.filtered_fillers)
-        for filler in revision_object.filtered_fillers:
-            noun = filler.split()[1]
-            line = revision_object.revised_untill_insertion + " " + noun + " " + revision_object.revised_after_insertion
-            vectorizer = MeanEmbeddingVectorizer(w2v, 50)
-            embeddings = vectorizer.transform(line.lower().split())
-            filler_repr.append([line, list(embeddings)[0], filler])
+           fillers_to_keep = []
+           for noun, _ in filtered.items(): 
+               if noun not in ["the", "a", "to"]: 
+                  if data[key]["CorrectReference"].lower() in filtered[noun]: 
+                     fillers_to_keep.append(data[key]["CorrectReference"].lower())
+                  else: 
+                      fillers_to_keep.append(filtered[noun][0])
         
-        sorted_filler_repr = sorted(filler_repr, key=lambda x:x[1], reverse=True)
-        for elem in sorted_filler_repr: 
-            print(elem)
+
+           print("before", revision_object.filtered_fillers)
+           print("after", fillers_to_keep)
         
-        break 
-        """ 
+        else: 
+           
+           print(revision_object.filtered_fillers)
 
 main()
