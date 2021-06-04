@@ -133,3 +133,6 @@ coreference/stanford-corenlp-4.1.0
 *.json 
 *.csv
 *.txt
+*.pt
+*.sh
+*.zip 
