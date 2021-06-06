@@ -104,7 +104,7 @@ def main():
         df.to_csv("current_filtered_set.tsv", sep='\t', index=False)
 
         # make for json 
-        dict_for_json[key] = {"revised_sentence": revised_sentence, "predictions": predictions, "filtered1": filtered_fillers, "filtered2": fillers_to_keep, "context": context}
+        dict_for_json[key] = {"revised_sentence": revised_sentence, "predictions": predictions, "filtered1": filtered_fillers, "filtered2": fillers_to_keep, "context": context, "revised_untill_insertion": revision_object.revised_untill_insertion, "revised_after_insertion": data[key]["revised_after_insertion"]}
 
 
         with open("filtered_predictions_step2.json", "w") as json_out: 
