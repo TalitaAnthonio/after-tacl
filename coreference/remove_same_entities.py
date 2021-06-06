@@ -63,6 +63,8 @@ def filter_second_step(filtered_fillers):
 def main(): 
 
     d = {"id": [], "revised_sentence": [], "human-inserted": [], "predictions": [], "filtered1": [], "filtered2": [], "context": []}
+
+    dict_for_json = {}
     for key, _ in data.items(): 
         revision_object = RevisionInstance(key, data[key], data[key].keys())
         print("================================")
@@ -86,7 +88,9 @@ def main():
         revised_sentence = data[key]["RevisedSentence"]
         filtered_fillers = revision_object.filtered_fillers
         new_filtered = fillers_to_keep 
+
         
+        # make df  
         d["id"].append(key)
         d["revised_sentence"].append(revised_sentence)
         d["human-inserted"].append(data[key]["CorrectReference"])
@@ -99,7 +103,11 @@ def main():
         df = pd.DataFrame.from_dict(d)
         df.to_csv("current_filtered_set.tsv", sep='\t', index=False)
 
+        # make for json 
+        dict_for_json[key] = {"revised_sentence": revised_sentence, "predictions": predictions, "filtered1": filtered_fillers, "filtered2": fillers_to_keep, "context": context}
 
-        
+
+        with open("filtered_predictions_step2.json", "w") as json_out: 
+             json.dump(dict_for_json, json_out)
 
 main()
