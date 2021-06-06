@@ -1,6 +1,9 @@
+# Script to remove the entities that are the same. 
+
 import json 
 import numpy as np 
 import pdb 
+import pandas as pd 
 
 path_to_pred_dir = "/Users/talita/Documents/PhD/tacl/analyse-predictions" 
 path_to_file_with_predictions = '{0}/bestmodels_predictions.json'.format(path_to_pred_dir)
@@ -59,31 +62,44 @@ def filter_second_step(filtered_fillers):
 
 def main(): 
 
-    avg_len = []
+    d = {"id": [], "revised_sentence": [], "human-inserted": [], "predictions": [], "filtered1": [], "filtered2": [], "context": []}
     for key, _ in data.items(): 
         revision_object = RevisionInstance(key, data[key], data[key].keys())
         print("================================")
         print(data[key]["RevisedSentence"])
 
-        if revision_object.reference_type == "trigram" or revision_object.reference_type == "bigram": 
-           filtered = filter_second_step(revision_object.filtered_fillers)
+        #if revision_object.reference_type == "trigram" or revision_object.reference_type == "bigram": 
+        filtered = filter_second_step(revision_object.filtered_fillers)
 
-           fillers_to_keep = []
-           for noun, _ in filtered.items(): 
-               if noun not in ["the", "a", "to"]: 
-                  if data[key]["CorrectReference"].lower() in filtered[noun]: 
-                     fillers_to_keep.append(data[key]["CorrectReference"].lower())
-                  else: 
-                      fillers_to_keep.append(filtered[noun][0])
-        
+        fillers_to_keep = []
+        for noun, _ in filtered.items(): 
+            if noun not in ["the", "a", "to"]: 
+                if data[key]["CorrectReference"].lower() in filtered[noun]: 
+                    fillers_to_keep.append(data[key]["CorrectReference"].lower())
+                else: 
+                    fillers_to_keep.append(filtered[noun][0])
 
-           print("before", revision_object.filtered_fillers)
-           for elem in fillers_to_keep: 
-               print(elem)
+
+        context = revision_object.left_context
+        predictions = revision_object.predictions
+        reference_type = revision_object.reference_type
+        revised_sentence = data[key]["RevisedSentence"]
+        filtered_fillers = revision_object.filtered_fillers
+        new_filtered = fillers_to_keep 
         
-        else: 
-           
-           for filler in revision_object.filtered_fillers: 
-               print(filler)
+        d["id"].append(key)
+        d["revised_sentence"].append(revised_sentence)
+        d["human-inserted"].append(data[key]["CorrectReference"])
+        d["predictions"].append(predictions)
+        d["filtered1"].append(filtered_fillers)
+        d["filtered2"].append(fillers_to_keep)
+        d["context"].append(context)
+
+
+        df = pd.DataFrame.from_dict(d)
+        df.to_csv("current_filtered_set.tsv", sep='\t', index=False)
+
+
+        
 
 main()
