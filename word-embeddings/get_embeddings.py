@@ -50,32 +50,42 @@ def get_repr_for_filtered(filtered_pred, before_insertion, after_insertion):
 
 
 def main(): 
+    counter = 0 
+    d = {}
     for key, _ in data.items(): 
 
-        if data[key]["revision-type"] == "bigram": 
-            print("======================================")
-            revised_sentence = data[key]["revised_sentence"]
-            rev_bert_repr = vectorize_text([revised_sentence])
+        counter +=1 
+        print("processing {0}".format(counter))
+        print("======================================")
+        revised_sentence = data[key]["revised_sentence"]
+        rev_bert_repr = vectorize_text([revised_sentence])
 
-            sents_with_distance_to_rev = []
-            for filler in data[key]["filtered2"]: 
-                if filler != data[key]["CorrectReference"]: 
-                    sent_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
-                    pred_bert_repr = vectorize_text([sent_with_filler])
+        sents_with_distance_to_rev = []
+        for filler in data[key]["filtered2"]: 
+            if filler != data[key]["CorrectReference"]: 
+                sent_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
+                pred_bert_repr = vectorize_text([sent_with_filler])
 
-                    distance_to_revised = compute_distance(rev_bert_repr, pred_bert_repr)
-                    sents_with_distance_to_rev.append([sent_with_filler, distance_to_revised]) 
+                distance_to_revised = compute_distance(rev_bert_repr, pred_bert_repr)
+                sents_with_distance_to_rev.append([filler, sent_with_filler, distance_to_revised]) 
 
-            sents_with_distance_to_rev_sorted = sorted(sents_with_distance_to_rev, key=lambda x: x[1], reverse=False)
-            
-            print(revised_sentence)
-            for elem in sents_with_distance_to_rev_sorted: 
-                print(elem)
+        sents_with_distance_to_rev_sorted = sorted(sents_with_distance_to_rev, key=lambda x: x[-1], reverse=False)
+        
+        d[key] = sents_with_distance_to_rev_sorted
+
+        for elem in sents_with_distance_to_rev_sorted: 
+            print(elem)
 
 
 
             print("============================================")
         
+        if counter == 10: 
+           break 
 
+
+
+    with open("bert_embeddings_dict.json", "w") as json_out: 
+         json.dump(d, json_out)
 
 main()

@@ -16,6 +16,9 @@ with open(path_to_file_with_predictions, "r") as json_in:
 with open(path_to_filtered_fillers, "r") as json_in: 
      filtered_fillers = json.load(json_in)
 
+with open("../word-embeddings/dev_set_references.json", "r") as json_in: 
+     references = json.load(json_in)
+
 
 class RevisionInstance: 
 
@@ -62,7 +65,7 @@ def filter_second_step(filtered_fillers):
 
 def main(): 
 
-    d = {"id": [], "revised_sentence": [], "human-inserted": [], "predictions": [], "filtered1": [], "filtered2": [], "context": [], "revision-type":[]}
+    d = {"id": [], "revised_sentence": [], "human-inserted": [], "predictions": [], "filtered1": [], "filtered2": [], "coref-entities": [], "context": [], "revision-type":[]}
 
     dict_for_json = {}
     for key, _ in data.items(): 
@@ -99,6 +102,7 @@ def main():
         d["filtered2"].append(fillers_to_keep)
         d["context"].append(context)
         d["revision-type"].append(revision_object.reference_type)
+        d["coref-entities"].append(references[key]["unique_references_in_context"])
 
 
         df = pd.DataFrame.from_dict(d)
@@ -106,7 +110,9 @@ def main():
 
         # make for json 
         dict_for_json[key] = {"revised_sentence": revised_sentence, "predictions": predictions, "CorrectReference": data[key]["CorrectReference"], 
-         "filtered1": filtered_fillers, "filtered2": fillers_to_keep, "context": context, "revision-type": revision_object.reference_type, "revised_untill_insertion": revision_object.revised_untill_insertion, "revised_after_insertion": data[key]["revised_after_insertion"]}
+         "filtered1": filtered_fillers, "filtered2": fillers_to_keep, "context": context, "revision-type": revision_object.reference_type, 
+         "revised_untill_insertion": revision_object.revised_untill_insertion, "revised_after_insertion": data[key]["revised_after_insertion"], 
+         "coref-entities": references[key]["unique_references_in_context"]}
 
 
         with open("filtered_predictions_step2.json", "w") as json_out: 
