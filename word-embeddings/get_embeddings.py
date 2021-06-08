@@ -80,10 +80,6 @@ def main():
 
             print("============================================")
         
-        if counter == 10: 
-           break 
-
-
 
     with open("bert_embeddings_dict.json", "w") as json_out: 
          json.dump(d, json_out)
