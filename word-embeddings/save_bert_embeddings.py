@@ -6,6 +6,7 @@ from sklearn.cluster import KMeans
 import json 
 import pdb 
 import numpy as np 
+import pickle
 
 
 PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
@@ -56,6 +57,8 @@ def get_clusters(vectorized_sentences, n_clusters=5):
 
 def main(): 
 
+    d = {}
+    counter = 0 
     for key, _ in data.items(): 
         print("------------------- {0} ------------------------------".format(key))
         revised_sentence = data[key]["revised_sentence"]
@@ -72,50 +75,15 @@ def main():
         
         # vectorize 
         vectorized = vectorize_data(sentences_with_filler)
+        d[key] = {"vectors": vectorized, "sentences": sentences_with_filler}
 
-        # get clusters 
+        counter +=1 
 
-        print(len(sentences_with_filler))
-        if len(sentences_with_filler) > 4: 
-            clusters, centers = get_clusters(vectorized, n_clusters=5)
-        elif len(sentences_with_filler) == 1: 
-            clusters, centers = get_clusters(vectorized, n_clusters=1)
-        else: 
-            clusters,centers = get_clusters(vectorized, n_clusters=len(sentences_with_filler)//2 )
-        
-        # check to which cluster each sentence belongs 
-
-        cluster_dict = {}
-        for sentence, cluster in zip(sentences_with_filler, clusters): 
-            if cluster in cluster_dict.keys(): 
-               cluster_dict[cluster].append(sentence)
-            else: 
-                cluster_dict[cluster] = []
-                cluster_dict[cluster].append(sentence)
-        
-        print(cluster_dict)
-        for clusternr, sentences in cluster_dict.items(): 
-            print("==== cluster {0} ====".format(clusternr)) 
-            for sentence in cluster_dict[clusternr]: 
-                print(sentence)
-        
-
-        # returns the vector sentences which are the centers 
-        print(centers)
-
-        
-        for i in range(len(sentences_with_filler)): 
-            #print(vectorized[i])
-            res = np.where(centers == vectorized[i])
-            print(res)
-
-            #print(sentences_with_filler[i], vectorized[i])
+    
+    np.save("bert_vectors.npy", d)
 
 
-        pdb.set_trace()
-
-        break 
-     
-
-
+    with open("bert_vectors.pickle", "wb") as pickle_out: 
+         pickle.dump(d, pickle_out)
+ 
 main()
