@@ -7,7 +7,7 @@ import json
 import pdb 
 import numpy as np 
 import pickle
-
+from sklearn.metrics import pairwise_distances_argmin_min
 
 PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
 
