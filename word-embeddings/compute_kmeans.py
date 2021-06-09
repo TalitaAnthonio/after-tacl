@@ -3,29 +3,27 @@ from scipy import spatial
 from sent2vec.vectorizer import Vectorizer
 from sklearn import cluster
 from sklearn.cluster import KMeans
+from sklearn.metrics import pairwise_distances_argmin_min
 import json 
 import pdb 
 import numpy as np 
+import pickle 
+
 
 
 PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
 
+PATH_TO_EMBEDDINGS = "bert_vectors.pickle"
+
+
+with open(PATH_TO_EMBEDDINGS, "rb") as pickle_in: 
+     embeddings = pickle.load(pickle_in) 
+
+
+
 with open(PATH_TO_FILE, "r") as json_in: 
      data = json.load(json_in)
 
-#sentences = [
-#  "Cook the steak to medium rare.", "Cook the chicken to medium rare", "Cook your dish to medium rare"
-#]
-
-#vectorizer = Vectorizer()
-#vectorizer.bert(sentences)
-#vectors_bert = vectorizer.vectors
-#print(vectors_bert)
-
-#km = KMeans(n_clusters=2)
-#km.fit(vectors_bert)
-#clusters = km.labels_.tolist()
-#print(clusters)
 
 def vectorize_data(sentences): 
     vectorizer = Vectorizer()
@@ -36,7 +34,7 @@ def vectorize_data(sentences):
 
 
 
-def get_clusters(vectorized_sentences, n_clusters=5):
+def get_clusters(vectorized_sentences, num_clusters=5):
     """
         Param: 
         --------------
@@ -46,76 +44,66 @@ def get_clusters(vectorized_sentences, n_clusters=5):
     """ 
     
     clustered_sentences = []
-    km = KMeans(n_clusters=n_clusters)
+    km = KMeans(n_clusters=num_clusters)
     km.fit(vectorized_sentences)
     clusters = km.labels_.tolist()
     cluster_centers = km.cluster_centers_
-    return clusters, cluster_centers 
+    closest_data_indexes, _ = pairwise_distances_argmin_min(km.cluster_centers_, vectorized_sentences)
+    return clusters, cluster_centers, closest_data_indexes
         
 
 
 def main(): 
 
+    d = {}
     for key, _ in data.items(): 
         print("------------------- {0} ------------------------------".format(key))
         revised_sentence = data[key]["revised_sentence"]
         filtered_predictions = data[key]["filtered2"]
+        vectorized_sentences = embeddings[key]["vectors"]
+        sentences = embeddings[key]["sentences"]
 
-        # get the top fillers 
-        sentences_with_filler = []
-        for filler in filtered_predictions: 
-            if filler.lower() != data[key]["CorrectReference"].lower(): 
-                sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
-                sentences_with_filler.append(sentence_with_filler)
+
+
+        if len(filtered_predictions) > 5: 
+
+            clusters, cluster_centers, closest_data_indexes = get_clusters(vectorized_sentences, num_clusters=6)
         
-        sentences_with_filler.append(revised_sentence)
-        
-        # vectorize 
-        vectorized = vectorize_data(sentences_with_filler)
+        elif len(filtered_predictions) == 1: 
 
-        # get clusters 
+            clusters, cluster_centers, closest_data_indexes = get_clusters(vectorized_sentences, num_clusters=1)
 
-        print(len(sentences_with_filler))
-        if len(sentences_with_filler) > 4: 
-            clusters, centers = get_clusters(vectorized, n_clusters=5)
-        elif len(sentences_with_filler) == 1: 
-            clusters, centers = get_clusters(vectorized, n_clusters=1)
+            
         else: 
-            clusters,centers = get_clusters(vectorized, n_clusters=len(sentences_with_filler)//2 )
+            
+            clusters, cluster_centers, closest_data_indexes = get_clusters(vectorized_sentences, num_clusters=len(filtered_predictions)//2)
         
-        # check to which cluster each sentence belongs 
+
 
         cluster_dict = {}
-        for sentence, cluster in zip(sentences_with_filler, clusters): 
-            if cluster in cluster_dict.keys(): 
-               cluster_dict[cluster].append(sentence)
+        for i in range(len(clusters)): 
+            if clusters[i] in cluster_dict.keys(): 
+               cluster_dict[clusters[i]].append(sentences[i])
+            
             else: 
-                cluster_dict[cluster] = []
-                cluster_dict[cluster].append(sentence)
-        
-        print(cluster_dict)
-        for clusternr, sentences in cluster_dict.items(): 
-            print("==== cluster {0} ====".format(clusternr)) 
-            for sentence in cluster_dict[clusternr]: 
-                print(sentence)
-        
-
-        # returns the vector sentences which are the centers 
-        print(centers)
+                cluster_dict[clusters[i]] = []
+                cluster_dict[clusters[i]].append(sentences[i])
 
         
-        for i in range(len(sentences_with_filler)): 
-            #print(vectorized[i])
-            res = np.where(centers == vectorized[i])
-            print(res)
-
-            #print(sentences_with_filler[i], vectorized[i])
-
-
-        pdb.set_trace()
-
-        break 
-     
+        print("revised", revised_sentence)
+        for key, _ in cluster_dict.items(): 
+            print("======= cluster {0} ==========".format(key))
+            for sent in cluster_dict[key]: 
+                print(sent)
 
 
+        closest_to_centroids =  [sentences[index] for index in closest_data_indexes]
+        print(closest_to_centroids)
+
+        d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids}
+
+
+        with open("kmeans_k=6.json", "w") as json_out: 
+             json.dump(d,json_out)
+ 
 main()
