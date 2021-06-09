@@ -65,9 +65,9 @@ def main():
 
 
 
-        if len(filtered_predictions) > 5: 
+        if len(filtered_predictions) > 4: 
 
-            clusters, cluster_centers, closest_data_indexes = get_clusters(vectorized_sentences, num_clusters=6)
+            clusters, cluster_centers, closest_data_indexes = get_clusters(vectorized_sentences, num_clusters=5)
         
         elif len(filtered_predictions) == 1: 
 
@@ -91,9 +91,9 @@ def main():
 
         
         print("revised", revised_sentence)
-        for key, _ in cluster_dict.items(): 
-            print("======= cluster {0} ==========".format(key))
-            for sent in cluster_dict[key]: 
+        for cluster_id, _ in cluster_dict.items(): 
+            print("======= cluster {0} ==========".format(cluster_id))
+            for sent in cluster_dict[cluster_id]: 
                 print(sent)
 
 
@@ -103,7 +103,7 @@ def main():
         d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids}
 
 
-        with open("kmeans_k=6.json", "w") as json_out: 
-             json.dump(d,json_out)
+    with open("kmeans_k=5.json", "w") as json_out: 
+            json.dump(d,json_out)
  
 main()
