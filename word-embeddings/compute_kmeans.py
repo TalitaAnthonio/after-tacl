@@ -13,7 +13,7 @@ import pickle
 
 PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
 
-PATH_TO_EMBEDDINGS = "bert_vectors.pickle"
+PATH_TO_EMBEDDINGS = "bert_vectors_POSTAG.pickle"
 
 
 with open(PATH_TO_EMBEDDINGS, "rb") as pickle_in: 
@@ -59,12 +59,14 @@ def main():
     for key, _ in data.items(): 
         print("------------------- {0} ------------------------------".format(key))
         revised_sentence = data[key]["revised_sentence"]
-        filtered_predictions = data[key]["filtered2"]
-        vectorized_sentences = embeddings[key]["vectors"]
+        filtered_predictions = data[key]["filtered1"][0:20]
+        vectorized_sentences = embeddings[key]["vectors"][0:20]
         sentences = embeddings[key]["sentences"]
 
+        pdb.set_trace()
 
 
+        print(filtered_predictions)
         if len(filtered_predictions) > 4: 
 
             clusters, cluster_centers, closest_data_indexes = get_clusters(vectorized_sentences, num_clusters=5)
@@ -103,7 +105,7 @@ def main():
         d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids}
 
 
-    with open("kmeans_k=5.json", "w") as json_out: 
+    with open("kmeans_k=5_filtered_step1_top20.json", "w") as json_out: 
             json.dump(d,json_out)
  
 main()
