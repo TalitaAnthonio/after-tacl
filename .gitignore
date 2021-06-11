@@ -137,3 +137,6 @@ coreference/stanford-corenlp-4.1.0
 *.sh
 *.zip 
 *.tsv 
+*.pickle
+clusters_5
+*.npy
