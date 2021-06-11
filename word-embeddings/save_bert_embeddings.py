@@ -62,7 +62,7 @@ def main():
     for key, _ in data.items(): 
         print("------------------- {0} ------------------------------".format(key))
         revised_sentence = data[key]["revised_sentence"]
-        filtered_predictions = data[key]["filtered2"]
+        filtered_predictions = data[key]["filtered1"]
 
         # get the top fillers 
         sentences_with_filler = []
@@ -80,10 +80,10 @@ def main():
         counter +=1 
 
     
-    np.save("bert_vectors.npy", d)
+    np.save("bert_vectors_POSTAG.npy", d)
 
 
-    with open("bert_vectors.pickle", "wb") as pickle_out: 
+    with open("bert_vectors_POSTAG.pickle", "wb") as pickle_out: 
          pickle.dump(d, pickle_out)
  
 main()
