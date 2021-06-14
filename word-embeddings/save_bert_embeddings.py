@@ -71,6 +71,7 @@ def main():
                 sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
                 sentences_with_filler.append(sentence_with_filler)
         
+        # add the revised sentence to the list with sentences. 
         sentences_with_filler.append(revised_sentence)
         
         # vectorize 
