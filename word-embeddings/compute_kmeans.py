@@ -10,9 +10,17 @@ import numpy as np
 import pickle 
 
 
+# TODO: 
+# If the revised sentence is not among the top N (check of de index in the range is van (0,top_n))
+# Als dat niet zo is: 
+# Pak de top_n - 1 
+# voeg de revised sentence toe (check de index en pak vanuit daar de sentence zoals ie in embeddings[sentences] staat en de vectorized represnetation )
+# sentence_embeddings + revised-sentence 
+# vectors + vector_of_revised_sentence 
+# Maak dan de clusters 
 
 PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
-PATH_TO_EMBEDDINGS = "bert_vectors_POSTAG.pickle"
+PATH_TO_EMBEDDINGS = "bert_vectors_POSTAG_new.pickle"
 NUM_OF_PRED = 20
 PATH_TO_FILE_OUT = "kmeans_k=5_filtered_step1_top{0}.json".format(NUM_OF_PRED)
 
@@ -60,11 +68,30 @@ def main():
     for key, _ in data.items(): 
         print("------------------- {0} ------------------------------".format(key))
         revised_sentence = data[key]["revised_sentence"]
-        filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED]
-        vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED]
-        sentences = embeddings[key]["sentences"]
 
-        print(filtered_predictions)
+
+        if data[key]["CorrectReference"].lower() in [elem.lower() for elem in data[key]["filtered1"]][0:NUM_OF_PRED]:
+            filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED]
+            vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED]
+            sentences = embeddings[key]["sentences"][0:NUM_OF_PRED]
+
+
+        else: 
+            filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED-1]
+            vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
+            sentences = embeddings[key]["sentences"][0:NUM_OF_PRED-1]
+
+            # take the index of the filler
+            pdb.set_trace() 
+            index_of_revised = embeddings[key]["sentences"].index(revised_sentence)
+
+
+        # add the revised sentence to the top predictions 
+        sentences = sentences + [revised_sentence]
+
+        # add the revised sentence to the top predictions 
+
+
         if len(filtered_predictions) > 4: 
 
             clusters, cluster_centers, closest_data_indexes = get_clusters(vectorized_sentences, num_clusters=5)
@@ -103,7 +130,7 @@ def main():
         d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids}
 
 
-    with open(PATH_TO_FILE_OUT, "w") as json_out: 
-            json.dump(d,json_out)
+    #with open(PATH_TO_FILE_OUT, "w") as json_out: 
+    #        json.dump(d,json_out)
  
 main()
