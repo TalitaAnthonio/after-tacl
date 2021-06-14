@@ -14,20 +14,6 @@ PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
 with open(PATH_TO_FILE, "r") as json_in: 
      data = json.load(json_in)
 
-#sentences = [
-#  "Cook the steak to medium rare.", "Cook the chicken to medium rare", "Cook your dish to medium rare"
-#]
-
-#vectorizer = Vectorizer()
-#vectorizer.bert(sentences)
-#vectors_bert = vectorizer.vectors
-#print(vectors_bert)
-
-#km = KMeans(n_clusters=2)
-#km.fit(vectors_bert)
-#clusters = km.labels_.tolist()
-#print(clusters)
-
 def vectorize_data(sentences): 
     vectorizer = Vectorizer()
     vectorizer.bert(sentences)
@@ -64,15 +50,19 @@ def main():
         revised_sentence = data[key]["revised_sentence"]
         filtered_predictions = data[key]["filtered1"]
 
-        # get the top fillers 
+        # get embeddings for the fillers 
         sentences_with_filler = []
         for filler in filtered_predictions: 
-            if filler.lower() != data[key]["CorrectReference"].lower(): 
-                sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
-                sentences_with_filler.append(sentence_with_filler)
+            
+            sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
+            sentences_with_filler.append(sentence_with_filler)
+
         
-        # add the revised sentence to the list with sentences. 
-        sentences_with_filler.append(revised_sentence)
+        
+        # if the reference is not among the filtered predictions, then add it to the list. 
+        if data[key]["CorrectReference"].lower() not in filtered_predictions: 
+           sentences_with_filler.append(revised_sentence)
+
         
         # vectorize 
         vectorized = vectorize_data(sentences_with_filler)
@@ -81,10 +71,10 @@ def main():
         counter +=1 
 
     
-    np.save("bert_vectors_POSTAG.npy", d)
+    np.save("bert_vectors_POSTAG_new.npy", d)
 
 
-    with open("bert_vectors_POSTAG.pickle", "wb") as pickle_out: 
+    with open("bert_vectors_POSTAG_new.pickle", "wb") as pickle_out: 
          pickle.dump(d, pickle_out)
  
 main()
