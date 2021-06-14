@@ -79,7 +79,6 @@ def main():
     with open("bert_vectors_POSTAG_new.pickle", "wb") as pickle_out: 
          pickle.dump(d, pickle_out)
     
-    with open("test.json", "w") as json_in: 
-         json.dump(d, json_in)
+
  
 main()
