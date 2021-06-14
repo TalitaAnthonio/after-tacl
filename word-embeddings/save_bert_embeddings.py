@@ -52,29 +52,34 @@ def main():
 
         # get embeddings for the fillers 
         sentences_with_filler = []
-        for filler in filtered_predictions: 
+        for index, filler in enumerate(filtered_predictions,0): 
             
             sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
             sentences_with_filler.append(sentence_with_filler)
 
-        
-        
+            if filler.lower() == data[key]["CorrectReference"].lower():
+               index_of_revised_sentence = index 
+                
+
         # if the reference is not among the filtered predictions, then add it to the list. 
         if data[key]["CorrectReference"].lower() not in filtered_predictions: 
            sentences_with_filler.append(revised_sentence)
+           index_of_revised_sentence = len(sentences_with_filler)-1
 
         
         # vectorize 
         vectorized = vectorize_data(sentences_with_filler)
-        d[key] = {"vectors": vectorized, "sentences": sentences_with_filler}
+        d[key] = {"vectors": vectorized, "sentences": sentences_with_filler, "index_of_revised_sentence": index_of_revised_sentence}
 
         counter +=1 
 
     
-    np.save("bert_vectors_POSTAG_new.npy", d)
-
+    #np.save("bert_vectors_POSTAG_new.npy", d)
 
     with open("bert_vectors_POSTAG_new.pickle", "wb") as pickle_out: 
          pickle.dump(d, pickle_out)
+    
+    with open("test.json", "w") as json_in: 
+         json.dump(d, json_in)
  
 main()
