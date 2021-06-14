@@ -12,8 +12,9 @@ import pickle
 
 
 PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
-
 PATH_TO_EMBEDDINGS = "bert_vectors_POSTAG.pickle"
+NUM_OF_PRED = 30
+PATH_TO_FILE_OUT = "kmeans_k=5_filtered_step1_top{0}.json".format(NUM_OF_PRED)
 
 
 with open(PATH_TO_EMBEDDINGS, "rb") as pickle_in: 
@@ -59,12 +60,9 @@ def main():
     for key, _ in data.items(): 
         print("------------------- {0} ------------------------------".format(key))
         revised_sentence = data[key]["revised_sentence"]
-        filtered_predictions = data[key]["filtered1"][0:20]
-        vectorized_sentences = embeddings[key]["vectors"][0:20]
+        filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED]
+        vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED]
         sentences = embeddings[key]["sentences"]
-
-        pdb.set_trace()
-
 
         print(filtered_predictions)
         if len(filtered_predictions) > 4: 
