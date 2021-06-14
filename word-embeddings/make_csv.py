@@ -7,8 +7,10 @@ import pandas as pd
 import pdb 
 from collections import Counter
 
-PATH_TO_CLUSTERS = "kmeans_k=5_filtered_step1_top20.json"
 PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
+NUM_OF_PRED = 20
+PATH_TO_CLUSTERS = "kmeans_k=5_filtered_step1_top{0}.json".format(NUM_OF_PRED)
+PATH_TO_FILE_OUT = "clusters_5_top{0}.tsv".format(NUM_OF_PRED)
 
 with open(PATH_TO_CLUSTERS, "r") as json_in: 
      clusters = json.load(json_in)
@@ -79,6 +81,6 @@ def main():
 
 
     df = pd.DataFrame.from_dict(d)
-    df.to_csv("clusters_5_top20.tsv", sep='\t', index=False)
+    df.to_csv(PATH_TO_FILE_OUT, sep='\t', index=False)
 
 main()

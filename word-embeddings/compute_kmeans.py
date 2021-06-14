@@ -13,7 +13,7 @@ import pickle
 
 PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
 PATH_TO_EMBEDDINGS = "bert_vectors_POSTAG.pickle"
-NUM_OF_PRED = 30
+NUM_OF_PRED = 20
 PATH_TO_FILE_OUT = "kmeans_k=5_filtered_step1_top{0}.json".format(NUM_OF_PRED)
 
 
@@ -103,7 +103,7 @@ def main():
         d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids}
 
 
-    with open("kmeans_k=5_filtered_step1_top20.json", "w") as json_out: 
+    with open(PATH_TO_FILE_OUT, "w") as json_out: 
             json.dump(d,json_out)
  
 main()
