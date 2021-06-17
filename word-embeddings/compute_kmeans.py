@@ -36,13 +36,6 @@ with open(PATH_TO_FILE, "r") as json_in:
 
 
 def vectorize_data(sentences): 
-    """
-        Param: 
-        ----------------------------------------------
-        sentences
-
-
-    """
     vectorizer = Vectorizer()
     vectorizer.bert(sentences)
     vectors_bert = vectorizer.vectors
@@ -59,7 +52,7 @@ def use_k_means(vectorized_sentences, num_clusters=5):
         vectorized_sentences {list} with sentence representation: 
         the sentence in embedding representation. 
 
-        num_cluster {int}: the number of clusters to use, default = 5 
+        num_cluster {int}: the number of clusters to use, default = 5
     """ 
     
     clustered_sentences = []
@@ -73,7 +66,7 @@ def use_k_means(vectorized_sentences, num_clusters=5):
 
 
 
-def get_clusters(vectorized_sentences, filtered_predictions, num_clusters=5): 
+def get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of_revised, num_clusters=5): 
     if len(filtered_predictions) > 4: 
 
         clusters, cluster_centers, closest_data_indexes = use_k_means(vectorized_sentences, num_clusters=num_clusters)
@@ -86,22 +79,26 @@ def get_clusters(vectorized_sentences, filtered_predictions, num_clusters=5):
     else: 
         
         clusters, cluster_centers, closest_data_indexes = use_k_means(vectorized_sentences, num_clusters=len(filtered_predictions)//2)
-        
-
-    return clusters, cluster_centers, closest_data_indexes
 
 
+    # make a dictionary with the clusters {"1": sent1, sent2, sent3, "2": sent4, sent5, sent6}
+    cluster_dict = {}
+    for i in range(len(clusters)): 
+        if clusters[i] in cluster_dict.keys(): 
+            cluster_dict[clusters[i]].append([sentences[i], i])   
+        else: 
+            cluster_dict[clusters[i]] = []
+            cluster_dict[clusters[i]].append([sentences[i], i])
 
-def get_dict_with_pos(filtered_predictions, revised_untill_insertion, revised_after_insertion):
 
-    d = {}
-    for index, filler in enumerate(filtered_predictions,0): 
+    # do not use the centroids but the sentence with the highest probability as provided by the GPT model. 
+    centroids_by_prob = []
+    for cluster, sents in cluster_dict.items():     
+        biggest_prob = sorted(cluster_dict[cluster], key=lambda x: x[-1])[0][0]
+        centroids_by_prob.append(biggest_prob)
     
-        sentence_with_filler = revised_untill_insertion + " " + filler + " " + revised_after_insertion
-        d[sentence_with_filler] = index 
-        
-    return d 
- 
+
+    return cluster_dict, cluster_centers, closest_data_indexes, centroids_by_prob
 
 
 def main(): 
@@ -132,23 +129,8 @@ def main():
             vectorized_sentences = vectorized_sentences + revised_sentence_vector
 
 
-        clusters, cluster_centers, closest_data_indexes = get_clusters(vectorized_sentences, filtered_predictions, NUM_CLUSTERS)
+        cluster_dict, cluster_centers, closest_data_indexes, centroids_by_prob = get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of_revised, NUM_CLUSTERS)
 
-        cluster_dict = {}
-        for i in range(len(clusters)): 
-            if clusters[i] in cluster_dict.keys(): 
-                cluster_dict[clusters[i]].append([sentences[i], i])   
-            else: 
-                cluster_dict[clusters[i]] = []
-                cluster_dict[clusters[i]].append([sentences[i], i])
-
-
-        centroids_by_prob = []
-        for cluster, sents in cluster_dict.items():     
-            biggest_prob = sorted(cluster_dict[cluster], key=lambda x: x[-1])[0][0]
-            centroids_by_prob.append(biggest_prob)
-        
- 
 
  
         
