@@ -73,7 +73,7 @@ def get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of
     
     elif len(filtered_predictions) == 1: 
 
-        clusters, cluster_centers, closest_data_indexes = use_k_means(vectorized_sentences, num_clusters=num_clusters)
+        clusters, cluster_centers, closest_data_indexes = use_k_means(vectorized_sentences, num_clusters=1)
 
         
     else: 
@@ -98,7 +98,33 @@ def get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of
         centroids_by_prob.append(biggest_prob)
     
 
-    return cluster_dict, cluster_centers, closest_data_indexes, centroids_by_prob
+    # make a dict with just the clusters and the indexes to check later which of them has the revised sentence. 
+    cluster_dict_indexes_only = {}
+    for cluster, sents in cluster_dict.items(): 
+        if index_of_revised in [sent[1] for sent in sents]: 
+           cluster_dict_indexes_only[cluster] = {"sents": [sent[1] for sent in sents], "revised-in-cluster": True, "index_of_revised": index_of_revised}
+        else: 
+           cluster_dict_indexes_only[cluster] = {"sents": [sent[1] for sent in sents], "revised-in-cluster": False, "index_of_revised": index_of_revised}
+
+
+    # array([ 2,  9, 11,  1, 17])
+    
+    print(cluster_dict_indexes_only)
+    print(closest_data_indexes)
+    filtered_centroids = []
+    for index in closest_data_indexes: 
+        for key, _ in cluster_dict_indexes_only.items(): 
+            if index in cluster_dict_indexes_only[key]["sents"]: 
+                if cluster_dict_indexes_only[key]["revised-in-cluster"] == False: 
+                   #filtered_centroids.append([key, index])
+                   filtered_centroids.append(index)
+                else: 
+                    #filtered_centroids.append([key, cluster_dict_indexes_only[key]["index_of_revised"]])
+                    filtered_centroids.append(cluster_dict_indexes_only[key]["index_of_revised"])
+
+    print(filtered_centroids)
+ 
+    return cluster_dict, cluster_centers, closest_data_indexes, centroids_by_prob, filtered_centroids
 
 
 def main(): 
@@ -111,13 +137,16 @@ def main():
         
         # if the revised sentence is in there: 
         if index_of_revised in [i for i in range(0,NUM_OF_PRED)]:
+            print("index in range")
             filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED]
             vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED]
             sentences = embeddings[key]["sentences"][0:NUM_OF_PRED]
 
+
       
         # otherwise, add the revised sentence to the predictions 
         else: 
+            print("index not in range")
             filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED-1]
             vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
             sentences = embeddings[key]["sentences"][0:NUM_OF_PRED-1]
@@ -125,11 +154,15 @@ def main():
             revised_sentence_vector = embeddings[key]["vectors"][index_of_revised]
             revised_sentence_repr = embeddings[key]["sentences"][index_of_revised]
 
+            index_of_revised = len(filtered_predictions)-1
+
             sentences = sentences + [revised_sentence_repr]
             vectorized_sentences = vectorized_sentences + revised_sentence_vector
 
 
-        cluster_dict, cluster_centers, closest_data_indexes, centroids_by_prob = get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of_revised, NUM_CLUSTERS)
+        print(len(filtered_predictions))
+
+        cluster_dict, cluster_centers, closest_data_indexes, centroids_by_prob, centroids_with_revised = get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of_revised, NUM_CLUSTERS)
 
 
  
@@ -142,15 +175,15 @@ def main():
 
 
         closest_to_centroids =  [sentences[index] for index in closest_data_indexes]
+        centroids_with_revised_sents = [sentences[index] for index in centroids_with_revised]
 
-        d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids, "centroids_by_prob": centroids_by_prob}
+        d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids, "centroids_by_prob": centroids_by_prob, "Centroids_with_revised": centroids_with_revised_sents}
 
 
         print(centroids_by_prob)
-        break 
 
-       # with open(PATH_TO_FILE_OUT, "w") as json_out: 
-       #         json.dump(d,json_out)
+        with open(PATH_TO_FILE_OUT, "w") as json_out: 
+                json.dump(d,json_out)
  
 
 main()
