@@ -1,4 +1,5 @@
 
+from operator import index
 from scipy import spatial
 from sent2vec.vectorizer import Vectorizer
 from sklearn import cluster
@@ -107,10 +108,7 @@ def get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of
            cluster_dict_indexes_only[cluster] = {"sents": [sent[1] for sent in sents], "revised-in-cluster": False, "index_of_revised": index_of_revised}
 
 
-    # array([ 2,  9, 11,  1, 17])
-    
-    print(cluster_dict_indexes_only)
-    print(closest_data_indexes)
+
     filtered_centroids = []
     for index in closest_data_indexes: 
         for key, _ in cluster_dict_indexes_only.items(): 
@@ -122,8 +120,7 @@ def get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of
                     #filtered_centroids.append([key, cluster_dict_indexes_only[key]["index_of_revised"]])
                     filtered_centroids.append(cluster_dict_indexes_only[key]["index_of_revised"])
 
-    print(filtered_centroids)
- 
+
     return cluster_dict, cluster_centers, closest_data_indexes, centroids_by_prob, filtered_centroids
 
 
@@ -134,6 +131,7 @@ def main():
         print("------------------- {0} ------------------------------".format(key))
         revised_sentence = data[key]["revised_sentence"]
         index_of_revised = embeddings[key]["index_of_revised_sentence"]
+        print("index of revised", index_of_revised)
         
         # if the revised sentence is in there: 
         if index_of_revised in [i for i in range(0,NUM_OF_PRED)]:
@@ -158,6 +156,9 @@ def main():
 
             sentences = sentences + [revised_sentence_repr]
             vectorized_sentences = vectorized_sentences + revised_sentence_vector
+
+            if key == "Claim_Your_Listing_With_Google0": 
+                pdb.set_trace()
 
 
         print(len(filtered_predictions))

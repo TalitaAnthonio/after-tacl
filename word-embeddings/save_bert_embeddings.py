@@ -49,6 +49,7 @@ def main():
         print("------------------- {0} ------------------------------".format(key))
         revised_sentence = data[key]["revised_sentence"]
         filtered_predictions = data[key]["filtered1"]
+        print(filtered_predictions)
 
         # get embeddings for the fillers 
         sentences_with_filler = []
@@ -58,13 +59,17 @@ def main():
             sentences_with_filler.append(sentence_with_filler)
 
             if filler.lower() == data[key]["CorrectReference"].lower():
-               index_of_revised_sentence = index 
-                
+                index_of_revised_sentence = index 
+                print(filler, data[key]["CorrectReference"].lower())
+                break 
+        
+        
+        print(index_of_revised_sentence)
 
         # if the reference is not among the filtered predictions, then add it to the list. 
         if data[key]["CorrectReference"].lower() not in filtered_predictions: 
-           sentences_with_filler.append(revised_sentence)
-           index_of_revised_sentence = len(sentences_with_filler)-1
+            sentences_with_filler.append(revised_sentence)
+            index_of_revised_sentence = len(sentences_with_filler)-1
 
         
         # vectorize 
@@ -76,8 +81,8 @@ def main():
     
     #np.save("bert_vectors_POSTAG_new.npy", d)
 
-    with open("bert_vectors_POSTAG_new.pickle", "wb") as pickle_out: 
-         pickle.dump(d, pickle_out)
+    #with open("bert_vectors_POSTAG_new.pickle", "wb") as pickle_out: 
+    #     pickle.dump(d, pickle_out)
     
 
  

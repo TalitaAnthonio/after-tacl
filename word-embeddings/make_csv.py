@@ -9,8 +9,8 @@ from collections import Counter
 
 PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
 NUM_OF_PRED = 20
-PATH_TO_CLUSTERS = "kmeans_k=5_filtered_step1_top{0}.json".format(NUM_OF_PRED)
-PATH_TO_FILE_OUT = "clusters_5_top{0}.tsv".format(NUM_OF_PRED)
+PATH_TO_CLUSTERS = "kmeans_k=5_filtered_step1_top{0}_with_rev.json".format(NUM_OF_PRED)
+PATH_TO_FILE_OUT = "clusters_5_top{0}_with_rev.tsv".format(NUM_OF_PRED)
 
 with open(PATH_TO_CLUSTERS, "r") as json_in: 
      clusters = json.load(json_in)
@@ -22,7 +22,7 @@ with open(PATH_TO_FILE, "r") as json_in:
 
 def main(): 
 
-    d = {"Id": [], "RevisedSentence": [], "Paragraph": [], "Reference": [],  "Cluster0": [], "Cluster1": [], "Cluster2": [], "Cluster3": [], "Cluster4": [], "Centroids": []}
+    d = {"Id": [], "RevisedSentence": [], "Paragraph": [], "Reference": [],  "Cluster0": [], "Cluster1": [], "Cluster2": [], "Cluster3": [], "Cluster4": [], "Centroids": [], "Centroids_by_Prob": [], "Centroids_with_revised": []}
     
     freqdict = Counter()
     lens = []
@@ -31,6 +31,7 @@ def main():
         d["Reference"].append(data[key]["CorrectReference"])
         d["Paragraph"].append(data[key]["par"])
         d["Id"].append(key)
+        d["Centroids_by_Prob"].append(" ".join([cluster + "\n" for cluster in clusters[key]["centroids_by_prob"]]))
 
     
         sents_for_0 = []
@@ -39,7 +40,7 @@ def main():
         sents_for_3 = []
         sents_for_4 = []
         for k, _ in clusters[key]["clusters"].items(): 
-            for sent in clusters[key]["clusters"][k]: 
+            for sent, pos in clusters[key]["clusters"][k]: 
                 sent = sent + "\n"
                 if k == "0": 
                     sents_for_0.append(sent)
@@ -69,8 +70,11 @@ def main():
 
         centroids = " ".join([cluster + "\n" for cluster in clusters[key]["centroids"]])
         d["Centroids"].append(centroids)
+        d["Centroids_with_revised"].append(" ".join([centroid + "\n" for centroid in clusters[key]["Centroids_with_revised"]]))
 
         lens.append(len(clusters[key]["centroids"]))
+
+
 
     
     for l in lens: 
