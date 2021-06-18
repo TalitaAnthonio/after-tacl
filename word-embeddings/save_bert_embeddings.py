@@ -58,31 +58,22 @@ def main():
             sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
             sentences_with_filler.append(sentence_with_filler)
 
-            if filler.lower() == data[key]["CorrectReference"].lower():
-                index_of_revised_sentence = index 
-                print(filler, data[key]["CorrectReference"].lower())
-                break 
-        
-        
-        print(index_of_revised_sentence)
 
-        # if the reference is not among the filtered predictions, then add it to the list. 
-        if data[key]["CorrectReference"].lower() not in filtered_predictions: 
-            sentences_with_filler.append(revised_sentence)
-            index_of_revised_sentence = len(sentences_with_filler)-1
 
         
         # vectorize 
         vectorized = vectorize_data(sentences_with_filler)
-        d[key] = {"vectors": vectorized, "sentences": sentences_with_filler, "index_of_revised_sentence": index_of_revised_sentence}
+        revised_sentence_embedding = vectorize_data([revised_sentence])
+
+        d[key] = {"vectors": vectorized, "sentences": sentences_with_filler, "revised_sentence_embedding": revised_sentence_embedding, "revised_sentence": revised_sentence}
 
         counter +=1 
 
     
-    #np.save("bert_vectors_POSTAG_new.npy", d)
-
-    #with open("bert_vectors_POSTAG_new.pickle", "wb") as pickle_out: 
-    #     pickle.dump(d, pickle_out)
+    np.save("bert_vectors_POSTAG_new.npy", d)
+    
+    with open("bert_vectors_POSTAG_new.pickle", "wb") as pickle_out: 
+         pickle.dump(d, pickle_out)
     
 
  
