@@ -124,42 +124,64 @@ def get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of
     return cluster_dict, cluster_centers, closest_data_indexes, centroids_by_prob, filtered_centroids
 
 
-def main(): 
+def get_index_of_revised(predictions, correct_reference): 
 
+    index_for_revised = []
+    for index, prediction in enumerate(predictions,0): 
+        if prediction.lower() == correct_reference.lower(): 
+           index_for_revised.append(index)
+           break 
+        
+    return index_for_revised
+
+
+
+
+def main(): 
     d = {}
     for key, _ in data.items(): 
         print("------------------- {0} ------------------------------".format(key))
         revised_sentence = data[key]["revised_sentence"]
-        index_of_revised = embeddings[key]["index_of_revised_sentence"]
-        print("index of revised", index_of_revised)
+        index_of_revised = get_index_of_revised(data[key]["filtered1"], data[key]["CorrectReference"])
+
+        if index_of_revised != []: 
+            index_of_revised = index_of_revised[0]
+            if index_of_revised in [i for i in range(0,NUM_OF_PRED)]:
+                print("index in range")
+                filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED]
+                vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED]
+                sentences = embeddings[key]["sentences"][0:NUM_OF_PRED]
+
+
         
-        # if the revised sentence is in there: 
-        if index_of_revised in [i for i in range(0,NUM_OF_PRED)]:
-            print("index in range")
-            filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED]
-            vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED]
-            sentences = embeddings[key]["sentences"][0:NUM_OF_PRED]
+            # otherwise, add the revised sentence to the predictions 
+            else: 
+                print("index not in range")
+                filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED-1]
+                vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
+                sentences = embeddings[key]["sentences"][0:NUM_OF_PRED-1]
 
+                revised_sentence_vector = embeddings[key]["revised_sentence_embedding"]
+                revised_sentence_repr = embeddings[key]["revised_sentence"]
 
-      
-        # otherwise, add the revised sentence to the predictions 
+            
+
+                sentences = sentences + [revised_sentence_repr]
+                vectorized_sentences = vectorized_sentences + revised_sentence_vector
+
         else: 
-            print("index not in range")
+            print("prediction not in top")
             filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED-1]
             vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
             sentences = embeddings[key]["sentences"][0:NUM_OF_PRED-1]
 
-            revised_sentence_vector = embeddings[key]["vectors"][index_of_revised]
-            revised_sentence_repr = embeddings[key]["sentences"][index_of_revised]
+            revised_sentence_vector = embeddings[key]["revised_sentence_embedding"]
+            revised_sentence_repr = embeddings[key]["revised_sentence"]
 
-            index_of_revised = len(filtered_predictions)-1
+        
 
             sentences = sentences + [revised_sentence_repr]
             vectorized_sentences = vectorized_sentences + revised_sentence_vector
-
-            if key == "Claim_Your_Listing_With_Google0": 
-                pdb.set_trace()
-
 
         print(len(filtered_predictions))
 
