@@ -9,7 +9,7 @@ import numpy as np
 import pickle
 from sklearn.metrics import pairwise_distances_argmin_min
 
-PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
+PATH_TO_FILE = "../coreference/filtered_dev_preds_final.json"
 
 with open(PATH_TO_FILE, "r") as json_in: 
      data = json.load(json_in)
@@ -47,8 +47,8 @@ def main():
     counter = 0 
     for key, _ in data.items(): 
         print("------------------- {0} ------------------------------".format(key))
-        revised_sentence = data[key]["revised_sentence"]
-        filtered_predictions = data[key]["filtered1"]
+        revised_sentence = data[key]["RevisedSentence"]
+        filtered_predictions = data[key]["filtered_fillers"]
         print(filtered_predictions)
 
         # get embeddings for the fillers 
@@ -62,6 +62,8 @@ def main():
 
         
         # vectorize 
+        if sentences_with_filler == []:
+           sentences_with_filler = [revised_sentence] 
         vectorized = vectorize_data(sentences_with_filler)
         revised_sentence_embedding = vectorize_data([revised_sentence])
 
@@ -70,9 +72,9 @@ def main():
         counter +=1 
 
     
-    np.save("bert_vectors_POSTAG_new.npy", d)
-    
-    with open("bert_vectors_POSTAG_new.pickle", "wb") as pickle_out: 
+    np.save("bert_vectors_POSTAG_newest.npy", d)
+
+    with open("bert_vectors_POSTAG_newest.pickle", "wb") as pickle_out: 
          pickle.dump(d, pickle_out)
     
 
