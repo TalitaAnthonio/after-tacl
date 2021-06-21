@@ -128,10 +128,12 @@ def tag_predictions(predictions, revised_untill_insertion, revised_after_inserti
     return tagged_predictions
 
 def main(): 
+    d = {}
     counter = 0 
     for key, _ in data.items():     
+        counter +=1 
         revision_instance = RevisionInstance(key, data[key], data[key].keys())
-        print(key) 
+        print(key, counter) 
         tagged_predictions = tag_predictions(revision_instance.predictions, revision_instance.revised_untill_insertion, revision_instance.revised_after_insertion, revision_instance.revlength) 
         print(revision_instance.predictions)
 
@@ -144,6 +146,14 @@ def main():
             fillers_to_return.append(filler_tokens)
 
         fillers_to_return_new = [filler for filler in fillers_to_return if filler not in string.punctuation]
+        print(fillers_to_return_new)
 
-        print(fillers_to_return_new) 
+        d[key] = data[key]
+        d[key].update({"filtered_fillers": fillers_to_return_new}) 
+
+
+    
+    with open("filtered_dev_preds_final.json", "w") as json_out: 
+         json.dump(d, json_out)
+
 main() 
