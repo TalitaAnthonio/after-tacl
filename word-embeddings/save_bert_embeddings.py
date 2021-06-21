@@ -62,8 +62,8 @@ def main():
 
 
         
-        # vectorize 
-        if sentences_with_filler == []:
+        # if there are no filtered predictions, leave empty. 
+        if filtered_predictions == []:
            sentences_with_filler = [] 
            vectorized = []
         else: 
