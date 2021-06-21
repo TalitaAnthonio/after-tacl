@@ -1,3 +1,5 @@
+# Step 3: Make clusters 
+
 
 from operator import index
 from scipy import spatial
@@ -11,17 +13,9 @@ import numpy as np
 import pickle 
 
 
-# TODO: 
-# If the revised sentence is not among the top N (check of de index in the range is van (0,top_n))
-# Als dat niet zo is: 
-# Pak de top_n - 1 
-# voeg de revised sentence toe (check de index en pak vanuit daar de sentence zoals ie in embeddings[sentences] staat en de vectorized represnetation )
-# sentence_embeddings + revised-sentence 
-# vectors + vector_of_revised_sentence 
-# Maak dan de clusters 
-
-PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
-PATH_TO_EMBEDDINGS = "bert_vectors_POSTAG_new.pickle"
+#PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
+PATH_TO_FILE = "../coreference/filtered_dev_preds_final.json"
+PATH_TO_EMBEDDINGS = "bert_vectors_FINAL.pickle"
 NUM_OF_PRED = 20
 NUM_CLUSTERS = 5 
 PATH_TO_FILE_OUT = "kmeans_k=5_filtered_step1_top{0}_with_rev_v2.json".format(NUM_OF_PRED)
@@ -72,7 +66,7 @@ def get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of
 
         clusters, cluster_centers, closest_data_indexes = use_k_means(vectorized_sentences, num_clusters=num_clusters)
     
-    elif len(filtered_predictions) == 1: 
+    elif len(filtered_predictions) == 1 or len(filtered_predictions) == 0: 
 
         clusters, cluster_centers, closest_data_indexes = use_k_means(vectorized_sentences, num_clusters=1)
 
@@ -138,14 +132,14 @@ def main():
     d = {}
     for key, _ in data.items(): 
         print("------------------- {0} ------------------------------".format(key))
-        revised_sentence = data[key]["revised_sentence"]
-        index_of_revised = get_index_of_revised(data[key]["filtered1"], data[key]["CorrectReference"])
+        revised_sentence = data[key]["RevisedSentence"]
+        index_of_revised = get_index_of_revised(data[key]["filtered_fillers"], data[key]["CorrectReference"])
 
         if index_of_revised != []: 
             index_of_revised = index_of_revised[0]
             if index_of_revised in [i for i in range(0,NUM_OF_PRED)]:
                 print("index in range")
-                filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED]
+                filtered_predictions = data[key]["filtered_fillers"][0:NUM_OF_PRED]
                 vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED]
                 sentences = embeddings[key]["sentences"][0:NUM_OF_PRED]
 
@@ -154,7 +148,7 @@ def main():
             # otherwise, add the revised sentence to the predictions 
             else: 
                 print("index not in range")
-                filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED-1]
+                filtered_predictions = data[key]["filtered_fillers"][0:NUM_OF_PRED-1]
                 vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
                 sentences = embeddings[key]["sentences"][0:NUM_OF_PRED-1]
 
@@ -166,7 +160,7 @@ def main():
 
         else: 
             print("prediction not in top")
-            filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED-1]
+            filtered_predictions = data[key]["filtered_fillers"][0:NUM_OF_PRED-1]
 
             # length = 19 and length = 19 
             vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
@@ -180,9 +174,14 @@ def main():
 
         
 
-            sentences = sentences + [revised_sentence_repr]
-            vectorized_sentences = np.append(vectorized_sentences, revised_sentence_vector, axis=0)
+            if vectorized_sentences == []: 
+               sentences  = [revised_sentence]
+               vectorized_sentences = revised_sentence_vector
+            else: 
+                sentences = sentences + [revised_sentence_repr]
+                vectorized_sentences = np.append(vectorized_sentences, revised_sentence_vector, axis=0)
 
+        
 
         try: 
             assert len(sentences) == len(vectorized_sentences)
@@ -190,6 +189,7 @@ def main():
         except AssertionError: 
             pdb.set_trace()
 
+        print(len(vectorized_sentences))
         cluster_dict, cluster_centers, closest_data_indexes, centroids_by_prob, centroids_with_revised = get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of_revised, NUM_CLUSTERS)
 
 
