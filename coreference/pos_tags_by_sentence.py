@@ -62,7 +62,7 @@ def filter_tags(tagged_fillers, reference_type, contains_digit):
         tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", ")", "(", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', '``', 'RB', 'VBP', 'CC'] 
     else: 
         tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", ")", "(", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', '``', 'RB', 'VBP', 'CC', 'CD'] 
-    words_to_exclude_unigrams = ["the", "a", "an"]
+    words_to_exclude_unigrams = ["the", "a", "an", "all"]
     if reference_type == "unigram": 
         for elem in tagged_fillers:
             if elem != []: 
@@ -74,8 +74,9 @@ def filter_tags(tagged_fillers, reference_type, contains_digit):
         for elem in tagged_fillers: 
             if elem != []: 
                 tags = [x[1] for x in elem]
+                words = [x[0] for x in elem]
                 if len(tags) == 2: 
-                    if tags[0] not in tags_to_exclude_unigrams and tags[1] not in tags_to_exclude_unigrams:
+                    if tags[0] not in tags_to_exclude_unigrams and tags[1] not in tags_to_exclude_unigrams and words[1] not in words_to_exclude_unigrams:
                         filtered_list.append(elem)
                 else: 
                     if tags[0] not in tags_to_exclude_unigrams: 
@@ -135,6 +136,7 @@ def main():
     counter = 0 
     for key, _ in data.items():     
         counter +=1 
+        print("==============================================")
         revision_instance = RevisionInstance(key, data[key], data[key].keys())
         print(key, counter) 
         tagged_predictions = tag_predictions(revision_instance.predictions, revision_instance.revised_untill_insertion, revision_instance.revised_after_insertion, revision_instance.revlength) 
