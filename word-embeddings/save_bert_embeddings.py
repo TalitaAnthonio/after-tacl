@@ -66,8 +66,8 @@ def main():
         if filtered_predictions == []:
            sentences_with_filler = [] 
            vectorized = []
+           revised_sentence_embedding = vectorize_data([revised_sentence])
         else: 
-        
             vectorized = vectorize_data(sentences_with_filler)
             revised_sentence_embedding = vectorize_data([revised_sentence])
 
