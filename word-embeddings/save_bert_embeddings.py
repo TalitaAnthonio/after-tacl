@@ -1,3 +1,4 @@
+# Step 2: Make Bert Embeddings. 
 
 from scipy import spatial
 from sent2vec.vectorizer import Vectorizer
@@ -63,18 +64,21 @@ def main():
         
         # vectorize 
         if sentences_with_filler == []:
-           sentences_with_filler = [revised_sentence] 
-        vectorized = vectorize_data(sentences_with_filler)
-        revised_sentence_embedding = vectorize_data([revised_sentence])
+           sentences_with_filler = [] 
+           vectorized = []
+        else: 
+        
+            vectorized = vectorize_data(sentences_with_filler)
+            revised_sentence_embedding = vectorize_data([revised_sentence])
 
         d[key] = {"vectors": vectorized, "sentences": sentences_with_filler, "revised_sentence_embedding": revised_sentence_embedding, "revised_sentence": revised_sentence}
 
         counter +=1 
 
     
-    np.save("bert_vectors_POSTAG_newest.npy", d)
+    np.save("bert_vectors_FINAL.npy", d)
 
-    with open("bert_vectors_POSTAG_newest.pickle", "wb") as pickle_out: 
+    with open("bert_vectors_FINAL.pickle", "wb") as pickle_out: 
          pickle.dump(d, pickle_out)
     
 
