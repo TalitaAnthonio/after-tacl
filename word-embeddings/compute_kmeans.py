@@ -24,7 +24,7 @@ PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
 PATH_TO_EMBEDDINGS = "bert_vectors_POSTAG_new.pickle"
 NUM_OF_PRED = 20
 NUM_CLUSTERS = 5 
-PATH_TO_FILE_OUT = "kmeans_k=5_filtered_step1_top{0}_with_rev.json".format(NUM_OF_PRED)
+PATH_TO_FILE_OUT = "kmeans_k=5_filtered_step1_top{0}_with_rev_v2.json".format(NUM_OF_PRED)
 
 
 with open(PATH_TO_EMBEDDINGS, "rb") as pickle_in: 
@@ -91,7 +91,6 @@ def get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of
             cluster_dict[clusters[i]] = []
             cluster_dict[clusters[i]].append([sentences[i], i])
 
-
     # do not use the centroids but the sentence with the highest probability as provided by the GPT model. 
     centroids_by_prob = []
     for cluster, sents in cluster_dict.items():     
@@ -106,8 +105,6 @@ def get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of
            cluster_dict_indexes_only[cluster] = {"sents": [sent[1] for sent in sents], "revised-in-cluster": True, "index_of_revised": index_of_revised}
         else: 
            cluster_dict_indexes_only[cluster] = {"sents": [sent[1] for sent in sents], "revised-in-cluster": False, "index_of_revised": index_of_revised}
-
-
 
     filtered_centroids = []
     for index in closest_data_indexes: 
@@ -164,31 +161,39 @@ def main():
                 revised_sentence_vector = embeddings[key]["revised_sentence_embedding"]
                 revised_sentence_repr = embeddings[key]["revised_sentence"]
 
-            
-
                 sentences = sentences + [revised_sentence_repr]
-                vectorized_sentences = vectorized_sentences + revised_sentence_vector
+                vectorized_sentences = np.append(vectorized_sentences, revised_sentence_vector, axis=0)
 
         else: 
             print("prediction not in top")
             filtered_predictions = data[key]["filtered1"][0:NUM_OF_PRED-1]
+
+            # length = 19 and length = 19 
             vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
             sentences = embeddings[key]["sentences"][0:NUM_OF_PRED-1]
 
+
             revised_sentence_vector = embeddings[key]["revised_sentence_embedding"]
             revised_sentence_repr = embeddings[key]["revised_sentence"]
+            index_of_revised = 19 
+            
 
         
 
             sentences = sentences + [revised_sentence_repr]
-            vectorized_sentences = vectorized_sentences + revised_sentence_vector
+            vectorized_sentences = np.append(vectorized_sentences, revised_sentence_vector, axis=0)
 
-        print(len(filtered_predictions))
+
+        try: 
+            assert len(sentences) == len(vectorized_sentences)
+            assert index_of_revised != []
+        except AssertionError: 
+            pdb.set_trace()
 
         cluster_dict, cluster_centers, closest_data_indexes, centroids_by_prob, centroids_with_revised = get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of_revised, NUM_CLUSTERS)
 
 
- 
+
         
         print("revised", revised_sentence)
         for cluster_id, _ in cluster_dict.items(): 
@@ -203,7 +208,7 @@ def main():
         d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids, "centroids_by_prob": centroids_by_prob, "Centroids_with_revised": centroids_with_revised_sents}
 
 
-        print(centroids_by_prob)
+        print("centroids with revised", centroids_with_revised_sents)
 
         with open(PATH_TO_FILE_OUT, "w") as json_out: 
                 json.dump(d,json_out)
