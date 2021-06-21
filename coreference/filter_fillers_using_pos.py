@@ -156,7 +156,8 @@ def main():
         fillers_to_return_new = [filler for filler in fillers_to_return if filler not in string.punctuation]
         average_length.append(len(fillers_to_return_new))
         
-        keys_with_fillers_to_keep[key] = {"filtered_fillers": fillers_to_return_new} 
+        keys_with_fillers_to_keep[key] = file_with_predictions[key]
+        keys_with_fillers_to_keep[key].update({"filtered_fillers": fillers_to_return_new})
         print("fillers to keep", fillers_to_return)
     
     print("average length", np.mean(average_length))
