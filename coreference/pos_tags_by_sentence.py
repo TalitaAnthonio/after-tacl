@@ -62,7 +62,8 @@ def filter_tags(tagged_fillers, reference_type, contains_digit):
         tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", ")", "(", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', '``', 'RB', 'VBP', 'CC'] 
     else: 
         tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", ")", "(", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', '``', 'RB', 'VBP', 'CC', 'CD'] 
-    words_to_exclude_unigrams = ["the", "a", "an", "all"]
+    words_to_exclude_unigrams = ["the", "a", "an"]
+    words_to_exclude_second_bigram = ["the", "a", "an", "all"]
     if reference_type == "unigram": 
         for elem in tagged_fillers:
             if elem != []: 
@@ -76,7 +77,7 @@ def filter_tags(tagged_fillers, reference_type, contains_digit):
                 tags = [x[1] for x in elem]
                 words = [x[0] for x in elem]
                 if len(tags) == 2: 
-                    if tags[0] not in tags_to_exclude_unigrams and tags[1] not in tags_to_exclude_unigrams and words[1] not in words_to_exclude_unigrams:
+                    if tags[0] not in tags_to_exclude_unigrams and tags[1] not in tags_to_exclude_unigrams and words[1] not in words_to_exclude_second_bigram:
                         filtered_list.append(elem)
                 else: 
                     if tags[0] not in tags_to_exclude_unigrams: 
