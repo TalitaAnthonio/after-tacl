@@ -55,10 +55,13 @@ class RevisionInstance:
            return self.revision_instance["revised_until_insertion"]
 
 
-def filter_tags(tagged_fillers, reference_type):
+def filter_tags(tagged_fillers, reference_type, contains_digit):
     # check the length 
     filtered_list = []
-    tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", ")", "(", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', '``', 'RB', 'VBP', 'CC', 'CD']
+    if contains_digit: 
+        tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", ")", "(", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', '``', 'RB', 'VBP', 'CC'] 
+    else: 
+        tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", ")", "(", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', '``', 'RB', 'VBP', 'CC', 'CD'] 
     words_to_exclude_unigrams = ["the", "a", "an"]
     if reference_type == "unigram": 
         for elem in tagged_fillers:
@@ -137,7 +140,10 @@ def main():
         tagged_predictions = tag_predictions(revision_instance.predictions, revision_instance.revised_untill_insertion, revision_instance.revised_after_insertion, revision_instance.revlength) 
         print(revision_instance.predictions)
 
-        filtered = filter_tags(tagged_predictions, data[key]["reference-type"])  
+        # check if the correct reference contains a digit. 
+        contains_digit = any(map(str.isdigit, data[key]["CorrectReference"]))
+
+        filtered = filter_tags(tagged_predictions, data[key]["reference-type"], contains_digit)  
         
         
         fillers_to_return = []
