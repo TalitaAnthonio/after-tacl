@@ -12,11 +12,13 @@ import string
 MODEL = spacy.load('en_core_web_sm')
 PUNCTUATION = string.punctuation + "..." + '(' + ')'
 
-path_to_pred_dir = "/Users/talita/Documents/PhD/tacl/analyse-predictions" 
-path_to_file_with_predictions = '{0}/bestmodels_predictions.json'.format(path_to_pred_dir)
-path_to_filtered_fillers = "../coreference/dev_set_with_filtered_fillers.json"
+#path_to_pred_dir = "/Users/talita/Documents/PhD/tacl/analyse-predictions" 
+#path_to_file_with_predictions = '{0}/bestmodels_predictions.json'.format(path_to_pred_dir)
+#path_to_filtered_fillers = "../coreference/dev_set_with_filtered_fillers.json"
 
-with open(path_to_file_with_predictions, "r") as json_in: 
+path_to_file = "../word-embeddings/train_set_predictions_all_info.json"
+
+with open(path_to_file, "r") as json_in: 
      data = json.load(json_in)
 
 def sublist(lst1, lst2):
@@ -31,9 +33,14 @@ class RevisionInstance:
         self.revision_instance = revision_instance
         self.key = key 
         self.keys = keys 
-        self.left_context = revision_instance["LeftContext"]
-        self.predictions = [prediction.strip() for prediction in revision_instance["GPT+Finetuning+P-perplexityPred"]] 
-        self.revised_after_insertion = revision_instance["revised_after_insertion"]
+        #self.left_context = revision_instance["LeftContext"]
+        #self.predictions = [prediction.strip() for prediction in revision_instance["GPT+Finetuning+P-perplexityPred"]] 
+        self.predictions = [prediction.strip() for prediction in revision_instance["predictions"]["generated_texts"]] 
+
+        try: 
+            self.revised_after_insertion = revision_instance["revised_after_insertion"]
+        except KeyError: 
+            self.revised_after_insertion = revision_instance["revised_afer_insertion"]
         self.reference_type = revision_instance["reference-type"]
     
     @property
@@ -136,33 +143,37 @@ def main():
     d = {}
     counter = 0 
     for key, _ in data.items():     
-        counter +=1 
-        print("==============================================")
-        revision_instance = RevisionInstance(key, data[key], data[key].keys())
-        print(key, counter) 
-        tagged_predictions = tag_predictions(revision_instance.predictions, revision_instance.revised_untill_insertion, revision_instance.revised_after_insertion, revision_instance.revlength) 
-        print(revision_instance.predictions)
+        if type(data[key]["predictions"]) != str: 
+            counter +=1 
+            print("==============================================")
+            revision_instance = RevisionInstance(key, data[key], data[key].keys())
+            print(key, counter) 
+            tagged_predictions = tag_predictions(revision_instance.predictions, revision_instance.revised_untill_insertion, revision_instance.revised_after_insertion, revision_instance.revlength) 
+            print(revision_instance.predictions)
 
-        # check if the correct reference contains a digit. 
-        contains_digit = any(map(str.isdigit, data[key]["CorrectReference"]))
+            # check if the correct reference contains a digit. 
+            #contains_digit = any(map(str.isdigit, data[key]["CorrectReference"]))
+            reference = " ".join(data[key]["reference"])
+            contains_digit = any(map(str.isdigit, reference ))
+            
 
-        filtered = filter_tags(tagged_predictions, data[key]["reference-type"], contains_digit)  
-        
-        
-        fillers_to_return = []
-        for filler in filtered: 
-            filler_tokens =  " ".join([elem[0] for elem in filler])
-            fillers_to_return.append(filler_tokens)
+            filtered = filter_tags(tagged_predictions, data[key]["reference-type"], contains_digit)  
+            
+            
+            fillers_to_return = []
+            for filler in filtered: 
+                filler_tokens =  " ".join([elem[0] for elem in filler])
+                fillers_to_return.append(filler_tokens)
 
-        fillers_to_return_new = [filler for filler in fillers_to_return if filler not in string.punctuation]
-        print(fillers_to_return_new)
+            fillers_to_return_new = [filler for filler in fillers_to_return if filler not in string.punctuation]
+            print(fillers_to_return_new)
 
-        d[key] = data[key]
-        d[key].update({"filtered_fillers": fillers_to_return_new}) 
+            d[key] = data[key]
+            d[key].update({"filtered_fillers": fillers_to_return_new}) 
 
 
     
-    with open("filtered_dev_preds_final.json", "w") as json_out: 
+    with open("filtered_train_preds_final.json", "w") as json_out: 
          json.dump(d, json_out)
 
 main() 
