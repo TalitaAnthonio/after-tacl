@@ -7,7 +7,7 @@ import pandas as pd
 import pdb 
 from collections import Counter
 
-PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
+PATH_TO_FILE = "../coreference/filtered_dev_preds_final.json"
 NUM_OF_PRED = 20
 PATH_TO_CLUSTERS = "kmeans_k=5_filtered_step1_top{0}_with_rev_v2.json".format(NUM_OF_PRED)
 PATH_TO_FILE_OUT = "clusters_5_top{0}_with_rev_v2.tsv".format(NUM_OF_PRED)
@@ -27,7 +27,7 @@ def main():
     freqdict = Counter()
     lens = []
     for key, _ in data.items(): 
-        d["RevisedSentence"].append(data[key]["revised_sentence"])
+        d["RevisedSentence"].append(data[key]["RevisedSentence"])
         d["Reference"].append(data[key]["CorrectReference"])
         d["Paragraph"].append(data[key]["par"])
         d["Id"].append(key)
