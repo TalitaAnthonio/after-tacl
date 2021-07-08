@@ -27,10 +27,12 @@ def main():
     freqdict = Counter()
     lens = []
     for key, _ in data.items(): 
+
         d["RevisedSentence"].append(data[key]["RevisedSentence"])
         d["Reference"].append(data[key]["CorrectReference"])
         d["Paragraph"].append(data[key]["par"])
         d["Id"].append(key)
+        pdb.set_trace()
         d["Centroids_by_Prob"].append(" ".join([cluster + "\n" for cluster in clusters[key]["centroids_by_prob"]]))
 
     
@@ -45,10 +47,10 @@ def main():
                 if k == "0": 
                     sents_for_0.append(sent)
 
-                elif k=="1": 
+                elif k== "1": 
                     sents_for_1.append(sent)
                 
-                elif k=="2": 
+                elif k== "2": 
                     sents_for_2.append(sent)
                 
                 elif k == "3": 
@@ -84,7 +86,7 @@ def main():
     print(freqdict)
 
 
-    df = pd.DataFrame.from_dict(d)
-    df.to_csv(PATH_TO_FILE_OUT, sep='\t', index=False)
+    #df = pd.DataFrame.from_dict(d)
+    #df.to_csv(PATH_TO_FILE_OUT, sep='\t', index=False)
 
 main()

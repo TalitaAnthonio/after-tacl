@@ -10,7 +10,7 @@ import numpy as np
 import pickle
 from sklearn.metrics import pairwise_distances_argmin_min
 
-PATH_TO_FILE = "../coreference/filtered_dev_preds_final.json"
+PATH_TO_FILE = "../coreference/filtered_train_preds_final.json" 
 
 with open(PATH_TO_FILE, "r") as json_in: 
      data = json.load(json_in)
@@ -47,17 +47,21 @@ def main():
     d = {}
     counter = 0 
     for key, _ in data.items(): 
-        print("------------------- {0} ------------------------------".format(key))
-        revised_sentence = data[key]["RevisedSentence"]
+        counter +=1 
+        print("------------------- {0} ------------------------------".format(counter))
+        revised_sentence = data[key]["revised_sentence"]
         filtered_predictions = data[key]["filtered_fillers"]
         print(filtered_predictions)
 
         # get embeddings for the fillers 
         sentences_with_filler = []
         for index, filler in enumerate(filtered_predictions,0): 
-            
-            sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
-            sentences_with_filler.append(sentence_with_filler)
+            if "revised_after_insertion" in data[key].keys(): 
+                sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
+                sentences_with_filler.append(sentence_with_filler)
+            else: 
+                sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_afer_insertion"]
+                sentences_with_filler.append(sentence_with_filler)
 
 
 
@@ -73,12 +77,12 @@ def main():
 
         d[key] = {"vectors": vectorized, "sentences": sentences_with_filler, "revised_sentence_embedding": revised_sentence_embedding, "revised_sentence": revised_sentence}
 
-        counter +=1 
+        
 
     
-    np.save("bert_vectors_FINAL.npy", d)
+    np.save("bert_vectors_FINAL_train.npy", d)
 
-    with open("bert_vectors_FINAL.pickle", "wb") as pickle_out: 
+    with open("bert_vectors_FINAL_train.pickle", "wb") as pickle_out: 
          pickle.dump(d, pickle_out)
     
 

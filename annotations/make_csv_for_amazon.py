@@ -2,7 +2,8 @@
 # distribution: Counter({5: 576, 1: 14, 2: 1})
 
 import json
-from os import read 
+from os import read
+from numpy import trunc 
 import pandas as pd 
 import pdb 
 from collections import Counter
@@ -26,6 +27,16 @@ with open("../../tacl/data/references_for_lm.json", "r") as json_in:
 def format_text(title): 
     return "<b> How to {0} </b>".format(title.replace("_", " ").strip(".txt"))
 
+def trunc_par(par):
+    #print(data[key]["par"])
+    par = par.strip('\n').split('\n')[-6:]
+
+    formatted = []
+    for sent in par: 
+        par_with_newline = sent + '\n'
+        formatted.append(par_with_newline)
+
+    return formatted 
 
 def main(): 
 
@@ -33,7 +44,8 @@ def main():
     for key, _ in data.items(): 
         if len(clusters[key]["Centroids_with_revised"]) == 5: 
             d["Title"].append(format_text(all_data[key]["filename"]))
-            d["Context"].append(data[key]["par"].replace('\n', "<br>"))
+            formatted = " ".join(trunc_par(data[key]["par"]))
+            d["Context"].append(formatted.replace('\n', "<br>"))
             d["Sent"].append(data[key]["RevisedSentence"])
             d["Reference"].append(all_data[key]["reference"])
             
