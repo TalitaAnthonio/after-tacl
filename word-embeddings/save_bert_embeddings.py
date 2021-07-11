@@ -80,9 +80,9 @@ def main():
         
 
     
-    np.save("bert_vectors_FINAL_train.npy", d)
+    np.save("bert_vectors_FINAL_train_top100.npy", d)
 
-    with open("bert_vectors_FINAL_train.pickle", "wb") as pickle_out: 
+    with open("bert_vectors_FINAL_train_top100.pickle", "wb") as pickle_out: 
          pickle.dump(d, pickle_out)
     
 

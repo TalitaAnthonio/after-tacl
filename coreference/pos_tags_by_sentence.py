@@ -16,7 +16,8 @@ PUNCTUATION = string.punctuation + "..." + '(' + ')'
 #path_to_file_with_predictions = '{0}/bestmodels_predictions.json'.format(path_to_pred_dir)
 #path_to_filtered_fillers = "../coreference/dev_set_with_filtered_fillers.json"
 
-path_to_file = "../word-embeddings/train_set_predictions_all_info.json"
+#path_to_file = "../word-embeddings/train_set_predictions_all_info.json"
+path_to_file = "../word-embeddings/train_set_predictions_all_info_top_100.json"
 
 with open(path_to_file, "r") as json_in: 
      data = json.load(json_in)
