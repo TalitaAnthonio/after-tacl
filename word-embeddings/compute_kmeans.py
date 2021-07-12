@@ -18,7 +18,7 @@ PATH_TO_FILE = "../coreference/filtered_train_preds_final.json"
 PATH_TO_EMBEDDINGS = "bert_vectors_FINAL_train_top100.pickle"
 NUM_OF_PRED = 20
 NUM_CLUSTERS = 5 
-PATH_TO_FILE_OUT = "kmeans_k=5_train".format(NUM_OF_PRED)
+PATH_TO_FILE_OUT = "kmeans_k=5_train.json".format(NUM_OF_PRED)
 
 
 with open(PATH_TO_EMBEDDINGS, "rb") as pickle_in: 
