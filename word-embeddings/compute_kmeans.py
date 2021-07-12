@@ -14,11 +14,11 @@ import pickle
 
 
 #PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
-PATH_TO_FILE = "../coreference/filtered_dev_preds_final.json"
-PATH_TO_EMBEDDINGS = "bert_vectors_FINAL.pickle"
+PATH_TO_FILE = "../coreference/filtered_train_preds_final.json"
+PATH_TO_EMBEDDINGS = "bert_vectors_FINAL_train_top100.pickle"
 NUM_OF_PRED = 20
 NUM_CLUSTERS = 5 
-PATH_TO_FILE_OUT = "kmeans_k=5_filtered_step1_top{0}_with_rev_v2.json".format(NUM_OF_PRED)
+PATH_TO_FILE_OUT = "kmeans_k=5_train".format(NUM_OF_PRED)
 
 
 with open(PATH_TO_EMBEDDINGS, "rb") as pickle_in: 
@@ -132,8 +132,9 @@ def main():
     d = {}
     for key, _ in data.items(): 
         print("------------------- {0} ------------------------------".format(key))
-        revised_sentence = data[key]["RevisedSentence"]
-        index_of_revised = get_index_of_revised(data[key]["filtered_fillers"], data[key]["CorrectReference"])
+        revised_sentence = data[key]["revised_sentence"]
+        reference = " ".join(data[key]["reference"])
+        index_of_revised = get_index_of_revised(data[key]["filtered_fillers"], reference)
 
         if index_of_revised != []: 
             index_of_revised = index_of_revised[0]
