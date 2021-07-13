@@ -44,7 +44,8 @@ def main():
     for key, _ in data.items(): 
         if len(clusters[key]["Centroids_with_revised"]) == 5: 
             d["Title"].append(format_text(all_data[key]["filename"]))
-            formatted = " ".join(trunc_par(data[key]["par"]))
+            # TODO: remove the newline at the end. 
+            formatted = " ".join(trunc_par(data[key]["par"])).strip('\n')
             d["Context"].append(formatted.replace('\n', "<br>"))
             d["Sent"].append(data[key]["RevisedSentence"])
             d["Reference"].append(all_data[key]["reference"])
