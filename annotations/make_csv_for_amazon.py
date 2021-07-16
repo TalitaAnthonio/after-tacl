@@ -3,10 +3,11 @@
 
 import json
 from os import read
-from numpy import trunc 
+from numpy import average, trunc 
 import pandas as pd 
 import pdb 
 from collections import Counter
+import numpy as np 
 
 PATH_TO_FILE = "../coreference/filtered_dev_preds_final.json"
 NUM_OF_PRED = 20
@@ -41,18 +42,41 @@ def trunc_par(par):
 def main(): 
 
     d  = {"Title": [], "Context": [], "Sent": [], "Reference": []} 
+    average_length = []
     for key, _ in data.items(): 
         if len(clusters[key]["Centroids_with_revised"]) == 5: 
+            try: 
+                print(all_data[key]["Base_Article_Clean"]["left"])
+                print("========= currrent ====") 
+                print(all_data[key]["Base_Article_Clean"]["current"])
+
+                print("========= par ===============")
+                print(all_data[key]["par"])
+                print("ref", all_data[key]["reference"])
+                print("revised sent", all_data[key]["revised_sentence"])
+                print("predictions", data[key]["GPT+Finetuning+P-perplexityPred"])
+                
+            except KeyError: 
+                print("not found")
+                print(all_data[key]["par"])
+            
+
+            print(all_data[key]["par"])
             d["Title"].append(format_text(all_data[key]["filename"]))
             formatted = " ".join(trunc_par(data[key]["par"])).strip('\n')
+            average_length.append(len(data[key]["par"].strip('\n').split('\n')))
             d["Context"].append(formatted.replace('\n', "<br>"))
             d["Sent"].append(data[key]["RevisedSentence"])
             d["Reference"].append(all_data[key]["reference"])
             
 
+        print("==============")
 
-    df = pd.DataFrame.from_dict(d)
-    df = df.tail(10)
-    df.tail(10).to_csv(PATH_TO_FILE_OUT, index=False)
+    print(np.mean(average_length))
+
+
+    #df = pd.DataFrame.from_dict(d)
+    #df = df.tail(10)
+    #df.tail(10).to_csv(PATH_TO_FILE_OUT, index=False)
 
 main()
