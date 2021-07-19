@@ -53,6 +53,7 @@ def main():
     sentences = []
     pars = []
     for key, _ in all_data.items(): 
+       
         try: 
             rev_sent = all_data[key]["revised_tokenized"]
         except KeyError: 
@@ -80,7 +81,7 @@ def main():
             tokenized_par = format_pars(par)
             complete_text = tokenized_par + revised_sent
             texts_with_pars.extend(complete_text)
-            print(len(complete_text))
+            #print(len(complete_text))
             sents_per_pars_len.append(len(complete_text))
 
             # average words per par 
@@ -88,7 +89,9 @@ def main():
             #print(len(texts_with_pars))
             #sents_per_pars_len.append(len(texts_with_pars))
             
-            #sents_per_pars_len.extend([len(tokenize(sent)) for sent in par.strip().split('\n') if "# Timestamp" not in sent])
+            sents_per_pars_len.extend([len(tokenize(sent)) for sent in par.strip().split('\n') if "# Timestamp" not in sent])
+            sents_per_pars_len.append(len(revised_sent))
+            
             #sents_per_pars_len.append(len(revised_sent))
             #print(sents_per_pars_len)
             #print([tokenize(sent) for sent in par.strip().split('\n') if "# Timestamp" not in sent])
