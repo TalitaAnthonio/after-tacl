@@ -7,10 +7,19 @@ import pandas as pd
 import pdb 
 from collections import Counter
 
-PATH_TO_FILE = "../coreference/filtered_dev_preds_final.json"
+#PATH_TO_FILE = "../coreference/filtered_dev_preds_final.json"
+#NUM_OF_PRED = 20
+#PATH_TO_CLUSTERS = "kmeans_k=5_filtered_step1_top{0}_with_rev_v2.json".format(NUM_OF_PRED)
+#PATH_TO_FILE_OUT = "clusters_5_top{0}_with_rev_v2.tsv".format(NUM_OF_PRED)
+
+
+
+
+PATH_TO_FILE = "../coreference/filtered_train_preds_final.json"
+
 NUM_OF_PRED = 20
-PATH_TO_CLUSTERS = "kmeans_k=5_filtered_step1_top{0}_with_rev_v2.json".format(NUM_OF_PRED)
-PATH_TO_FILE_OUT = "clusters_5_top{0}_with_rev_v2.tsv".format(NUM_OF_PRED)
+PATH_TO_CLUSTERS = "../word-embeddings/kmeans_k=5_train.json"
+PATH_TO_FILE_OUT = "./amazon_file.csv"
 
 with open(PATH_TO_CLUSTERS, "r") as json_in: 
      clusters = json.load(json_in)
@@ -22,18 +31,17 @@ with open(PATH_TO_FILE, "r") as json_in:
 
 def main(): 
 
-    d = {"Id": [], "RevisedSentence": [], "Paragraph": [], "Reference": [],  "Cluster0": [], "Cluster1": [], "Cluster2": [], "Cluster3": [], "Cluster4": [], "Centroids": [], "Centroids_by_Prob": [], "Centroids_with_revised": []}
+    d = {"Id": [], "RevisedSentence": [], "Paragraph": [], "Reference": [],  "Cluster0": [], "Cluster1": [], "Cluster2": [], "Cluster3": [], "Cluster4": [], "Centroids": [], "Centroids_with_revised": []}
     
     freqdict = Counter()
     lens = []
     for key, _ in data.items(): 
 
-        d["RevisedSentence"].append(data[key]["RevisedSentence"])
-        d["Reference"].append(data[key]["CorrectReference"])
+        d["RevisedSentence"].append(data[key]["revised_sentence"])
+        d["Reference"].append(data[key]["reference"])
         d["Paragraph"].append(data[key]["par"])
         d["Id"].append(key)
-        pdb.set_trace()
-        d["Centroids_by_Prob"].append(" ".join([cluster + "\n" for cluster in clusters[key]["centroids_by_prob"]]))
+        #d["Centroids_by_Prob"].append(" ".join([cluster + "\n" for cluster in clusters[key]["centroids_by_prob"]]))
 
     
         sents_for_0 = []
@@ -43,6 +51,8 @@ def main():
         sents_for_4 = []
         for k, _ in clusters[key]["clusters"].items(): 
             for sent, pos in clusters[key]["clusters"][k]: 
+                if type(sent) == list: 
+                    sent = " ".join(sent)
                 sent = sent + "\n"
                 if k == "0": 
                     sents_for_0.append(sent)
@@ -70,9 +80,9 @@ def main():
         #pdb.set_trace()
 
 
-        centroids = " ".join([cluster + "\n" for cluster in clusters[key]["centroids"]])
+        centroids = " ".join([cluster + "\n" if type(cluster) == str else " ".join(cluster) for cluster in clusters[key]["centroids"]] )
         d["Centroids"].append(centroids)
-        d["Centroids_with_revised"].append(" ".join([centroid + "\n" for centroid in clusters[key]["Centroids_with_revised"]]))
+        d["Centroids_with_revised"].append(" ".join([centroid + "\n"  if type(centroid) == str else " ".join(centroid) for centroid in clusters[key]["Centroids_with_revised"]]))
 
         lens.append(len(clusters[key]["centroids"]))
 
@@ -83,10 +93,10 @@ def main():
          freqdict[l] +=1 
     
 
-    print(freqdict)
+    #print(freqdict)
 
 
-    #df = pd.DataFrame.from_dict(d)
-    #df.to_csv(PATH_TO_FILE_OUT, sep='\t', index=False)
+    df = pd.DataFrame.from_dict(d)
+    df.to_csv(PATH_TO_FILE_OUT, sep='\t', index=False)
 
 main()

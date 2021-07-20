@@ -228,7 +228,7 @@ background: #428BCA }
   <div class="panel-group">
     <div class="panel panel-default"> 
       <div class="panel-heading panel-heading-instruction">Instruction</div>
-      <div class="panel-body"> Read the text below and indicate on a scale from 1 (not plausible) to 5 (definitely plausible) whether the highlighted 
+      <div class="panel-body"> Read the text below and indicate on a scale from 1 (not plausible) to 5 (definitely plausible) whether the underlined
         part is plausible, given the text. <br> 
       </div>
     </div>
@@ -236,8 +236,9 @@ background: #428BCA }
       <div class="panel-heading panel-heading-custom1">Text</div>
       <div class="panel-body">
         
+      
+      <h4> ${Title} </h4> 
       <p style="margin-left: 2.5em;"> 
-        ${Title} 
         <br>
         ${Context}
         ${Sent}
@@ -252,7 +253,7 @@ background: #428BCA }
 
 
     <!-- <form method="post" enctype="text/plain"> --> 
-     <p> Is the highlighted part plausible, given the text? </p>
+     <p> Is the underlined part plausible, given the text? </p>
   <crowd-slider name="plausibility" min="0" max="5" step="1" pin="true" required></crowd-slider>
     <!--- </form> ---> 
 
