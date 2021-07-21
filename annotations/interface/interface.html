@@ -229,7 +229,7 @@ background: #428BCA }
     <div class="panel panel-default"> 
       <div class="panel-heading panel-heading-instruction">Instruction</div>
       <div class="panel-body"> Read the text below and indicate on a scale from 1 (not plausible) to 5 (definitely plausible) whether the underlined
-        part is plausible, given the text. <br> 
+        part is plausible in the given context. <br> 
       </div>
     </div>
     <div class="panel panel-default">
@@ -240,8 +240,9 @@ background: #428BCA }
       <h4> ${Title} </h4> 
       <p style="margin-left: 2.5em;"> 
         <br>
-        ${Context}
+        ${ContextBefore}
         ${Sent}
+        ${ContextAfter}
       </p>
 
       </div>
@@ -253,7 +254,7 @@ background: #428BCA }
 
 
     <!-- <form method="post" enctype="text/plain"> --> 
-     <p> Is the underlined part plausible, given the text? </p>
+     <p> Is the underlined part plausible in the given context? </p>
   <crowd-slider name="plausibility" min="0" max="5" step="1" pin="true" required></crowd-slider>
     <!--- </form> ---> 
 
