@@ -58,13 +58,16 @@ def main():
     d  = {"Title": [], "Context": [], "Sent": [], "Reference": []} 
     average_length = []
     for key, _ in data.items(): 
-        if len(clusters[key]["Centroids_with_revised"]) == 5: 
+        if len(clusters[key]["Centroids_with_revised"]) == 5 and all_data[key]["reference"] != ["it"]: 
             print("TITLE", format_text(all_data[key]["filename"]))
             try: 
                 print(all_data[key]["Base_Article_Clean"]["left"])
                 print("========= currrent ====") 
                 print(all_data[key]["Base_Article_Clean"]["current"])
-
+                print("ref", all_data[key]["reference"])
+                print("revised sent", all_data[key]["revised_sentence"])
+                print("filtered predictions", data[key]["filtered_fillers"])
+                print("clusters", clusters[key]["Centroids_with_revised"])
             
             except KeyError: 
 
