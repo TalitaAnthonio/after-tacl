@@ -78,7 +78,7 @@ for key, _ in predictions_data.items():
     "LanguageModelText": predictions_data[key]["language_model_text"]}
 
 
-    simplified_dict.update(other_info)
+    simplified_dict[key].update(other_info)
     
 
     with open("all_references.json", "w") as json_out: 

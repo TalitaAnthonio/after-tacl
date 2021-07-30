@@ -12,15 +12,18 @@ PATH_TO_DEV_FILE_PRED = "../coreference/filtered_dev_preds_final.json"
 PATH_TO_TRAIN_FILE_PRED = "../coreference/filtered_train_preds_final.json"
 
 
+PATH_TO_OTHER_INFO = "./data/all_references.json"
 
+with open(PATH_TO_OTHER_INFO, "r") as json_in: 
+     file_with_all_info = json.load(json_in)
 
 
 def get_pos_tags(filler): 
     parsed = spacy_model(filler)
     return [token.tag_ for token in parsed]
 
-with open("../../tacl/data/references_for_lm.json", "r") as json_in: 
-     all_data = json.load(json_in)
+#with open("../../tacl/data/references_for_lm.json", "r") as json_in: 
+#     all_data = json.load(json_in)
 
 
 with open(PATH_TO_DEV_FILE_PRED, "r") as json_in: 
@@ -34,14 +37,18 @@ predictions_data.update(predictions_train)
 
 # count how many references there are 
 freq_dict = Counter()
-references = [" ".join(all_data[key]['reference']).lower() if type(all_data[key]["reference"]) == list else all_data[key]['reference'] for key, _ in all_data.items()]
+try: 
+    references = [" ".join(file_with_all_info[key]['Reference']).lower() if type(file_with_all_info[key]["Reference"]) == list else file_with_all_info[key]['Reference'] for key, _ in file_with_all_info.items()]
+
+except KeyError: 
+    pdb.set_trace()
 
 # exclude references 
 for key, _ in predictions_data.items(): 
-    if type(all_data[key]["reference"]) == list: 
-        reference = " ".join(all_data[key]['reference']) 
+    if type(file_with_all_info[key]["Reference"]) == list: 
+        reference = " ".join(file_with_all_info[key]['reference']) 
     else: 
-        reference = all_data[key]["reference"]
+        reference = file_with_all_info[key]["Reference"]
     tagged_reference = get_pos_tags(reference)
 
     if tagged_reference != ['PRP'] and tagged_reference != ['PRP$']: 
@@ -50,10 +57,11 @@ for key, _ in predictions_data.items():
  
         filtered_fillers = predictions_data[key]["filtered_fillers"]
   
-        print(all_data[key]["par"])
-        print(all_data[key]["revised_sentence"])
+        print(file_with_all_info[key]["Par"])
+        print(file_with_all_info[key]["RevisedSentence"])
         print('\n')
         print("filtered fillers", filtered_fillers)
-        print("reference", all_data[key]["reference"])
+        print("reference", file_with_all_info[key]["Reference"])
+        print("base_nr:", file_with_all_info[key]["BaseNr"])
         print("=========================================")
 
