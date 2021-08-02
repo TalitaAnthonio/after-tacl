@@ -79,7 +79,9 @@ for key, _ in predictions_data.items():
     "RevisedNr": bigger_file[key]["Target_Line_Nr"][-1], 
     "RevisedBeforeInsertion": predictions_data[key]["revised_untill_insertion"], 
     "RevisedAfterInsertion": revised_after_insertion, 
-    "LanguageModelText": predictions_data[key]["language_model_text"]}
+    "LanguageModelText": predictions_data[key]["language_model_text"], 
+    "FilteredPredictions": predictions_data[key]['filtered_fillers']}
+
 
 
     simplified_dict[key].update(other_info)
