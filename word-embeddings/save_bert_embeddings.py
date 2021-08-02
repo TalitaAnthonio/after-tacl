@@ -10,7 +10,8 @@ import numpy as np
 import pickle
 from sklearn.metrics import pairwise_distances_argmin_min
 
-PATH_TO_FILE = "../coreference/filtered_train_preds_final.json" 
+#PATH_TO_FILE = "../coreference/filtered_train_preds_final.json" 
+PATH_TO_FILE = "../coreference/filtered_dev_preds_final_nouns_only.json"
 
 with open(PATH_TO_FILE, "r") as json_in: 
      data = json.load(json_in)
@@ -22,6 +23,23 @@ def vectorize_data(sentences):
 
     return vectors_bert 
 
+def filter_second_step(filtered_fillers): 
+    d = {}
+
+    for elem in filtered_fillers: 
+        if len(elem.split()) == 2: 
+            noun = elem.split()[1]
+        elif len(elem.split()) == 3: 
+            noun = elem.split()[2]
+        else: 
+            noun = elem 
+        if noun in d.keys(): 
+            d[noun].append(elem) 
+        else: 
+            d[noun] = []
+            d[noun].append(elem)
+
+    return d 
 
 
 def get_clusters(vectorized_sentences, n_clusters=5):
@@ -49,9 +67,14 @@ def main():
     for key, _ in data.items(): 
         counter +=1 
         print("------------------- {0} ------------------------------".format(counter))
-        revised_sentence = data[key]["revised_sentence"]
+        revised_sentence = data[key]["RevisedSentence"]
         filtered_predictions = data[key]["filtered_fillers"]
-        print(filtered_predictions)
+
+
+        if data[key]['reference-type'] == "bigram": 
+            predictions_new = filter_second_step(data[key]["filtered_fillers"])
+            filtered_predictions = [predictions_new[key][0] for key, _ in predictions_new.items()]
+
 
         # get embeddings for the fillers 
         sentences_with_filler = []
@@ -80,9 +103,9 @@ def main():
         
 
     
-    np.save("bert_vectors_FINAL_train_top100.npy", d)
+    np.save("bert_vectors_FINAL_dev_top100.npy", d)
 
-    with open("bert_vectors_FINAL_train_top100.pickle", "wb") as pickle_out: 
+    with open("bert_vectors_FINAL_dev_top100.pickle", "wb") as pickle_out: 
          pickle.dump(d, pickle_out)
     
 
