@@ -12,12 +12,14 @@ import string
 MODEL = spacy.load('en_core_web_sm')
 PUNCTUATION = string.punctuation + "..." + '(' + ')'
 
-#path_to_pred_dir = "/Users/talita/Documents/PhD/tacl/analyse-predictions" 
-#path_to_file_with_predictions = '{0}/bestmodels_predictions.json'.format(path_to_pred_dir)
+path_to_pred_dir = "/Users/talita/Documents/PhD/tacl/analyse-predictions" 
+path_to_file = '{0}/bestmodels_predictions.json'.format(path_to_pred_dir)
 #path_to_filtered_fillers = "../coreference/dev_set_with_filtered_fillers.json"
 
+
+
 #path_to_file = "../word-embeddings/train_set_predictions_all_info.json"
-path_to_file = "../word-embeddings/train_set_predictions_all_info_top_100.json"
+# path_to_file = "../word-embeddings/train_set_predictions_all_info_top_100.json"
 
 with open(path_to_file, "r") as json_in: 
      data = json.load(json_in)
@@ -35,8 +37,8 @@ class RevisionInstance:
         self.key = key 
         self.keys = keys 
         #self.left_context = revision_instance["LeftContext"]
-        #self.predictions = [prediction.strip() for prediction in revision_instance["GPT+Finetuning+P-perplexityPred"]] 
-        self.predictions = [prediction.strip() for prediction in revision_instance["predictions"]["generated_texts"]] 
+        self.predictions = [prediction.strip() for prediction in revision_instance["GPT+Finetuning+P-perplexityPred"]] 
+        #self.predictions = [prediction.strip() for prediction in revision_instance["predictions"]["generated_texts"]] 
 
         try: 
             self.revised_after_insertion = revision_instance["revised_after_insertion"]
@@ -67,43 +69,37 @@ def filter_tags(tagged_fillers, reference_type, contains_digit):
     # check the length 
     filtered_list = []
     if contains_digit: 
-        tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", ")", "(", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', '``', 'RB', 'VBP', 'CC'] 
+        tags_to_include = ["NNS", "CD", "NNP", "NN"]
     else: 
-        tags_to_exclude_unigrams = [".", ",", "!", ":", ";", "$", ")", "(", "MD", "RBR", "VBZ",  "LS", "VBD", "VB", "VBG", "VBN", "WP", "UH", "XX", "-RRB-", "NFP", "IN", "WDT", "FW", ";", "-LRB-", "WRB", '""', '``', 'RB', 'VBP', 'CC', 'CD'] 
+        tags_to_include = ["NNS", "NNP", "NN"]
     words_to_exclude_unigrams = ["the", "a", "an"]
     words_to_exclude_second_bigram = ["the", "a", "an", "all"]
-    if reference_type == "unigram": 
-        for elem in tagged_fillers:
-            if elem != []: 
-               tag = elem[0][1]
-               if tag not in tags_to_exclude_unigrams: 
-                  if elem[0][0] not in words_to_exclude_unigrams: 
-                     filtered_list.append(elem)
-    elif reference_type == "bigram": 
-        for elem in tagged_fillers: 
-            if elem != []: 
-                tags = [x[1] for x in elem]
-                words = [x[0] for x in elem]
-                if len(tags) == 2: 
-                    if tags[0] not in tags_to_exclude_unigrams and tags[1] not in tags_to_exclude_unigrams and words[1] not in words_to_exclude_second_bigram:
-                        filtered_list.append(elem)
-                else: 
-                    if tags[0] not in tags_to_exclude_unigrams: 
-                       filtered_list.append(elem)
 
+    if reference_type == "unigram":  
+        for elem in tagged_fillers: 
+            if elem != []:  
+                token, tag = elem[0]           
+                if tag in tags_to_include: 
+                    filtered_list.append(elem)
+    elif reference_type == "bigram": 
+         for elem in tagged_fillers: 
+             pos_tags = [pos_tag[1] for pos_tag in elem]
+             try: 
+                if pos_tags[1] in tags_to_include: 
+                    filtered_list.append(elem)
+             except IndexError: 
+                 continue 
     else: 
         for elem in tagged_fillers: 
-            if elem != []: 
-                tags = [x[1] for x in elem]
-                if len(tags) == 3: 
-                    if tags[0] not in tags_to_exclude_unigrams and tags[1] not in tags_to_exclude_unigrams and tags[2] not in tags_to_exclude_unigrams:
-                        filtered_list.append(elem)
-                else: 
-                    if tags[0] not in tags_to_exclude_unigrams: 
-                       filtered_list.append(elem)
-               
-    return filtered_list  
+            pos_tags = [pos_tag[1] for pos_tag in elem]
+            try: 
+                if pos_tags[-1] in tags_to_include: 
+                    filtered_list.append(elem)
+            except IndexError: 
+                continue 
 
+    print(filtered_list)
+    return filtered_list
 
 def tag_predictions(predictions, revised_untill_insertion, revised_after_insertion, rev_length): 
     tagged_predictions = []
@@ -144,20 +140,30 @@ def main():
     d = {}
     counter = 0 
     for key, _ in data.items():     
-        if type(data[key]["predictions"]) != str: 
+        if type(data[key]["GPT+Finetuning+P-perplexityPred"]) != str: 
+
             counter +=1 
             print("==============================================")
             revision_instance = RevisionInstance(key, data[key], data[key].keys())
             print(key, counter) 
             tagged_predictions = tag_predictions(revision_instance.predictions, revision_instance.revised_untill_insertion, revision_instance.revised_after_insertion, revision_instance.revlength) 
-            print(revision_instance.predictions)
+            
+            print(data[key]["LeftContext"])
+            print(revision_instance.revised_untill_insertion, "_____", revision_instance.revised_after_insertion)
+            print(data[key]["RevisedSentence"])
+            print("all_predictions", revision_instance.predictions)
 
             # check if the correct reference contains a digit. 
-            #contains_digit = any(map(str.isdigit, data[key]["CorrectReference"]))
-            reference = " ".join(data[key]["reference"])
+        
+            reference = " ".join(data[key]["CorrectReference"])
             contains_digit = any(map(str.isdigit, reference ))
-            
 
+
+            for tagged_prediction, prediction in zip(tagged_predictions, revision_instance.predictions): 
+                
+                print(tagged_prediction)
+        
+            
             filtered = filter_tags(tagged_predictions, data[key]["reference-type"], contains_digit)  
             
             
@@ -167,14 +173,16 @@ def main():
                 fillers_to_return.append(filler_tokens)
 
             fillers_to_return_new = [filler for filler in fillers_to_return if filler not in string.punctuation]
-            print(fillers_to_return_new)
+            print("returned_fillers") 
+            for elem in fillers_to_return_new: 
+                print(elem)
 
             d[key] = data[key]
             d[key].update({"filtered_fillers": fillers_to_return_new}) 
 
 
     
-    with open("filtered_train_preds_final.json", "w") as json_out: 
+    with open("filtered_dev_preds_final_nouns_only.json", "w") as json_out: 
          json.dump(d, json_out)
 
 main() 
