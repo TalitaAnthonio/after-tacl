@@ -98,7 +98,8 @@ def main():
             vectorized = vectorize_data(sentences_with_filler)
             revised_sentence_embedding = vectorize_data([revised_sentence])
 
-        d[key] = {"vectors": vectorized, "sentences": sentences_with_filler, "revised_sentence_embedding": revised_sentence_embedding, "revised_sentence": revised_sentence}
+        d[key] = {"vectors": vectorized, "sentences": sentences_with_filler, "revised_sentence_embedding": revised_sentence_embedding, "revised_sentence": revised_sentence, 
+        "filtered_fillers": filtered_predictions}
 
         
 
