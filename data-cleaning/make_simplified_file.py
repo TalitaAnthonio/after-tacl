@@ -57,6 +57,10 @@ for key, _ in predictions_data.items():
         reference = predictions_data[key]["reference"]
     
 
+    if type(reference) != str: 
+        reference = " ".join(reference)
+    
+
     if "revised_after_insertion" in predictions_data[key].keys(): 
         revised_after_insertion = predictions_data[key]["revised_after_insertion"]
     else: 
