@@ -12,14 +12,14 @@ import string
 MODEL = spacy.load('en_core_web_sm')
 PUNCTUATION = string.punctuation + "..." + '(' + ')'
 
-path_to_pred_dir = "/Users/talita/Documents/PhD/tacl/analyse-predictions" 
-path_to_file = '{0}/bestmodels_predictions.json'.format(path_to_pred_dir)
+#path_to_pred_dir = "/Users/talita/Documents/PhD/tacl/analyse-predictions" 
+#path_to_file = '{0}/bestmodels_predictions.json'.format(path_to_pred_dir)
 #path_to_filtered_fillers = "../coreference/dev_set_with_filtered_fillers.json"
 
 
 
 #path_to_file = "../word-embeddings/train_set_predictions_all_info.json"
-# path_to_file = "../word-embeddings/train_set_predictions_all_info_top_100.json"
+path_to_file = "../word-embeddings/train_set_predictions_all_info_top_100.json"
 
 with open(path_to_file, "r") as json_in: 
      data = json.load(json_in)
@@ -37,8 +37,8 @@ class RevisionInstance:
         self.key = key 
         self.keys = keys 
         #self.left_context = revision_instance["LeftContext"]
-        self.predictions = [prediction.strip() for prediction in revision_instance["GPT+Finetuning+P-perplexityPred"]] 
-        #self.predictions = [prediction.strip() for prediction in revision_instance["predictions"]["generated_texts"]] 
+        #self.predictions = [prediction.strip() for prediction in revision_instance["GPT+Finetuning+P-perplexityPred"]] 
+        self.predictions = [prediction.strip() for prediction in revision_instance["predictions"]["generated_texts"]] 
 
         try: 
             self.revised_after_insertion = revision_instance["revised_after_insertion"]
@@ -84,9 +84,8 @@ def filter_tags(tagged_fillers, reference_type, contains_digit):
     elif reference_type == "bigram": 
          for elem in tagged_fillers: 
              pos_tags = [pos_tag[1] for pos_tag in elem]
-             tokens = [pos_tag[0] for pos_tag in elem] 
              try: 
-                if pos_tags[1] in tags_to_include and tokens[0] not in PUNCTUATION:
+                if pos_tags[1] in tags_to_include: 
                     filtered_list.append(elem)
              except IndexError: 
                  continue 
@@ -141,7 +140,7 @@ def main():
     d = {}
     counter = 0 
     for key, _ in data.items():     
-        if type(data[key]["GPT+Finetuning+P-perplexityPred"]) != str: 
+        if type(data[key]["predictions"]['generated_texts']) == list: 
 
             counter +=1 
             print("==============================================")
@@ -149,14 +148,14 @@ def main():
             print(key, counter) 
             tagged_predictions = tag_predictions(revision_instance.predictions, revision_instance.revised_untill_insertion, revision_instance.revised_after_insertion, revision_instance.revlength) 
             
-            print(data[key]["LeftContext"])
+            
             print(revision_instance.revised_untill_insertion, "_____", revision_instance.revised_after_insertion)
-            print(data[key]["RevisedSentence"])
+            print(data[key]["revised_sentence"])
             print("all_predictions", revision_instance.predictions)
 
             # check if the correct reference contains a digit. 
         
-            reference = " ".join(data[key]["CorrectReference"])
+            reference = " ".join(data[key]["reference"])
             contains_digit = any(map(str.isdigit, reference ))
 
 
@@ -183,7 +182,7 @@ def main():
 
 
     
-    with open("filtered_dev_preds_final_nouns_only.json", "w") as json_out: 
+    with open("filtered_train_preds_final_nouns_only.json", "w") as json_out: 
          json.dump(d, json_out)
 
 main() 
