@@ -103,9 +103,9 @@ def main():
         
 
     
-    np.save("bert_vectors_FINAL_dev_top100.npy", d)
+    np.save("bert_vectors_FINAL_dev_top100_nouns_only.npy", d)
 
-    with open("bert_vectors_FINAL_dev_top100.pickle", "wb") as pickle_out: 
+    with open("bert_vectors_FINAL_dev_top100_nouns_only.pickle", "wb") as pickle_out: 
          pickle.dump(d, pickle_out)
     
 
