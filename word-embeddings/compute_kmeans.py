@@ -51,7 +51,7 @@ def use_k_means(vectorized_sentences, num_clusters=5):
     """ 
     
     clustered_sentences = []
-    km = KMeans(n_clusters=num_clusters)
+    km = KMeans(n_clusters=num_clusters, random_state=1, max_iter=300, n_init=20)
     km.fit(vectorized_sentences)
     clusters = km.labels_.tolist()
     cluster_centers = km.cluster_centers_
