@@ -42,23 +42,6 @@ def filter_second_step(filtered_fillers):
     return d 
 
 
-def get_clusters(vectorized_sentences, n_clusters=5):
-    """
-        Param: 
-        --------------
-
-        vectorized_sentences {list} with sentence representation: 
-        the sentence in embedding representation. 
-    """ 
-    
-    clustered_sentences = []
-    # n_init -> default = 20 
-    km = KMeans(n_clusters=n_clusters, random_state=1, max_iter=300, n_init=20)
-    km.fit(vectorized_sentences)
-    clusters = km.labels_.tolist()
-    cluster_centers = km.cluster_centers_
-    return clusters, cluster_centers 
-        
 
 
 def main(): 
