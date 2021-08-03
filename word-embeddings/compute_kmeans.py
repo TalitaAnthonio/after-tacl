@@ -53,7 +53,7 @@ def use_k_means(vectorized_sentences, num_clusters=5):
     """ 
     
     clustered_sentences = []
-    km = KMeans(n_clusters=num_clusters, random_state=1, max_iter=300, n_init=20)
+    km = KMeans(n_clusters=num_clusters, random_state=1, max_iter=600, n_init=20)
     km.fit(vectorized_sentences)
     clusters = km.labels_.tolist()
     cluster_centers = km.cluster_centers_
@@ -135,9 +135,17 @@ def main():
     for key, _ in data.items(): 
         print("------------------- {0} ------------------------------".format(key))
         revised_sentence = data[key]["RevisedSentence"]
-        reference = " ".join(data[key]["CorrectReference"])
+
+        if type(data[key]["CorrectReference"]) == list: 
+           reference = " ".join(reference)
+        else: 
+            reference = data[key]["CorrectReference"]
+           
+
 
         index_of_revised = get_index_of_revised(embeddings[key]["filtered_fillers"], reference)
+    
+
 
         if index_of_revised != []: 
             index_of_revised = index_of_revised[0]
@@ -179,8 +187,8 @@ def main():
         
 
             if vectorized_sentences == []: 
-               sentences  = [revised_sentence]
-               vectorized_sentences = revised_sentence_vector
+                sentences  = [revised_sentence]
+                vectorized_sentences = revised_sentence_vector
             else: 
                 sentences = sentences + [revised_sentence_repr]
                 vectorized_sentences = np.append(vectorized_sentences, revised_sentence_vector, axis=0)
@@ -213,9 +221,10 @@ def main():
 
 
         print("centroids with revised", centroids_with_revised_sents)
+  
 
         with open(PATH_TO_FILE_OUT, "w") as json_out: 
-                json.dump(d,json_out)
+                 json.dump(d,json_out)
  
 
 main()

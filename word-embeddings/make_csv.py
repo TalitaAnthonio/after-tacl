@@ -14,12 +14,13 @@ from collections import Counter
 
 
 
-
-PATH_TO_FILE = "../coreference/filtered_train_preds_final.json"
-
+PATH_TO_FILE = "../coreference/filtered_dev_preds_final_nouns_only.json"
+PATH_TO_EMBEDDINGS = "bert_vectors_FINAL_dev_top100_nouns_only.pickle"
 NUM_OF_PRED = 20
-PATH_TO_CLUSTERS = "../word-embeddings/kmeans_k=5_train.json"
-PATH_TO_FILE_OUT = "./amazon_file.csv"
+NUM_CLUSTERS = 5 
+PATH_TO_CLUSTERS = "kmeans_k=5_dev.json"
+PATH_TO_FILE_OUT = "dev_set_new.csv"
+
 
 with open(PATH_TO_CLUSTERS, "r") as json_in: 
      clusters = json.load(json_in)
@@ -37,8 +38,8 @@ def main():
     lens = []
     for key, _ in data.items(): 
 
-        d["RevisedSentence"].append(data[key]["revised_sentence"])
-        d["Reference"].append(data[key]["reference"])
+        d["RevisedSentence"].append(data[key]["RevisedSentence"])
+        d["Reference"].append(data[key]["CorrectReference"])
         d["Paragraph"].append(data[key]["par"])
         d["Id"].append(key)
         #d["Centroids_by_Prob"].append(" ".join([cluster + "\n" for cluster in clusters[key]["centroids_by_prob"]]))
