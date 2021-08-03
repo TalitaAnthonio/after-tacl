@@ -20,7 +20,7 @@ PATH_TO_FILE = "../coreference/filtered_dev_preds_final_nouns_only.json"
 PATH_TO_EMBEDDINGS = "bert_vectors_FINAL_dev_top100_nouns_only.pickle"
 NUM_OF_PRED = 20
 NUM_CLUSTERS = 5 
-PATH_TO_FILE_OUT = "kmeans_k=5_train.json".format(NUM_OF_PRED)
+PATH_TO_FILE_OUT = "kmeans_k=5_dev.json".format(NUM_OF_PRED)
 
 
 with open(PATH_TO_EMBEDDINGS, "rb") as pickle_in: 
