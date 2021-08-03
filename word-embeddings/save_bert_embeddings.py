@@ -11,6 +11,7 @@ import pickle
 from sklearn.metrics import pairwise_distances_argmin_min
 
 #PATH_TO_FILE = "../coreference/filtered_train_preds_final.json" 
+
 PATH_TO_FILE = "../coreference/filtered_dev_preds_final_nouns_only.json"
 
 with open(PATH_TO_FILE, "r") as json_in: 

@@ -14,8 +14,10 @@ import pickle
 
 
 #PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
-PATH_TO_FILE = "../coreference/filtered_train_preds_final.json"
-PATH_TO_EMBEDDINGS = "bert_vectors_FINAL_train_top100.pickle"
+# PATH_TO_FILE = "../coreference/filtered_train_preds_final.json"
+
+PATH_TO_FILE = "../coreference/filtered_dev_preds_final_nouns_only.json"
+PATH_TO_EMBEDDINGS = "bert_vectors_FINAL_dev_top100_nouns_only.pickle"
 NUM_OF_PRED = 20
 NUM_CLUSTERS = 5 
 PATH_TO_FILE_OUT = "kmeans_k=5_train.json".format(NUM_OF_PRED)
@@ -132,15 +134,16 @@ def main():
     d = {}
     for key, _ in data.items(): 
         print("------------------- {0} ------------------------------".format(key))
-        revised_sentence = data[key]["revised_sentence"]
-        reference = " ".join(data[key]["reference"])
-        index_of_revised = get_index_of_revised(data[key]["filtered_fillers"], reference)
+        revised_sentence = data[key]["RevisedSentence"]
+        reference = " ".join(data[key]["CorrectReference"])
+
+        index_of_revised = get_index_of_revised(embeddings[key]["filtered_fillers"], reference)
 
         if index_of_revised != []: 
             index_of_revised = index_of_revised[0]
             if index_of_revised in [i for i in range(0,NUM_OF_PRED)]:
                 print("index in range")
-                filtered_predictions = data[key]["filtered_fillers"][0:NUM_OF_PRED]
+                filtered_predictions = embeddings[key]["filtered_fillers"][0:NUM_OF_PRED]
                 vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED]
                 sentences = embeddings[key]["sentences"][0:NUM_OF_PRED]
 
@@ -149,7 +152,7 @@ def main():
             # otherwise, add the revised sentence to the predictions 
             else: 
                 print("index not in range")
-                filtered_predictions = data[key]["filtered_fillers"][0:NUM_OF_PRED-1]
+                filtered_predictions = embeddings[key]["filtered_fillers"][0:NUM_OF_PRED-1]
                 vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
                 sentences = embeddings[key]["sentences"][0:NUM_OF_PRED-1]
 
@@ -161,7 +164,7 @@ def main():
 
         else: 
             print("prediction not in top")
-            filtered_predictions = data[key]["filtered_fillers"][0:NUM_OF_PRED-1]
+            filtered_predictions = embeddings[key]["filtered_fillers"][0:NUM_OF_PRED-1]
 
             # length = 19 and length = 19 
             vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
