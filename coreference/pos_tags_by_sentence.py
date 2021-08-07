@@ -8,6 +8,16 @@ from collections import Counter
 import numpy as np 
 import string 
 
+from spellchecker import SpellChecker
+spell = SpellChecker()
+
+
+def check(word):
+    if word == spell.correction(word):
+        return True
+    else:
+        return False
+
 
 MODEL = spacy.load('en_core_web_sm')
 PUNCTUATION = string.punctuation + "..." + '(' + ')'
@@ -20,6 +30,9 @@ path_to_file = '{0}/bestmodels_predictions.json'.format(path_to_pred_dir)
 
 #path_to_file = "../word-embeddings/train_set_predictions_all_info.json"
 # path_to_file = "../word-embeddings/train_set_predictions_all_info_top_100.json"
+
+
+
 
 with open(path_to_file, "r") as json_in: 
      data = json.load(json_in)
@@ -82,23 +95,27 @@ def filter_tags(tagged_fillers, reference_type, contains_digit):
         for elem in tagged_fillers: 
             if elem != []:  
                 token, tag = elem[0]           
-                if tag in tags_to_include and token not in PUNCTUATION and token not in words_to_exclude_unigrams: 
-                    filtered_list.append(elem)
+                if tag in tags_to_include and token not in PUNCTUATION and token not in words_to_exclude_unigrams:
+                    if check(token): 
+                        filtered_list.append(elem)
     elif reference_type == "bigram": 
          for elem in tagged_fillers: 
              pos_tags = [pos_tag[1] for pos_tag in elem]
              tokens = [pos_tag[0] for pos_tag in elem] 
              try: 
                 if pos_tags[1] in tags_to_include and tokens[0] not in PUNCTUATION and pos_tags[1] and tokens[1] not in words_to_exclude_second_bigram+words_to_exclude_unigrams: 
-                    filtered_list.append(elem)
+                    if check(tokens[0]) and check(tokens[1]): 
+                        filtered_list.append(elem)
              except IndexError: 
                  continue 
     else: 
         for elem in tagged_fillers: 
             pos_tags = [pos_tag[1] for pos_tag in elem]
+            tokens = [pos_tag[0] for pos_tag in elem]
             try: 
                 if pos_tags[-1] in tags_to_include: 
-                    filtered_list.append(elem)
+                    if check(tokens[0]) and check(tokens[1]): 
+                        filtered_list.append(elem)
             except IndexError: 
                 continue 
 
