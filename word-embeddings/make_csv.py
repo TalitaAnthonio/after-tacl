@@ -32,7 +32,7 @@ with open(PATH_TO_FILE, "r") as json_in:
 
 def main(): 
 
-    d = {"Id": [], "RevisedSentence": [], "Paragraph": [], "Reference": [],  "Cluster0": [], "Cluster1": [], "Cluster2": [], "Cluster3": [], "Cluster4": [], "Centroids": [], "Centroids_with_revised": []}
+    d = {"Id": [], "RevisedSentence": [], "Paragraph": [], "Reference": [],  "Cluster0": [], "Cluster1": [], "Cluster2": [], "Cluster3": [], "Cluster4": [], "Centroids": [], "Centroids_with_revised": [], "Centroids_with_prob": []}
     
     freqdict = Counter()
     lens = []
@@ -42,7 +42,7 @@ def main():
         d["Reference"].append(data[key]["CorrectReference"])
         d["Paragraph"].append(data[key]["par"])
         d["Id"].append(key)
-        #d["Centroids_by_Prob"].append(" ".join([cluster + "\n" for cluster in clusters[key]["centroids_by_prob"]]))
+        d["Centroids_with_prob"].append(" ".join([cluster + "\n" for cluster in clusters[key]["centroids_by_prob"]]))
 
     
         sents_for_0 = []

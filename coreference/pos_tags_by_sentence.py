@@ -72,21 +72,24 @@ def filter_tags(tagged_fillers, reference_type, contains_digit):
         tags_to_include = ["NNS", "CD", "NNP", "NN"]
     else: 
         tags_to_include = ["NNS", "NNP", "NN"]
-    words_to_exclude_unigrams = ["the", "a", "an"]
+    
+    # to get rid of those words that are just uppercase 
+    words_to_exclude_unigrams = [letter for letter in "bcdefghjklmnopqrstuvwxyz"]
+
     words_to_exclude_second_bigram = ["the", "a", "an", "all"]
 
     if reference_type == "unigram":  
         for elem in tagged_fillers: 
             if elem != []:  
                 token, tag = elem[0]           
-                if tag in tags_to_include: 
+                if tag in tags_to_include and token not in PUNCTUATION and token not in words_to_exclude_unigrams: 
                     filtered_list.append(elem)
     elif reference_type == "bigram": 
          for elem in tagged_fillers: 
              pos_tags = [pos_tag[1] for pos_tag in elem]
              tokens = [pos_tag[0] for pos_tag in elem] 
              try: 
-                if pos_tags[1] in tags_to_include and tokens[0] not in PUNCTUATION:
+                if pos_tags[1] in tags_to_include and tokens[0] not in PUNCTUATION and pos_tags[1] and tokens[1] not in words_to_exclude_second_bigram+words_to_exclude_unigrams: 
                     filtered_list.append(elem)
              except IndexError: 
                  continue 
