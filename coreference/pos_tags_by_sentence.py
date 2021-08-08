@@ -29,7 +29,7 @@ path_to_file = '{0}/bestmodels_predictions.json'.format(path_to_pred_dir)
 
 
 #path_to_file = "../word-embeddings/train_set_predictions_all_info.json"
-# path_to_file = "../word-embeddings/train_set_predictions_all_info_top_100.json"
+path_to_file = "../word-embeddings/train_set_predictions_all_info_top_100.json"
 
 
 
@@ -50,8 +50,8 @@ class RevisionInstance:
         self.key = key 
         self.keys = keys 
         #self.left_context = revision_instance["LeftContext"]
-        self.predictions = [prediction.strip() for prediction in revision_instance["GPT+Finetuning+P-perplexityPred"]] 
-        #self.predictions = [prediction.strip() for prediction in revision_instance["predictions"]["generated_texts"]] 
+        #self.predictions = [prediction.strip() for prediction in revision_instance['GPT+Finetuning+P-perplexityPred']] 
+        self.predictions = [prediction.strip() for prediction in revision_instance["predictions"]["generated_texts"]] 
 
         try: 
             self.revised_after_insertion = revision_instance["revised_after_insertion"]
@@ -161,22 +161,26 @@ def main():
     d = {}
     counter = 0 
     for key, _ in data.items():     
-        if type(data[key]["GPT+Finetuning+P-perplexityPred"]) != str: 
-
+        
+        if type(data[key]["predictions"]) != str: 
             counter +=1 
             print("==============================================")
             revision_instance = RevisionInstance(key, data[key], data[key].keys())
             print(key, counter) 
             tagged_predictions = tag_predictions(revision_instance.predictions, revision_instance.revised_untill_insertion, revision_instance.revised_after_insertion, revision_instance.revlength) 
             
-            print(data[key]["LeftContext"])
+            print(data[key]["par"])
             print(revision_instance.revised_untill_insertion, "_____", revision_instance.revised_after_insertion)
-            print(data[key]["RevisedSentence"])
+            print(data[key]["revised_sentence"])
             print("all_predictions", revision_instance.predictions)
 
             # check if the correct reference contains a digit. 
-        
-            reference = " ".join(data[key]["CorrectReference"])
+
+            assert type(data[key]["reference"]) == list
+
+            if type(data[key]["reference"]) == list: 
+                reference = " ".join(data[key]["reference"])
+            
             contains_digit = any(map(str.isdigit, reference ))
 
 
@@ -203,7 +207,7 @@ def main():
 
 
     
-    #with open("filtered_dev_preds_final_nouns_only.json", "w") as json_out: 
-    #     json.dump(d, json_out)
+    with open("filtered_train_preds_final_nouns_only.json", "w") as json_out: 
+         json.dump(d, json_out)
 
 main() 
