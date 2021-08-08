@@ -23,6 +23,8 @@ NUM_CLUSTERS = 5
 PATH_TO_FILE_OUT = "kmeans_k=5_dev.json".format(NUM_OF_PRED)
 
 
+
+
 with open(PATH_TO_EMBEDDINGS, "rb") as pickle_in: 
      embeddings = pickle.load(pickle_in) 
 
@@ -64,18 +66,18 @@ def use_k_means(vectorized_sentences, num_clusters=5):
 
 
 def get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of_revised, num_clusters=5): 
-    if len(filtered_predictions) > 4: 
+    if len(vectorized_sentences) > 4: 
 
         clusters, cluster_centers, closest_data_indexes = use_k_means(vectorized_sentences, num_clusters=num_clusters)
     
-    elif len(filtered_predictions) == 1 or len(filtered_predictions) == 0: 
+    elif len(vectorized_sentences) == 1 or len(filtered_predictions) == 0: 
 
         clusters, cluster_centers, closest_data_indexes = use_k_means(vectorized_sentences, num_clusters=1)
 
         
     else: 
-        
-        clusters, cluster_centers, closest_data_indexes = use_k_means(vectorized_sentences, num_clusters=len(filtered_predictions)//2)
+        print("in else")
+        clusters, cluster_centers, closest_data_indexes = use_k_means(vectorized_sentences, num_clusters=len(vectorized_sentences))
 
 
     # make a dictionary with the clusters {"1": sent1, sent2, sent3, "2": sent4, sent5, sent6}
@@ -97,10 +99,12 @@ def get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of
     # make a dict with just the clusters and the indexes to check later which of them has the revised sentence. 
     cluster_dict_indexes_only = {}
     for cluster, sents in cluster_dict.items(): 
+        print(cluster, sents)
         if index_of_revised in [sent[1] for sent in sents]: 
            cluster_dict_indexes_only[cluster] = {"sents": [sent[1] for sent in sents], "revised-in-cluster": True, "index_of_revised": index_of_revised}
         else: 
            cluster_dict_indexes_only[cluster] = {"sents": [sent[1] for sent in sents], "revised-in-cluster": False, "index_of_revised": index_of_revised}
+
 
     filtered_centroids = []
     for index in closest_data_indexes: 
@@ -132,19 +136,20 @@ def get_index_of_revised(predictions, correct_reference):
 
 def main(): 
     d = {}
-    for key, _ in data.items(): 
+    for key, _ in data.items():  
         print("------------------- {0} ------------------------------".format(key))
+
         revised_sentence = data[key]["RevisedSentence"]
 
         if type(data[key]["CorrectReference"]) == list: 
-           reference = " ".join(reference)
+            reference = " ".join(reference)
         else: 
             reference = data[key]["CorrectReference"]
-           
+        
 
 
         index_of_revised = get_index_of_revised(embeddings[key]["filtered_fillers"], reference)
-    
+        
 
 
         if index_of_revised != []: 
@@ -169,6 +174,7 @@ def main():
 
                 sentences = sentences + [revised_sentence_repr]
                 vectorized_sentences = np.append(vectorized_sentences, revised_sentence_vector, axis=0)
+                index_of_revised = 19 
 
         else: 
             print("prediction not in top")
@@ -217,11 +223,12 @@ def main():
         closest_to_centroids =  [sentences[index] for index in closest_data_indexes]
         centroids_with_revised_sents = [sentences[index] for index in centroids_with_revised]
 
+
         d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids, "centroids_by_prob": centroids_by_prob, "Centroids_with_revised": centroids_with_revised_sents}
 
 
         print("centroids with revised", centroids_with_revised_sents)
-  
+
 
         with open(PATH_TO_FILE_OUT, "w") as json_out: 
                  json.dump(d,json_out)

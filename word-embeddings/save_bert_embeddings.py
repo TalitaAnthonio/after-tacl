@@ -52,47 +52,51 @@ def main():
     for key, _ in data.items(): 
         counter +=1 
         print("------------------- {0} ------------------------------".format(counter))
-        revised_sentence = data[key]["RevisedSentence"]
-        filtered_predictions = data[key]["filtered_fillers"]
+        if key == "Be_Indifferent10": 
+            revised_sentence = data[key]["RevisedSentence"]
+            filtered_predictions = data[key]["filtered_fillers"]
 
 
-        if data[key]['reference-type'] == "bigram": 
-            predictions_new = filter_second_step(data[key]["filtered_fillers"])
-            filtered_predictions = [predictions_new[key][0] for key, _ in predictions_new.items()]
+            if data[key]['reference-type'] == "bigram": 
+                predictions_new = filter_second_step(data[key]["filtered_fillers"])
+                filtered_predictions = [predictions_new[key][0] for key, _ in predictions_new.items()]
 
 
-        # get embeddings for the fillers 
-        sentences_with_filler = []
-        for index, filler in enumerate(filtered_predictions,0): 
-            if "revised_after_insertion" in data[key].keys(): 
-                sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
-                sentences_with_filler.append(sentence_with_filler)
+
+            # get embeddings for the fillers 
+            sentences_with_filler = []
+            for index, filler in enumerate(filtered_predictions,0): 
+                if "revised_after_insertion" in data[key].keys(): 
+                    sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
+                    sentences_with_filler.append(sentence_with_filler)
+                else: 
+                    sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_afer_insertion"]
+                    sentences_with_filler.append(sentence_with_filler)
+
+
+
+            
+            # if there are no filtered predictions, leave empty. 
+            if filtered_predictions == []:
+                sentences_with_filler = [] 
+                vectorized = []
+                revised_sentence_embedding = vectorize_data([revised_sentence])
             else: 
-                sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_afer_insertion"]
-                sentences_with_filler.append(sentence_with_filler)
+                vectorized = vectorize_data(sentences_with_filler)
+                revised_sentence_embedding = vectorize_data([revised_sentence])
 
+            d[key] = {"vectors": vectorized, "sentences": sentences_with_filler, "revised_sentence_embedding": revised_sentence_embedding, "revised_sentence": revised_sentence, 
+            "filtered_fillers": filtered_predictions}
 
-
-        
-        # if there are no filtered predictions, leave empty. 
-        if filtered_predictions == []:
-           sentences_with_filler = [] 
-           vectorized = []
-           revised_sentence_embedding = vectorize_data([revised_sentence])
-        else: 
-            vectorized = vectorize_data(sentences_with_filler)
-            revised_sentence_embedding = vectorize_data([revised_sentence])
-
-        d[key] = {"vectors": vectorized, "sentences": sentences_with_filler, "revised_sentence_embedding": revised_sentence_embedding, "revised_sentence": revised_sentence, 
-        "filtered_fillers": filtered_predictions}
-
+            pdb.set_trace()
+            break 
         
 
     
-    np.save("bert_vectors_FINAL_dev_top100_nouns_only.npy", d)
+    #np.save("bert_vectors_FINAL_dev_top100_nouns_only.npy", d)
 
-    with open("bert_vectors_FINAL_dev_top100_nouns_only.pickle", "wb") as pickle_out: 
-         pickle.dump(d, pickle_out)
+    #with open("bert_vectors_FINAL_dev_top100_nouns_only.pickle", "wb") as pickle_out: 
+    #     pickle.dump(d, pickle_out)
     
 
  

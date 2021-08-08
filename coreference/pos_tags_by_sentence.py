@@ -195,15 +195,15 @@ def main():
 
             fillers_to_return_new = [filler for filler in fillers_to_return if filler not in string.punctuation]
             print("returned_fillers") 
-            for elem in fillers_to_return_new: 
+            for elem in list(set(fillers_to_return_new)): 
                 print(elem)
 
             d[key] = data[key]
-            d[key].update({"filtered_fillers": fillers_to_return_new}) 
+            d[key].update({"filtered_fillers": list(set(fillers_to_return_new))}) 
 
 
     
-    with open("filtered_dev_preds_final_nouns_only.json", "w") as json_out: 
-         json.dump(d, json_out)
+    #with open("filtered_dev_preds_final_nouns_only.json", "w") as json_out: 
+    #     json.dump(d, json_out)
 
 main() 
