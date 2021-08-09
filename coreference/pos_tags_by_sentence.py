@@ -176,8 +176,6 @@ def main():
 
             # check if the correct reference contains a digit. 
 
-            assert type(data[key]["reference"]) == list
-
             if type(data[key]["reference"]) == list: 
                 reference = " ".join(data[key]["reference"])
             

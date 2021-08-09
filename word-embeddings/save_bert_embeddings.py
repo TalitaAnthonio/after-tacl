@@ -12,7 +12,9 @@ from sklearn.metrics import pairwise_distances_argmin_min
 
 #PATH_TO_FILE = "../coreference/filtered_train_preds_final.json" 
 
-PATH_TO_FILE = "../coreference/filtered_dev_preds_final_nouns_only.json"
+PATH_TO_FILE = "../coreference/filtered_train_preds_final_nouns_only.json"
+
+#PATH_TO_FILE = "../coreference/filtered_dev_preds_final_nouns_only.json"
 
 with open(PATH_TO_FILE, "r") as json_in: 
      data = json.load(json_in)
@@ -52,44 +54,42 @@ def main():
     for key, _ in data.items(): 
         counter +=1 
         print("------------------- {0} ------------------------------".format(counter))
-        if key == "Be_Indifferent10": 
-            revised_sentence = data[key]["RevisedSentence"]
-            filtered_predictions = data[key]["filtered_fillers"]
+        revised_sentence = data[key]["revised_sentence"]
+        filtered_predictions = data[key]["filtered_fillers"]
 
 
-            if data[key]['reference-type'] == "bigram": 
-                predictions_new = filter_second_step(data[key]["filtered_fillers"])
-                filtered_predictions = [predictions_new[key][0] for key, _ in predictions_new.items()]
-
-
-
-            # get embeddings for the fillers 
-            sentences_with_filler = []
-            for index, filler in enumerate(filtered_predictions,0): 
-                if "revised_after_insertion" in data[key].keys(): 
-                    sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
-                    sentences_with_filler.append(sentence_with_filler)
-                else: 
-                    sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_afer_insertion"]
-                    sentences_with_filler.append(sentence_with_filler)
+        if data[key]['reference-type'] == "bigram": 
+            predictions_new = filter_second_step(data[key]["filtered_fillers"])
+            filtered_predictions = [predictions_new[key][0] for key, _ in predictions_new.items()]
 
 
 
-            
-            # if there are no filtered predictions, leave empty. 
-            if filtered_predictions == []:
-                sentences_with_filler = [] 
-                vectorized = []
-                revised_sentence_embedding = vectorize_data([revised_sentence])
+        # get embeddings for the fillers 
+        sentences_with_filler = []
+        for index, filler in enumerate(filtered_predictions,0): 
+            if "revised_after_insertion" in data[key].keys(): 
+                sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_after_insertion"]
+                sentences_with_filler.append(sentence_with_filler)
             else: 
-                vectorized = vectorize_data(sentences_with_filler)
-                revised_sentence_embedding = vectorize_data([revised_sentence])
+                sentence_with_filler = data[key]["revised_untill_insertion"] + " " + filler + " " + data[key]["revised_afer_insertion"]
+                sentences_with_filler.append(sentence_with_filler)
 
-            d[key] = {"vectors": vectorized, "sentences": sentences_with_filler, "revised_sentence_embedding": revised_sentence_embedding, "revised_sentence": revised_sentence, 
-            "filtered_fillers": filtered_predictions}
 
-            pdb.set_trace()
-            break 
+
+        
+        # if there are no filtered predictions, leave empty. 
+        if filtered_predictions == []:
+            sentences_with_filler = [] 
+            vectorized = []
+            revised_sentence_embedding = vectorize_data([revised_sentence])
+        else: 
+            vectorized = vectorize_data(sentences_with_filler)
+            revised_sentence_embedding = vectorize_data([revised_sentence])
+
+        d[key] = {"vectors": vectorized, "sentences": sentences_with_filler, "revised_sentence_embedding": revised_sentence_embedding, "revised_sentence": revised_sentence, 
+        "filtered_fillers": filtered_predictions}
+
+
         
 
     
