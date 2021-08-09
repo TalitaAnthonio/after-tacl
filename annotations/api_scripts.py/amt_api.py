@@ -1,6 +1,10 @@
+# python amt_api.py config 
+
 import boto3 
 import configparser
 import sys 
+import datetime
+import pdb 
 
 def connect_mturk(CONFIG):
     region_name = CONFIG['default']['region']
@@ -17,6 +21,18 @@ def connect_mturk(CONFIG):
     )
     sys.stderr.write("Connected")
     return mturk_client
+
+
+def parse_time(date_string):
+    """
+        date_string = "2019-04-17 11:41:34+02:00"
+         t = parse_time(date_string)
+        datetime(2019, 4, 17)
+    """
+    if isinstance(date_string, datetime.datetime):
+        return date_string
+    date_string = [int(a) for a in date_string.split()[0].split("-")]
+    return datetime.datetime(date_string[0], date_string[1], date_string[2])
 
 
 def get_all_hits(mturk):
@@ -84,6 +100,14 @@ if __name__ == '__main__':
     hit_ids = get_all_hits(client)
     for hit_id in hit_ids: 
         assignments = get_assignments(client, hit_id, ["Submitted"])
-        print(assignments)
+        assert len(assignments) == 1 or len(assignments) == 0 
+        assignment_with_parsed_time = {}
 
+        if assignments != []: 
+            for key, _ in assignments[0].items(): 
+                print(assignments[0])
+                assignment_with_parsed_time[key] = assignments[0][key]
+                assignment_with_parsed_time["AutoApprovalTime"] = parse_time(assignments[0]["AutoApprovalTime"]) 
+
+            print(assignment_with_parsed_time)
 
