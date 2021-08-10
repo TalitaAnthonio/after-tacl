@@ -14,7 +14,7 @@ SCRIPTDIR = os.path.abspath(os.path.dirname(sys.argv[0]))
 def make_qualification(mturk, questionqual_xml):
     with open(os.path.join(SCRIPTDIR, questionqual_xml), 'r') as myfile:
         question=myfile.read()
-    with open(os.path.join(SCRIPTDIR, '../answerqual.xml'), 'r') as myfile:
+    with open(os.path.join(SCRIPTDIR, './answerqual.xml'), 'r') as myfile:
         answer=myfile.read()
         
     print(question)
@@ -41,7 +41,7 @@ def make_qualification(mturk, questionqual_xml):
 def update_qualification(mturk, qualtypeID, questionqual_xml):
     with open(os.path.join(SCRIPTDIR, questionqual_xml), 'r') as myfile:
         question=myfile.read()
-    with open(os.path.join(SCRIPTDIR, '../answerqual.xml'), 'r') as myfile:
+    with open(os.path.join(SCRIPTDIR, './answerqual.xml'), 'r') as myfile:
         answer=myfile.read()
         
     print(question)
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     CONFIG.read(configfile)
     print(CONFIG)
     logging.info("config file: "+configfile)
-    questionqual_xml = '../questionqual_round1.xml'
+    questionqual_xml = './questionqual_round1.xml'
 
     MTURK = amt_api.connect_mturk(CONFIG)
     
