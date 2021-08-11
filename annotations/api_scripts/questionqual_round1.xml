@@ -5,8 +5,21 @@
     </Title>
     <Text>
     Your task is to indicate if the underlined parts makes sense in the given how-to guides. 
-    ETC
     </Text>
+
+
+    <FormattedContent><![CDATA[
+    
+    <p><font size="5"><b>How to Calm an Angry Cat </b></font></p>
+    <p> 
+    <b>Tips</b>  <br/><br/>
+    * Ensure that your cat's flea and worm treatments are totally up-to-date.
+    These <u>cats</u> can aggravate a cat.
+    </p> 
+
+    
+    ]]></FormattedContent>
+
 
     <FormattedContent><![CDATA[
     <p>
