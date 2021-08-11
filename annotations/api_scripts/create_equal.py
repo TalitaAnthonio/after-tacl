@@ -31,6 +31,7 @@ def make_qualification(mturk, questionqual_xml):
         TestDurationInSeconds=300,
     )
     print(response)
+    
     del response['QualificationType']['CreationTime']
     
     with open("protectionqual.json", 'w') as outfile:
