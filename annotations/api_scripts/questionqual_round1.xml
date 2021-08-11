@@ -5,164 +5,35 @@
     </Title>
     <Text>
     Your task is to indicate if the underlined parts makes sense in the given how-to guides. 
+    ETC
     </Text>
 
     <FormattedContent><![CDATA[
-    <p><font size="5"><b>YouNameIt Instructions</b></font></p>
     <p>
         <font size="4">
-            <b>Task: Please name the object in the red box with the </b>
+            <b> Second attempt </b>
         </font>
         <font color="#0020C2" size="4">
             <b>first name that comes to mind.</b>
         </font>
     </p>
-    <ul>
-        <li><font size="4">Make sure to identify the correct object:</font>
-            <font color="#0020C2" size="4"><b>the single object that the box marks</b></font>.
-            <font size="4">It is the one that the </font>
-            <font color="#0020C2" size="4"><b>box fits tightly around</b></font>.
-        </li>
-        <li>For more advice please see the FAQ below.</li>
-    </ul>
-    <p>
-        <b><font size="4">Make sure to avoid the </font>
-        <font color="#FF0000" size="4">mistakes</font> 
-        <font size="4">exemplified below:</font>
-        </b>
-    </p>
-    <table width="100%" cellpadding="1" cellspacing="1">
-    <tbody>
-        <tr>
-            <td width="50">
-                <img src="http://www.coli.uni-saarland.de/~carina/object_naming/amt_images/ex2363125_2056940_singleton_category.png" alt="ex2363125_2056940_singleton_category.png" width="225" height="215"></img>
-            </td>
-            <td align="center" valign="middle" width="300">
-                <img src="http://object-naming-amore.upf.edu/qual_r1_ex1.png" alt="ex1.png" width="450"></img>
-            </td>
-            <td>
-                <font color="red" size="5"><b>BAD</b></font>
-                <font color="black" size="4"><i>---the box is marking the jacket, not the man</i></font>
-                <br/><br/>
-                <font color="green" size="5"><b>Good options (examples):</b></font>
-                <font color="black" size="4"><br/><i>jacket, coat, shirt, clothing, ...</i></font>
-            </td>
-        </tr>
-        <tr>
-            <td width="50">
-                <img src="http://www.coli.uni-saarland.de/~carina/object_naming/amt_images/ex2373806_1986195_ambiguous_synset.png" alt="ex2373806_1986195_ambiguous_synset.png" width="225" height="190"></img>
-            </td>
-            <td align="center" valign="middle" width="300">
-                <img src="http://object-naming-amore.upf.edu/qual_r1_ex2.png" alt="ex1.png" width="450"></img>
-            </td>
-            <td>
-                <font color="red" size="5"><b>BAD</b></font>
-                <font color="black" size="4">
-                    <i>---the box is marking the car, not the motorcycle</i>
-                </font><br/><br/>
-                <font color="green" size="5">
-                    <b>Good options (examples):</b>
-                </font>
-                <font color="black" size="4">
-                    <br/><i>car, vehicle, suv, automobile, ...</i>
-                </font>
-            </td>
-        </tr>
-        <tr>
-            <td width="50">
-                <img src="http://www.coli.uni-saarland.de/~carina/object_naming/amt_images/ex2343599_921837_ambiguous_category.png" alt="ex2343599_921837_ambiguous_category.png" width="225" height="215"></img>
-            </td>
-            <td align="center" valign="middle" width="300">
-                <img src="http://object-naming-amore.upf.edu/qual_r1_ex3.png" alt="ex4.png" width="450"></img>
-            </td>
-            <td>
-                <font color="red" size="5"><b>BAD</b></font>
-                <font color="black" size="4"><i>---this is not a name, only </i>hat<i> is.</i></font><br/><br/>
-                <font color="green" size="5">
-                    <b>Good options (examples):</b>
-                </font>
-                <font color="black" size="4">
-                    <br/><i>hat, helmet, headgear...</i>
-                </font>
-            </td>
-        </tr>
-    </tbody>
-    </table><br/>
-    <p><font size="5"><b>FAQ:</b></font></p>
-    <table width="100%" cellpadding="10" cellspacing="1">
-    <tbody>	
-        <tr>
-            <td bgcolor="#EEEEEE" align="left" valign="middle">
-            <font color="#1100FF"><b>+</b> If there is a person riding a skateboard or riding a surfboard, would you prefer the answer to be <i>man</i> or <i>surfer</i>?</font>
-            </td>
-        </tr>
-        <tr>
-            <td align="left" valign="middle">
-            There is no unique "correct" or "best" answer---we ask you to enter the first name that comes to mind for the marked object. 
-            For example, if you first think of <i>surfer</i>, then please enter this name. If, however, <i>man</i> comes to mind first, then enter <i>man</i>. 
-            </td>
-        </tr>
-        <tr>
-            <td bgcolor="#EEEEEE" align="left" valign="middle">
-            <font color="#1100FF"><b>+</b> For food, for example, a photo of a pizza would be <i>pizza</i> and not <i>food</i>? </font>
-            </td>
-        </tr>
-        <tr>
-            <td align="left" valign="middle">
-            That's up to you---there is no unique "correct" or "best" answer. Instead, please enter the name which first occurred to you for the identified object; if you first thought <i>food</i>, then <i>food</i>, if first <i>pizza</i>, then <i>pizza</i>.
-            </td>
-        </tr>
-        <tr>
-            <td bgcolor="#EEEEEE" align="left" valign="middle">
-            <font color="#1100FF"><b>+</b> I was wondering what you wanted us to do with images and boundary boxes around women, men, children that are not particularly doing anything? It looks as though you do not want us to name it <i>man</i> or <i>woman</i>...</font>
-            </td>
-        </tr>
-        <tr>
-            <td align="left" valign="middle">
-            Any name is ok as long as it identifies the right object; <i>man</i>, <i>woman</i>, <i>child</i>, etc. are all valid names for objects. It is important, though, to make sure that you have identified the correct object for which we ask you to give a name. As the instructions say, it is the object that the bounding box is tightly around.
-            </td>
-        </tr>
-        <tr>
-            <td bgcolor="#EEEEEE" align="left" valign="middle">
-            <font color="#1100FF"><b>+</b> In some cases, a group of objects together could be described with a singular noun (i.e. <i>bundle</i>, <i>salad</i>, <i>sandwich</i>, etc.).</font>
-            </td>
-        </tr>
-        <tr>
-            <td align="left" valign="middle">
-            If you can describe the objects with a singular noun, i.e. they together form some kind of object, such as sandwich or salad, then this is completely fine. It is important though that this "group of objects" is to be named, that is, the bounding box is tightly around them as a whole (for instance, pay attention that it is not only marking the filling of a sandwich).
-            </td>
-        </tr>
-        <tr>
-            <td bgcolor="#EEEEEE" align="left" valign="middle">
-                <font color="#1100FF"><b>+</b> When there is a picture of a person and the whole person is in the red box and they are doing a sport is it better that I say <i>player</i>, <i>snowboarder</i>, <i>skier</i>, etc." instead of <i>man</i>, <i>woman</i>, <i>girl</i>, <i>boy</i>, etc?</font>
-            </td>
-        </tr>
-        <tr>
-            <td align="left" valign="middle">
-            There is no "correct answer", so you are just asked to enter the first name that comes to mind for the marked object.
-            Referring directly to your example, any of the options, <i>player</i> OR <i>snowboarder</i> OR <i>man</i> OR <i>woman</i> etc., are good.
-            </td>
-        </tr>
-    </tbody>
-    </table>
-    If your question is not clarified by the FAQ, feel free to contact us  (Carina.Silberer"at"upf.edu). 
-    <br/><br/><p><font size="5"><b>INFORMATION SHEET AND REQUEST FOR INFORMED CONSENT</b></font></p>
-    ]]></FormattedContent>
-
     
-
-
+    ]]></FormattedContent>
+    
+    
   </Overview>
+
+
   <Question>
     <QuestionIdentifier>q1</QuestionIdentifier>
     <DisplayName>accept</DisplayName>
     <IsRequired>true</IsRequired>
     <QuestionContent>
      <Text>
-    Does the underlined part make sense in the given how-to guide? 
+     This is a text 
     </Text>
     </QuestionContent>
-      
+    
 <AnswerSpecification>
     <SelectionAnswer>
   <StyleSuggestion>radiobutton</StyleSuggestion>
@@ -179,4 +50,40 @@
     </SelectionAnswer>
     </AnswerSpecification>
   </Question>
+
+
+
+<Question>
+    <QuestionIdentifier>q2</QuestionIdentifier>
+    <DisplayName>accept</DisplayName>
+    <IsRequired>true</IsRequired>
+    <QuestionContent>
+     <Text>
+     This is a text 
+    </Text>
+    </QuestionContent>
+    
+
+
+<AnswerSpecification>
+    <SelectionAnswer>
+  <StyleSuggestion>radiobutton</StyleSuggestion>
+  <Selections>
+    <Selection>
+      <SelectionIdentifier>C1B</SelectionIdentifier>
+      <Text>YES</Text>
+    </Selection>
+    <Selection>
+      <SelectionIdentifier>C2B</SelectionIdentifier>
+      <Text>NO</Text>
+    </Selection>
+    </Selections>
+    </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+
+
+
+
+
 </QuestionForm>
