@@ -10,27 +10,26 @@
 
     <FormattedContent><![CDATA[
     
-    <p><font size="5"><b>How to Calm an Angry Cat </b></font></p>
+    <p><b>How to Calm an Angry Cat </b></p>
     <p> 
-    <b>Tips</b>  <br/><br/>
-    * Ensure that your cat's flea and worm treatments are totally up-to-date.
+    <b>Tips</b> <br/><br/>
+    * Ensure that your cat's flea and worm treatments are totally up-to-date. <br/><br/>
     These <u>cats</u> can aggravate a cat.
     </p> 
-
-    
     ]]></FormattedContent>
 
 
     <FormattedContent><![CDATA[
     <p>
-        <font size="4">
-            <b> Second attempt </b>
-        </font>
-        <font color="#0020C2" size="4">
-            <b>first name that comes to mind.</b>
-        </font>
-    </p>
-    
+       
+        <b> How to raise a baby Squirrel </b> <br/><br/> 
+         Feeding Your Baby Squirrel <br/><br/> 
+        (…) <br/><br/> 
+        9. Introduce raw fruit and nuts. <br/><br/> 
+        (...) <br/><br/>
+        * Like a human baby it will also let you know when it’s done with formula by pushing it away. <br/><br/>
+        * If your squirrel rubs its face on the ground, it means it doesn't like <u>the smell</u>. <br/><br/>
+    </p> 
     ]]></FormattedContent>
     
     
@@ -43,7 +42,7 @@
     <IsRequired>true</IsRequired>
     <QuestionContent>
      <Text>
-     This is a text 
+        Does the underlined part makes sense in the given how-to-guide? 
     </Text>
     </QuestionContent>
     
@@ -72,7 +71,7 @@
     <IsRequired>true</IsRequired>
     <QuestionContent>
      <Text>
-     This is a text 
+     Does the underlined part makes sense in the given how-to-guide? 
     </Text>
     </QuestionContent>
     
