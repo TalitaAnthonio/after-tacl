@@ -27,7 +27,7 @@
     <IsRequired>true</IsRequired>
     <QuestionContent>
      <Text>
-     This is a text 
+     Does the underlined part makes sense in the given how-to guide? 
     </Text>
     </QuestionContent>
 

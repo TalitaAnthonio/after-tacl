@@ -34,7 +34,7 @@
     <IsRequired>true</IsRequired>
     <QuestionContent>
      <Text>
-        Question 1: Does the underlined part in Text 1 makes sense in the given how-to-guide? 
+        Question 1: Does the underlined part in Text 1 make sense in the given how-to-guide? 
     </Text>
     </QuestionContent>
     
@@ -43,11 +43,11 @@
   <StyleSuggestion>radiobutton</StyleSuggestion>
   <Selections>
     <Selection>
-      <SelectionIdentifier>C1</SelectionIdentifier>
+      <SelectionIdentifier>1Y</SelectionIdentifier>
       <Text>yes</Text>
     </Selection>
     <Selection>
-      <SelectionIdentifier>C2</SelectionIdentifier>
+      <SelectionIdentifier>1N</SelectionIdentifier>
       <Text>no</Text>
     </Selection>
     </Selections>
@@ -76,7 +76,7 @@
     <IsRequired>true</IsRequired>
     <QuestionContent>
      <Text>
-     Question 2: Does the underlined part in text 2 makes sense in the given how-to-guide? 
+     Question 2: Does the underlined part in text 2 make sense in the given how-to-guide? 
     </Text>
     </QuestionContent>
     
@@ -87,11 +87,11 @@
   <StyleSuggestion>radiobutton</StyleSuggestion>
   <Selections>
     <Selection>
-      <SelectionIdentifier>C1B</SelectionIdentifier>
+      <SelectionIdentifier>2Y</SelectionIdentifier>
       <Text>yes</Text>
     </Selection>
     <Selection>
-      <SelectionIdentifier>C2B</SelectionIdentifier>
+      <SelectionIdentifier>2N</SelectionIdentifier>
       <Text>no</Text>
     </Selection>
     </Selections>
@@ -122,7 +122,7 @@
     <IsRequired>true</IsRequired>
     <QuestionContent>
      <Text>
-     Question 3: Does the underlined part in text 3 makes sense in the given how-to-guide? 
+     Question 3: Does the underlined part in text 3 make sense in the given how-to-guide? 
     </Text>
     </QuestionContent>
     
@@ -131,16 +131,61 @@
   <StyleSuggestion>radiobutton</StyleSuggestion>
   <Selections>
     <Selection>
-      <SelectionIdentifier>C1C</SelectionIdentifier>
+      <SelectionIdentifier>3Y</SelectionIdentifier>
       <Text>yes</Text>
     </Selection>
     <Selection>
-      <SelectionIdentifier>C2C</SelectionIdentifier>
+      <SelectionIdentifier>3N</SelectionIdentifier>
       <Text>no</Text>
     </Selection>
     </Selections>
     </SelectionAnswer>
     </AnswerSpecification>
   </Question>
+
+
+  <Overview> 
+  <FormattedContent><![CDATA[
+  <p><font size="5"><b>Text 4</b></font></p>
+  <p><b>How to Lighten Birthmarks Naturally </b></p>
+  <p> 
+   <b> Lightening Your Birthmark </b> <br/> 
+  2. Rub lemon juice on your birthmark <br/> 
+  (...) <br/> 
+ * Wash thoroughly with warm water. <br/>     
+  Repeat this process three times a day. <br/> 
+  Pat  <u> your birthmark </u> dry with a towel. 
+    </p> 
+  ]]></FormattedContent>
+</Overview> 
+
+
+<Question>
+    <QuestionIdentifier>q4</QuestionIdentifier>
+    <DisplayName>accept</DisplayName>
+    <IsRequired>true</IsRequired>
+    <QuestionContent>
+     <Text>
+     Question 4: Does the underlined part in text 3 make sense in the given how-to-guide? 
+    </Text>
+    </QuestionContent>
+    
+<AnswerSpecification>
+    <SelectionAnswer>
+  <StyleSuggestion>radiobutton</StyleSuggestion>
+  <Selections>
+    <Selection>
+      <SelectionIdentifier>4Y</SelectionIdentifier>
+      <Text>yes</Text>
+    </Selection>
+    <Selection>
+      <SelectionIdentifier>4N</SelectionIdentifier>
+      <Text>no</Text>
+    </Selection>
+    </Selections>
+    </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+
 
 </QuestionForm>

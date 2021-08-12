@@ -2,12 +2,54 @@
 <Question>
     <QuestionIdentifier>q1</QuestionIdentifier>
     <AnswerOption>
-      <SelectionIdentifier>C1</SelectionIdentifier>
-      <AnswerScore>100</AnswerScore>
+      <SelectionIdentifier>1Y</SelectionIdentifier>
+      <AnswerScore>0</AnswerScore>
     </AnswerOption>   
     <AnswerOption>
-      <SelectionIdentifier>C2</SelectionIdentifier>
-      <AnswerScore>-100</AnswerScore>
+      <SelectionIdentifier>1N</SelectionIdentifier>
+      <AnswerScore>1</AnswerScore>
     </AnswerOption>
   </Question>
+
+
+<Question>
+    <QuestionIdentifier>q2</QuestionIdentifier>
+    <AnswerOption>
+      <SelectionIdentifier>2Y</SelectionIdentifier>
+      <AnswerScore>0</AnswerScore>
+    </AnswerOption>   
+    <AnswerOption>
+      <SelectionIdentifier>2N</SelectionIdentifier>
+      <AnswerScore>1</AnswerScore>
+    </AnswerOption>
+  </Question>
+
+
+
+<Question>
+    <QuestionIdentifier>q3</QuestionIdentifier>
+    <AnswerOption>
+      <SelectionIdentifier>3Y</SelectionIdentifier>
+      <AnswerScore>1</AnswerScore>
+    </AnswerOption>   
+    <AnswerOption>
+      <SelectionIdentifier>3N</SelectionIdentifier>
+      <AnswerScore>0</AnswerScore>
+    </AnswerOption>
+  </Question>
+
+<Question>
+    <QuestionIdentifier>q4</QuestionIdentifier>
+    <AnswerOption>
+      <SelectionIdentifier>4Y</SelectionIdentifier>
+      <AnswerScore>1</AnswerScore>
+    </AnswerOption>   
+    <AnswerOption>
+      <SelectionIdentifier>4N</SelectionIdentifier>
+      <AnswerScore>0</AnswerScore>
+    </AnswerOption>
+  </Question>
+
 </AnswerKey>
+
+
