@@ -4,36 +4,28 @@
     QUALIFICATION TEST 
     </Title>
     <Text>
+    INSTRUCTIONS 
     Your task is to indicate if the underlined parts makes sense in the given how-to guides. 
     </Text>
 
+  </Overview> 
 
-    <FormattedContent><![CDATA[
-    
-    <p><b>How to Calm an Angry Cat </b></p>
-    <p> 
-    <b>Tips</b> <br/><br/>
-    * Ensure that your cat's flea and worm treatments are totally up-to-date. <br/><br/>
-    These <u>cats</u> can aggravate a cat.
+  
+  <Overview> 
+  <FormattedContent><![CDATA[
+  <p> QUESTIONS </p> <br/> 
+  <p><font size="5"><b>Text 1</b></font></p>
+  <p><b>How to Calm an Angry Cat </b></p>
+  <p> 
+  <b>Tips</b><br/>
+  * Ensure that your cat's flea and worm treatments are totally up-to-date. <br/>
+  These <u>cats</u> can aggravate a cat.
     </p> 
-    ]]></FormattedContent>
-
-
-    <FormattedContent><![CDATA[
-    <p>
-       
-        <b> How to raise a baby Squirrel </b> <br/><br/> 
-         Feeding Your Baby Squirrel <br/><br/> 
-        (…) <br/><br/> 
-        9. Introduce raw fruit and nuts. <br/><br/> 
-        (...) <br/><br/>
-        * Like a human baby it will also let you know when it’s done with formula by pushing it away. <br/><br/>
-        * If your squirrel rubs its face on the ground, it means it doesn't like <u>the smell</u>. <br/><br/>
-    </p> 
-    ]]></FormattedContent>
-    
-    
+  ]]></FormattedContent>
   </Overview>
+
+    
+
 
 
   <Question>
@@ -42,7 +34,7 @@
     <IsRequired>true</IsRequired>
     <QuestionContent>
      <Text>
-        Does the underlined part makes sense in the given how-to-guide? 
+        Question 1: Does the underlined part in Text 1 makes sense in the given how-to-guide? 
     </Text>
     </QuestionContent>
     
@@ -52,18 +44,31 @@
   <Selections>
     <Selection>
       <SelectionIdentifier>C1</SelectionIdentifier>
-      <Text>YES</Text>
+      <Text>yes</Text>
     </Selection>
     <Selection>
       <SelectionIdentifier>C2</SelectionIdentifier>
-      <Text>NO</Text>
+      <Text>no</Text>
     </Selection>
     </Selections>
     </SelectionAnswer>
     </AnswerSpecification>
   </Question>
 
-
+<Overview> 
+    <FormattedContent><![CDATA[
+  <p><font size="5"><b>Text 2</b></font></p>
+  <p><b>How to raise a baby Squirrel</b></p>
+  <p> 
+  Feeding Your baby Squirrel <br/> 
+  (...) <br/> 
+  9. Introduce raw fruits and nuts. <br/> 
+  (...) <br/> 
+  * Like a human baby it will also let you know when it’s done with formula by pushing it away. <br/> 
+* If your squirrel rubs its face on the ground, it means it doesn't like the <u>smell </u>. 
+    </p> 
+  ]]></FormattedContent>
+</Overview> 
 
 <Question>
     <QuestionIdentifier>q2</QuestionIdentifier>
@@ -71,7 +76,7 @@
     <IsRequired>true</IsRequired>
     <QuestionContent>
      <Text>
-     Does the underlined part makes sense in the given how-to-guide? 
+     Question 2: Does the underlined part in text 2 makes sense in the given how-to-guide? 
     </Text>
     </QuestionContent>
     
@@ -83,11 +88,11 @@
   <Selections>
     <Selection>
       <SelectionIdentifier>C1B</SelectionIdentifier>
-      <Text>YES</Text>
+      <Text>yes</Text>
     </Selection>
     <Selection>
       <SelectionIdentifier>C2B</SelectionIdentifier>
-      <Text>NO</Text>
+      <Text>no</Text>
     </Selection>
     </Selections>
     </SelectionAnswer>
@@ -95,7 +100,47 @@
   </Question>
 
 
+  <Overview> 
+  <FormattedContent><![CDATA[
+  <p><font size="5"><b>Text 3</b></font></p>
+  <p><b>How to Lighten Birthmarks Naturally </b></p>
+  <p> 
+   <b> Lightening Your Birthmark </b> <br/> 
+  2. Rub lemon juice on your birthmark <br/> 
+  (...) <br/> 
+ * Wash thoroughly with warm water. <br/>     
+  Repeat this process three times a day. <br/> 
+  Pat  <u> your birthmark </u> dry with a towel. 
+    </p> 
+  ]]></FormattedContent>
+</Overview> 
 
 
+<Question>
+    <QuestionIdentifier>q3</QuestionIdentifier>
+    <DisplayName>accept</DisplayName>
+    <IsRequired>true</IsRequired>
+    <QuestionContent>
+     <Text>
+     Question 3: Does the underlined part in text 3 makes sense in the given how-to-guide? 
+    </Text>
+    </QuestionContent>
+    
+<AnswerSpecification>
+    <SelectionAnswer>
+  <StyleSuggestion>radiobutton</StyleSuggestion>
+  <Selections>
+    <Selection>
+      <SelectionIdentifier>C1C</SelectionIdentifier>
+      <Text>yes</Text>
+    </Selection>
+    <Selection>
+      <SelectionIdentifier>C2C</SelectionIdentifier>
+      <Text>no</Text>
+    </Selection>
+    </Selections>
+    </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
 
 </QuestionForm>
