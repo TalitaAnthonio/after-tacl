@@ -147,15 +147,13 @@
   <Overview> 
   <FormattedContent><![CDATA[
   <p><font size="5"><b>Text 4</b></font></p>
-  <p><b>How to Lighten Birthmarks Naturally </b></p>
+  <p><b>How to Store Jalapenos </b></p>
   <p> 
-   <b> Lightening Your Birthmark </b> <br/> 
-  2. Rub lemon juice on your birthmark <br/> 
-  (...) <br/> 
- * Wash thoroughly with warm water. <br/>     
-  Repeat this process three times a day. <br/> 
-  Pat  <u> your birthmark </u> dry with a towel. 
-    </p> 
+   <b> Warnings </b> <br/> 
+  You can get a chemical burn if you don't protect yourself. <br/> 
+  * Make sure to wear latex gloves when handling jalapenos or wash 
+  <u>your hands</u> thoroughly after handling. <br/>
+  </p> 
   ]]></FormattedContent>
 </Overview> 
 
@@ -166,7 +164,7 @@
     <IsRequired>true</IsRequired>
     <QuestionContent>
      <Text>
-     Question 4: Does the underlined part in text 3 make sense in the given how-to-guide? 
+     Question 4: Does the underlined part in text 4 make sense in the given how-to-guide? 
     </Text>
     </QuestionContent>
     
