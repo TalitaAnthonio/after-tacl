@@ -5,7 +5,7 @@
     </Title>
     <Text>
     INSTRUCTIONS 
-    Your task is to indicate if the underlined parts makes sense in the given how-to guides. 
+    This qualification test is a simplified version of the HITs of this task: you are given a text from a how-to guide and you need to indicate whether the underlined part makes sense in the text.
     </Text>
 
   </Overview> 
@@ -65,7 +65,7 @@
   9. Introduce raw fruits and nuts. <br/> 
   (...) <br/> 
   * Like a human baby it will also let you know when it’s done with formula by pushing it away. <br/> 
-* If your squirrel rubs its face on the ground, it means it doesn't like the <u>smell </u>. 
+* If your squirrel rubs its face on the ground, it means it doesn't like the <u>ground</u>. 
     </p> 
   ]]></FormattedContent>
 </Overview> 

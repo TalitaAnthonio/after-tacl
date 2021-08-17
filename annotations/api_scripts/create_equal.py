@@ -90,12 +90,12 @@ if __name__ == '__main__':
 
     MTURK = amt_api.connect_mturk(CONFIG)
     
-    if "protectionid" in CONFIG["qualification"]:
-        sys.stdout.write("Config contains qualification protection (id %s). Updating qualification..." % (CONFIG["qualification"]["protectionid"]))
+    if "QualificationTest" in CONFIG["qualification"]:
+        sys.stdout.write("Config contains qualification protection (id %s). Updating qualification..." % (CONFIG["qualification"]["QualificationTest"]))
         logging.info("Updating qualification:")
-        logging.info(CONFIG["qualification"]["protectionid"])
-        update_qualification(MTURK, CONFIG["qualification"]["protectionid"], questionqual_xml)
-        print("Qualification {0} updated.".format(CONFIG["qualification"]["protectionid"]))
+        logging.info(CONFIG["qualification"]["QualificationTest"])
+        update_qualification(MTURK, CONFIG["qualification"]["QualificationTest"], questionqual_xml)
+        print("Qualification {0} updated.".format(CONFIG["qualification"]["QualificationTest"]))
     else:
         make_qualification(MTURK, questionqual_xml)
         print("Qualification created.")

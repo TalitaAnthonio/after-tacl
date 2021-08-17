@@ -10,7 +10,7 @@ def connect_mturk(CONFIG):
     region_name = CONFIG['default']['region']
     aws_access_key_id=CONFIG['default']['id']
     aws_secret_access_key = CONFIG['default']['key']
-    endpoint_url = 'https://mturk-requester-sandbox.us-east-1.amazonaws.com'
+    endpoint_url = CONFIG['default']['sandbox']
 
     mturk_client = boto3.client(
         'mturk',
@@ -111,3 +111,4 @@ if __name__ == '__main__':
 
             print(assignment_with_parsed_time)
 
+    print(client.get_account_balance()['AvailableBalance'])
