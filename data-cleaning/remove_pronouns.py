@@ -10,6 +10,9 @@ with open(PATH_TO_FILE, "r") as json_in:
      data = json.load(json_in)
 
 
+with open("../../tacl/data/references_for_lm.json", "r") as json_in: 
+     all_data = json.load(json_in)
+
 
 
 
@@ -44,13 +47,17 @@ for key, _ in data.items():
             if reference.lower() not in pronouns: 
                 unique_references.append(reference)
                 filtered_set[key] = data[key]
+                filtered_set[key].update({"Filename": all_data[key]["filename"]})
+                print(all_data[key]["filename"])
+ 
         else: 
             unique_references.append(reference)
             filtered_set[key] = data[key]
-        
-
-print(len(filtered_set.keys()))
+            filtered_set[key].update({"Filename": all_data[key]["filename"]})
+            print(all_data[key]["filename"])
  
+        
+        
     
 
 
