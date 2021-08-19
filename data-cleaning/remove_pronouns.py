@@ -29,6 +29,7 @@ unique_references = []
 pronouns = ["all", '"', "i", "our", "we", "of", "yours", "it", "your", "he", "she", "him", "her", "they", "them", "these", ",", "their", "yourself", "me", "its", "herself", "you"]
 counter = 0 
 filtered_set = {}
+filenames = []
 for key, _ in data.items(): 
     reference = data[key]['reference']
     filtered_fillers = data[key]["filtered_fillers"]
@@ -48,7 +49,7 @@ for key, _ in data.items():
                 unique_references.append(reference)
                 filtered_set[key] = data[key]
                 filtered_set[key].update({"Filename": all_data[key]["filename"]})
-                print(all_data[key]["filename"])
+                filenames.append(all_data[key]["filename"])
  
         else: 
             unique_references.append(reference)
@@ -57,7 +58,10 @@ for key, _ in data.items():
             print(all_data[key]["filename"])
  
         
-        
+
+filenames = list(set(filenames))
+for elem in filenames: 
+    print(elem)
     
 
 
