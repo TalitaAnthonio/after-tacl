@@ -13,7 +13,8 @@ with open(PATH_TO_FILE, "r") as json_in:
 with open("../../tacl/data/references_for_lm.json", "r") as json_in: 
      all_data = json.load(json_in)
 
-
+with open("all_references.json", "r") as json_in: 
+     all_references = json.load(json_in)
 
 
 def check_filler_length(fillers, reference): 
@@ -49,12 +50,15 @@ for key, _ in data.items():
                 unique_references.append(reference)
                 filtered_set[key] = data[key]
                 filtered_set[key].update({"Filename": all_data[key]["filename"]})
+                filtered_set[key].update(all_references[key])
                 filenames.append(all_data[key]["filename"])
+                
  
         else: 
             unique_references.append(reference)
             filtered_set[key] = data[key]
             filtered_set[key].update({"Filename": all_data[key]["filename"]})
+            filtered_set[key].update(all_references[key])
             print(all_data[key]["filename"])
  
         
@@ -64,6 +68,8 @@ for elem in filenames:
     print(elem)
     
 
+with open("filtered_set_train.json", "w") as json_out: 
+     json.dump(filtered_set, json_out)
 
     # check the length of the fillers 
 
