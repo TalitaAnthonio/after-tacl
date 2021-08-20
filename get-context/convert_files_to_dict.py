@@ -1,5 +1,5 @@
 # Puts all the files in a dictionary format. 
-# "id_of_the_article": {line_nr: "the text on the line"}
+# "id_of_the_article": {line_nr: "the text on the line"} -> but excluding lines just with newlines. 
 
 import json
 import bz2
@@ -23,6 +23,7 @@ def get_file_to_dict_format(directory='filenames'):
         path = "./{0}/{1}".format(directory, filename)
         with bz2.open(path, "rt") as bz_file:
             file_in_dict_format = {}
+            # if the line is not a newline, then add the line. 
             for counter, line in enumerate(bz_file, 1):
                 if line != '\n':
                     file_in_dict_format[counter] = line.strip('\n').strip()
