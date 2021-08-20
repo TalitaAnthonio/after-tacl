@@ -18,7 +18,6 @@ def get_file_to_dict_format(directory='filenames'):
     counter = 0
     for filename in os.listdir(directory):
         counter += 1
-        filename = filename.strip(".txt.bz2")
         print(
             "Processing filename {0}/{1}".format(counter, len(os.listdir(directory))))
         path = "./{0}/{1}".format(directory, filename)
@@ -27,7 +26,7 @@ def get_file_to_dict_format(directory='filenames'):
             for counter, line in enumerate(bz_file, 1):
                 if line != '\n':
                     file_in_dict_format[counter] = line.strip('\n').strip()
-        data[filename] = file_in_dict_format
+        data[filename.strip(".txt.bz2")] = file_in_dict_format
     return data
 
 
