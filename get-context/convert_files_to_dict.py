@@ -1,4 +1,5 @@
 # Puts all the files in a dictionary format. 
+# "id_of_the_article": {line_nr: "the text on the line"}
 
 import json
 import bz2
@@ -17,6 +18,7 @@ def get_file_to_dict_format(directory='filenames'):
     counter = 0
     for filename in os.listdir(directory):
         counter += 1
+        filename = filename.strip(".txt.bz2")
         print(
             "Processing filename {0}/{1}".format(counter, len(os.listdir(directory))))
         path = "./{0}/{1}".format(directory, filename)
