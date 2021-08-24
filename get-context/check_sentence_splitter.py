@@ -33,8 +33,8 @@ class RevisionInstance:
     def __init__(self, instance): 
         self.instance = instance
         self.left_context_splitted =  sentence_splitter.tokenize([sent for sent in self.instance["BaseArticle"]["left_context"] if "Timestamp" not in sent])
-        self.right_context_splitted = sentence_splitter.tokenize([sent for sent in self.instance["BaseArticle"]["right_context"] if "Timestamp" not in sent])
         self.current_line_splitted = sentence_splitter.tokenize([sent for sent in self.instance["BaseArticle"]["current_line"] if "Timestamp" not in sent])
+        self.right_context_splitted = sentence_splitter.tokenize([sent for sent in self.instance["BaseArticle"]["right_context"] if "Timestamp" not in sent])
     
 
 
@@ -43,55 +43,89 @@ def main():
     for key, _ in data.items(): 
         
         revision_instance = RevisionInstance(data[key])
-        par = make_paragraphs(revision_instance.left_context_splitted)
-
                     
         left_context = revision_instance.left_context_splitted
         current = revision_instance.current_line_splitted
         right_context = revision_instance.right_context_splitted
 
-        current_line_tokenized = revision_instance.current_line_splitted
 
+        formatted = []
+        for i in range(len(left_context)): 
+            formatted = left_context
+            if left_context[i].startswith('#'): 
+                pattern = re.findall(r"[0-9]+.$", left_context[i])
+                if pattern != []: 
+                # remove the number from the line 
+                    formatted[i] = re.sub(r'[0-9]+.$', r'', left_context[i])
+                    formatted[i+1] = " ".join(pattern) + " " + left_context[i+1]
+                    if i < len(left_context): 
+                        i += 1 
 
-        if len(current_line_tokenized) > 1: 
-            print("===========================")
-            counter +=1 
-            print(counter)
-
-            print(key)
-            print(current_line_tokenized)
-        
-    
-
-            if "Base_Sentence" not in data[key].keys():
-                original_sentence = " ".join(data[key]["base_tokenized"])
             else: 
-                original_sentence =  data[key]["Base_Sentence"]
+                formatted.append(left_context[i])
+                
+            
+        print(formatted)
+        break 
+        
+        for elem in current: 
+            print(elem)
+        
+        for elem in right_context: 
+            pattern = re.findall(r"[0-9]+.$", elem)
+            print(elem, "pattern", pattern)
+        print("========================")
+
+        #current_line_tokenized = revision_instance.current_line_splitted
+
+
+        """
+            if len(current_line_tokenized) > 1: 
+                print("===========================")
+                counter +=1 
+                print(counter)
+
+                print(key)
+                print(current_line_tokenized)
             
         
-            res = get_matching_sent_context(current_line_tokenized, original_sentence)
+
+                if "Base_Sentence" not in data[key].keys():
+                    original_sentence = " ".join(data[key]["base_tokenized"])
+                else: 
+                    original_sentence =  data[key]["Base_Sentence"]
+                
+            
+                res = get_matching_sent_context(current_line_tokenized, original_sentence)
 
 
-            before_sent = res["before_sent"]
-            current_sent = res["current_line"]
-            after_sent = res["after_sent"]
+                before_sent = res["before_sent"]
+                current_sent = res["current"]
+                after_sent = res["after_sent"]
 
-            if before_sent != []: 
-               left_context = left_context + before_sent
-            if after_sent != []: 
-               right_context = after_sent + right_context
-
-
-            print(left_context)
-            print(current_sent)
-            print(right_context)
+                if before_sent != []: 
+                print("left", left_context)
+                print("before", before_sent)
+                left_context = left_context.split('\n') + before_sent
 
 
-            break 
+                if after_sent != []: 
+                
+                right_context = after_sent + right_context
 
-            # correct if necessary 
+
+                par = left_context + current + right_context
+
+                print(par)
+
+            #else: 
+            #    pdb.set_trace()
+            #    par = left_context + current + right_context
 
             
+            #print(par)
 
+            
+        """
   
 main()
