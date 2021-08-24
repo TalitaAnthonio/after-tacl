@@ -38,46 +38,63 @@ class RevisionInstance:
     
 
 
+def correct_splitter(context): 
+
+    # correct the problem with remaining *.
+    formatted = []
+    for i in range(len(context)): 
+        formatted = context 
+        if context[i].startswith('#'): 
+            pattern = re.findall(r"[0-9]+.$", context[i])
+            if pattern != []: 
+            # remove the number from the line 
+                formatted[i] = re.sub(r'[0-9]+.$', r'', context[i])
+                formatted[i+1] = " ".join(pattern) + " " + context[i+1]
+                if i < len(context): 
+                    i += 1 
+
+        else: 
+            formatted.append(context[i])
+    
+    
+    # fix the remaining problem with the stars 
+    context_new = []
+    for sent in formatted: 
+    
+        if " * " in sent: 
+            sent = sent.replace(" *", "\n*")
+            context_new.extend(sent.split("\n"))
+            
+        else: 
+            context_new.append(sent)
+
+    return context_new
+
+
+
 def main(): 
     counter = 0 
     for key, _ in data.items(): 
         
         revision_instance = RevisionInstance(data[key])
                     
-        left_context = revision_instance.left_context_splitted
+        left_context = correct_splitter(revision_instance.left_context_splitted)
         current = revision_instance.current_line_splitted
-        right_context = revision_instance.right_context_splitted
+        right_context = correct_splitter(revision_instance.right_context_splitted) 
 
-
-        formatted = []
-        for i in range(len(left_context)): 
-            formatted = left_context
-            if left_context[i].startswith('#'): 
-                pattern = re.findall(r"[0-9]+.$", left_context[i])
-                if pattern != []: 
-                # remove the number from the line 
-                    formatted[i] = re.sub(r'[0-9]+.$', r'', left_context[i])
-                    formatted[i+1] = " ".join(pattern) + " " + left_context[i+1]
-                    if i < len(left_context): 
-                        i += 1 
-
-            else: 
-                formatted.append(left_context[i])
-                
-            
-        print(formatted)
-        break 
+        print("before")
+        for elem in revision_instance.left_context_splitted: 
+            print(elem)
+ 
         
-        for elem in current: 
+        print("after")
+
+
+        
+        for elem in left_context_new: 
             print(elem)
         
-        for elem in right_context: 
-            pattern = re.findall(r"[0-9]+.$", elem)
-            print(elem, "pattern", pattern)
-        print("========================")
-
-        #current_line_tokenized = revision_instance.current_line_splitted
-
+        print("=========================")
 
         """
             if len(current_line_tokenized) > 1: 
