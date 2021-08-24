@@ -12,6 +12,26 @@ import spacy
 
 tagger = spacy.load("en_core_web_sm")
 
+def normalize_punkt(text):
+    """replace unicode punctuation by ascii"""
+    text = re.sub('[\u2010\u2043]', '-', text)  # hyphen
+    text = re.sub('[\u2018\u2019]', "'", text)  # single quotes
+    text = re.sub('[\u201c\u201d]', '"', text)  # double quotes
+    return text
+
+
+def format_new(string): 
+    line = normalize_punkt(string)
+    line = re.sub(r'<.*?>', r'', string)
+    line = re.sub(r'\[\[Image:.*?\]\]', r'', line)
+    line = line.lstrip('-*\\0123456789. ')
+    line = re.sub(r'\[ \[[^\[]*?\|(.*?)\] \]', r'\1', line)
+
+    # apply to deal with isues caused by my sentence splitter 
+    line = re.sub(r' .$', r'.', line )
+    line = re.sub(r' ,', r',', line)
+    return line 
+
 
 def tokenize_with_spacy(list_with_string_sentences):
     return [token.text for token in tagger(list_with_string_sentences)]
@@ -150,42 +170,73 @@ class SentenceSplitter:
         return corrected_tokenized_text 
 
 
+def check_if_sentence_in_context(context, sent): 
+
+
+    formatted_sents_in_context = [format_new(sent) for sent in context]
+    print("formatted", formatted_sents_in_context)
+    try: 
+        index_of_sent = formatted_sents_in_context.index(sent)
+        return index_of_sent   
+    except ValueError: 
+        return []
+
+
 def get_matching_sent_context(context, sent):
     """
         Use this function to get closest match to a source_line or target_line in a paragraph.
         Tokenized: whether the input sent should be tokenized or not (nesecarry when the sent is a string.)
         use_sent_from_context: if true, then the matched sent will be taken in the final representation.
+
+        Context: the tokenized current_line 
     """
     bleu_scores = []
     sents_in_article = []
 
-    for tokenized_sentence in context:
-        # print(tokenized_sentence)
-        #reference = [word_tokenize(elem)]
-        # the reference is the tokenized sentence here
-        tokenized_sentence = tokenize_with_spacy(tokenized_sentence)
-        score = sentence_bleu(tokenized_sentence, sent)
 
-        bleu_scores.append(score)
-        sents_in_article.append(tokenized_sentence)
-    index_of_max_bleu = bleu_scores.index(max(bleu_scores))
-    matched_sent = sents_in_article[index_of_max_bleu]
+    index_of_sentence_in_context = check_if_sentence_in_context(context, sent) 
+    if index_of_sentence_in_context != []:
+        # then do something with the index 
+    
+        return {
 
-    # current might have items to the left or right already.
-    left_items = context[:index_of_max_bleu]
-    current = context[index_of_max_bleu]
-    right_items = context[index_of_max_bleu+1:]
+            "before_sent": context[:index_of_sentence_in_context],
+            "current": context[index_of_sentence_in_context],
+            "after_sent": context[index_of_sentence_in_context+1:], 
+            "match_found": "yes"
+        }
 
-    if re.match(r"^[0-9]+.$", ' '.join(matched_sent)):
-       matched_sent = current + right_items[1]
-       right_items = right_items[1:]
+    else:  
+        for tokenized_sentence in context:
+            # print(tokenized_sentence)
+            #reference = [word_tokenize(elem)]
+            # the reference is the tokenized sentence here
 
-    return {
+            tokenized_sentence = tokenize_with_spacy(tokenized_sentence)
+            score = sentence_bleu(tokenized_sentence, sent)
+            
 
-        "before_sent": left_items,
-        "current": [' '.join(matched_sent)],
-        "after_sent": right_items
-    }
+            bleu_scores.append(score)
+            sents_in_article.append(tokenized_sentence)
+        index_of_max_bleu = bleu_scores.index(max(bleu_scores))
+        matched_sent = sents_in_article[index_of_max_bleu]
+
+        # current might have items to the left or right already.
+        left_items = context[:index_of_max_bleu]
+        current = context[index_of_max_bleu]
+        right_items = context[index_of_max_bleu+1:]
+
+        if re.match(r"^[0-9]+.$", ' '.join(matched_sent)):
+            matched_sent = current + right_items[1]
+            right_items = right_items[1:]
+
+        return {
+
+            "before_sent": left_items,
+            "current": [' '.join(matched_sent)],
+            "after_sent": right_items, 
+            "match_found": "no"
+        }
 
 
 if __name__ == "__main__":
