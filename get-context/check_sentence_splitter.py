@@ -77,72 +77,58 @@ def main():
     for key, _ in data.items(): 
         
         revision_instance = RevisionInstance(data[key])
-                    
+
+        # correct remaining errors with the splitter     
         left_context = correct_splitter(revision_instance.left_context_splitted)
-        current = revision_instance.current_line_splitted
+        current_line_tokenized = revision_instance.current_line_splitted
         right_context = correct_splitter(revision_instance.right_context_splitted) 
 
-        print("before")
-        for elem in revision_instance.left_context_splitted: 
-            print(elem)
- 
         
-        print("after")
+        if len(current_line_tokenized) > 1: 
+            print("===========================")
+            counter +=1 
+            print(counter)
 
-
+            print(key)
+            print(current_line_tokenized)
         
-        for elem in left_context_new: 
-            print(elem)
-        
-        print("=========================")
+    
 
-        """
-            if len(current_line_tokenized) > 1: 
-                print("===========================")
-                counter +=1 
-                print(counter)
-
-                print(key)
-                print(current_line_tokenized)
+            if "Base_Sentence" not in data[key].keys():
+                original_sentence = " ".join(data[key]["base_tokenized"])
+            else: 
+                original_sentence =  data[key]["Base_Sentence"]
             
         
-
-                if "Base_Sentence" not in data[key].keys():
-                    original_sentence = " ".join(data[key]["base_tokenized"])
-                else: 
-                    original_sentence =  data[key]["Base_Sentence"]
-                
-            
-                res = get_matching_sent_context(current_line_tokenized, original_sentence)
+            res = get_matching_sent_context(current_line_tokenized, original_sentence)
 
 
-                before_sent = res["before_sent"]
-                current_sent = res["current"]
-                after_sent = res["after_sent"]
+            before_sent = res["before_sent"]
+            current_sent = res["current"]
+            after_sent = res["after_sent"]
 
-                if before_sent != []: 
+            if before_sent != []: 
                 print("left", left_context)
                 print("before", before_sent)
                 left_context = left_context.split('\n') + before_sent
 
 
-                if after_sent != []: 
-                
+            if after_sent != []: 
+            
                 right_context = after_sent + right_context
 
 
-                par = left_context + current + right_context
+            par = left_context + current_sent + right_context
 
-                print(par)
+            print(par)
 
-            #else: 
-            #    pdb.set_trace()
-            #    par = left_context + current + right_context
+        else: 
+            # TODO: check what the type is 
+            par = left_context + current_line_tokenized + right_context
+
+        
+        #print(par)
 
             
-            #print(par)
-
-            
-        """
   
 main()
