@@ -174,7 +174,6 @@ def check_if_sentence_in_context(context, sent):
 
 
     formatted_sents_in_context = [format_new(sent) for sent in context]
-    print("formatted", formatted_sents_in_context)
     try: 
         index_of_sent = formatted_sents_in_context.index(sent)
         return index_of_sent   
@@ -201,7 +200,7 @@ def get_matching_sent_context(context, sent):
         return {
 
             "before_sent": context[:index_of_sentence_in_context],
-            "current": context[index_of_sentence_in_context],
+            "current": [context[index_of_sentence_in_context]],
             "after_sent": context[index_of_sentence_in_context+1:], 
             "match_found": "yes"
         }
