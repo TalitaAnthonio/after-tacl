@@ -93,14 +93,14 @@ def main():
         # type is a list 
           
         left_context = correct_splitter(revision_instance.left_context_splitted)
-        print("tokenized left context")
+        
         current_line_tokenized = revision_instance.current_line_splitted
-        print("tokenized current line")
+    
         right_context = correct_splitter(revision_instance.right_context_splitted) 
-        print("tokenized right context")
+      
   
         
-        """
+        
         if len(current_line_tokenized) > 1: 
             print("===========================")
             counter +=1 
@@ -148,8 +148,8 @@ def main():
         #print(par)
 
 
-        #with open("filtered_set_train_articles_tokenized_context.json", "w") as json_out: 
-        #    json.dump(d, json_out)     
+        with open("filtered_set_train_articles_tokenized_context.json", "w") as json_out: 
+            json.dump(d, json_out)     
 
-        """
+        
 main()
