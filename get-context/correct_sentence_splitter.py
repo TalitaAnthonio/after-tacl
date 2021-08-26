@@ -54,10 +54,7 @@ def correct_splitter(context):
             if pattern != [] and i != len(context)-1: 
             # remove the number from the line 
                 formatted[i] = re.sub(r'[0-9]+.$', r'', context[i])
-                try: 
-                    formatted[i+1] = " ".join(pattern) + " " + context[i+1]
-                except IndexError: 
-                    pdb.set_trace()
+                formatted[i+1] = " ".join(pattern) + " " + context[i+1]
                 if i < len(context): 
                     i += 1 
 
