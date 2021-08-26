@@ -1,7 +1,9 @@
 # used to correct the remaining errors from the sentence splitter. 
 
 
-import json 
+import json
+
+from nltk.util import Index 
 from tools import SentenceSplitter, get_matching_sent_context
 import pdb 
 import re 
@@ -49,10 +51,13 @@ def correct_splitter(context):
         formatted = context 
         if context[i].startswith('#'): 
             pattern = re.findall(r"[0-9]+.$", context[i])
-            if pattern != []: 
+            if pattern != [] and i != len(context)-1: 
             # remove the number from the line 
                 formatted[i] = re.sub(r'[0-9]+.$', r'', context[i])
-                formatted[i+1] = " ".join(pattern) + " " + context[i+1]
+                try: 
+                    formatted[i+1] = " ".join(pattern) + " " + context[i+1]
+                except IndexError: 
+                    pdb.set_trace()
                 if i < len(context): 
                     i += 1 
 
@@ -81,18 +86,24 @@ def main():
     counter = 0 
     d = {}
     for key, _ in data.items(): 
+
         
         d[key] = data[key]
 
         revision_instance = RevisionInstance(data[key])
 
         # correct remaining errors with the splitter    
-        # type is a list  
+        # type is a list 
+          
         left_context = correct_splitter(revision_instance.left_context_splitted)
+        print("tokenized left context")
         current_line_tokenized = revision_instance.current_line_splitted
+        print("tokenized current line")
         right_context = correct_splitter(revision_instance.right_context_splitted) 
-
+        print("tokenized right context")
+  
         
+        """
         if len(current_line_tokenized) > 1: 
             print("===========================")
             counter +=1 
@@ -135,12 +146,13 @@ def main():
             
         else:
             d[key].update({"Tokenized_article": {"left": left_context, "current": current_line_tokenized, "right": right_context}}) 
-       
+        
  
         #print(par)
 
 
-        with open("filtered_set_train_articles_tokenized_context.json", "w") as json_out: 
-            json.dump(d, json_out)     
-  
+        #with open("filtered_set_train_articles_tokenized_context.json", "w") as json_out: 
+        #    json.dump(d, json_out)     
+
+        """
 main()
