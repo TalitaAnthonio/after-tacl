@@ -1,3 +1,6 @@
+# used to correct the remaining errors from the sentence splitter. 
+
+
 import json 
 from tools import SentenceSplitter, get_matching_sent_context
 import pdb 
@@ -78,7 +81,8 @@ def main():
         
         revision_instance = RevisionInstance(data[key])
 
-        # correct remaining errors with the splitter     
+        # correct remaining errors with the splitter    
+        # type is a list  
         left_context = correct_splitter(revision_instance.left_context_splitted)
         current_line_tokenized = revision_instance.current_line_splitted
         right_context = correct_splitter(revision_instance.right_context_splitted) 
@@ -101,8 +105,7 @@ def main():
             
         
             res = get_matching_sent_context(current_line_tokenized, original_sentence)
-
-
+            
             before_sent = res["before_sent"]
             current_sent = res["current"]
             after_sent = res["after_sent"]
@@ -110,20 +113,21 @@ def main():
             if before_sent != []: 
                 print("left", left_context)
                 print("before", before_sent)
-                left_context = left_context.split('\n') + before_sent
+                left_context = left_context + before_sent
+                
 
 
             if after_sent != []: 
-            
+                
+
                 right_context = after_sent + right_context
 
 
             par = left_context + current_sent + right_context
+            
 
-            print(par)
 
         else: 
-            # TODO: check what the type is 
             par = left_context + current_line_tokenized + right_context
 
         
