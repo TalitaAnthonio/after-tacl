@@ -75,10 +75,15 @@ def correct_splitter(context):
 
 
 
+new_dict = {}
+
 def main(): 
     counter = 0 
+    d = {}
     for key, _ in data.items(): 
         
+        d[key] = data[key]
+
         revision_instance = RevisionInstance(data[key])
 
         # correct remaining errors with the splitter    
@@ -115,6 +120,7 @@ def main():
                 print("before", before_sent)
                 left_context = left_context + before_sent
                 
+        
 
 
             if after_sent != []: 
@@ -122,17 +128,19 @@ def main():
 
                 right_context = after_sent + right_context
 
-
-            par = left_context + current_sent + right_context
             
+            d[key].update({"Tokenized_article": {"left": left_context, "current": current_sent, "right": right_context}})
 
-
-        else: 
-            par = left_context + current_line_tokenized + right_context
-
-        
+            #par = left_context + current_sent + right_context
+            
+        else:
+            d[key].update({"Tokenized_article": {"left": left_context, "current": current_line_tokenized, "right": right_context}}) 
+       
+ 
         #print(par)
 
-            
+
+        with open("filtered_set_train_articles_tokenized_context.json", "w") as json_out: 
+            json.dump(d, json_out)     
   
 main()
