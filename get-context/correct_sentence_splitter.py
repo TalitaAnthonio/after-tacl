@@ -13,6 +13,12 @@ sentence_splitter = SentenceSplitter(use_sent=True)
 with open("filtered_set_train_articles.json", "r") as json_in: 
      data = json.load(json_in)
 
+def format_current(x): 
+    """
+        if you have something like this "5 ." then merge it back to "5 ."
+    """
+    replaced = [re.sub(r'^([0-9]+)\s', r"\1", elem) for elem in x]
+    return replaced 
 
 def make_paragraphs(left_context_splitted): 
     """
@@ -120,7 +126,7 @@ def main():
             res = get_matching_sent_context(current_line_tokenized, original_sentence)
             
             before_sent = res["before_sent"]
-            current_sent = res["current"]
+            current_sent = format_current(res["current"])
             after_sent = res["after_sent"]
 
             if before_sent != []: 
