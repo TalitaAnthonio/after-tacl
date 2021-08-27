@@ -24,8 +24,12 @@ class RevisionInstance:
 
 
         # types --> list 
-        self.right_paragraph = make_paragraph_left(instance[key]["Tokenized_article"]["right"])
-        self.left_paragraph = make_paragraph_right(instance[key]["Tokenized_article"]["left"])
+        self.right_paragraph = make_paragraph_right(instance[key]["Tokenized_article"]["right"])
+        self.left_paragraph = make_paragraph_left(instance[key]["Tokenized_article"]["left"])
+
+
+        self.full_paragraph = [self.left_paragraph if self.left_paragraph else "EMPTY"] +  ["REVISED"] + self.current_splitted + self.right_paragraph
+
 
         
 
@@ -71,22 +75,10 @@ def main():
     for key, _ in data.items(): 
         revision_object = RevisionInstance(data, key)
         
-        print("======= before =====")
-        for elem in revision_object.right_context_splitted: 
-            print(elem)
-
-        print("======= after ===== ")
-
-        for elem in make_paragraph_right(revision_object.right_context_splitted): 
-            print(elem)
-        print("\n")
-
-        counter +=1 
-
-        if counter == 10: 
-           break 
-    
-    
+        
+        print(revision_object.full_paragraph) 
+        print(data[key]["RevisedSentence"])
+        print("============================")
 
 
 main() 
