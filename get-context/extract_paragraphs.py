@@ -28,7 +28,7 @@ class RevisionInstance:
         self.left_paragraph = make_paragraph_left(instance[key]["Tokenized_article"]["left"])
 
 
-        self.full_paragraph = [self.left_paragraph if self.left_paragraph else "EMPTY"] +  ["REVISED"] + self.current_splitted + self.right_paragraph
+        self.full_paragraph = self.left_paragraph + self.current_splitted + self.right_paragraph
 
 
         
