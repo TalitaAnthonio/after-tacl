@@ -202,7 +202,8 @@ def get_matching_sent_context(context, sent):
             "before_sent": context[:index_of_sentence_in_context],
             "current": [context[index_of_sentence_in_context]],
             "after_sent": context[index_of_sentence_in_context+1:], 
-            "match_found": "yes"
+            "match_found": "yes", 
+            "index_of_sentence_in_context": index_of_sentence_in_context
         }
 
     else:  
@@ -234,8 +235,42 @@ def get_matching_sent_context(context, sent):
             "before_sent": left_items,
             "current": [' '.join(matched_sent)],
             "after_sent": right_items, 
-            "match_found": "no"
+            "match_found": "no", 
+            "index_of_sentence_in_context": index_of_max_bleu
         }
+
+def correct_splitter(context): 
+
+    # correct the problem with remaining *.
+    formatted = []
+    for i in range(len(context)): 
+        formatted = context 
+        if context[i].startswith('#'): 
+            pattern = re.findall(r"[0-9]+.$", context[i])
+            if pattern != [] and i != len(context)-1: 
+            # remove the number from the line 
+                formatted[i] = re.sub(r'[0-9]+.$', r'', context[i])
+                formatted[i+1] = " ".join(pattern) + " " + context[i+1]
+                if i < len(context): 
+                    i += 1 
+
+        else: 
+            formatted.append(context[i])
+    
+    
+    # fix the remaining problem with the stars 
+    context_new = []
+    for sent in formatted: 
+    
+        if " * " in sent: 
+            sent = sent.replace(" *", "\n*")
+            context_new.extend(sent.split("\n"))
+            
+        else: 
+            context_new.append(sent)
+
+    return context_new
+
 
 
 if __name__ == "__main__":
