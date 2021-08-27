@@ -144,17 +144,21 @@ def main():
 
             
             d[key].update({"Tokenized_article": {"left": left_context, "current": current_sent, "right": right_context}})
+            #  "match_found": "no", 
+            #"index_of_sentence_in_context": index_of_max_bleu
+            d[key].update({"match_found": res["match_found"], 
+            "index_of_sentence_in_context": res["index_of_sentence_in_context"]})
+
 
             #par = left_context + current_sent + right_context
             
         else:
             d[key].update({"Tokenized_article": {"left": left_context, "current": current_line_tokenized, "right": right_context}}) 
-        
  
         #print(par)
 
 
-        with open("filtered_set_train_articles_tokenized_context.json", "w") as json_out: 
+        with open("filtered_set_train_articles_tokenized_context_latest.json", "w") as json_out: 
             json.dump(d, json_out)     
 
         
