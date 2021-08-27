@@ -1,8 +1,13 @@
 # TODO: extract paragraphs 
 # TODO: extract the algorithms 
 
+import pdb 
 
-import json 
+
+import json
+from logging import currentframe 
+import re 
+from tools import SentenceSplitter, correct_splitter
 
 PATH_TO_FILE = "filtered_set_train_articles_tokenized_context.json"
 
@@ -10,28 +15,8 @@ with open(PATH_TO_FILE, "r") as json_in:
      data = json.load(json_in)
 
 
-class RevisionInstance: 
 
-    def __init__(self, instance, key): 
-        
-        self.left_context = instance[key]["BaseArticle"]["left_context"]
-        self.current_line = instance[key]["BaseArticle"]["current_line"]
-        self.right_context = instance[key]["BaseArticle"]["right_context"]
-
-        self.left_context_splitted = instance[key]["Tokenized_article"]["left"]
-        self.current_splitted = instance[key]["Tokenized_article"]["current"]
-        self.right_context_splitted = instance[key]["Tokenized_article"]["right"]
-
-
-        # types --> list 
-        self.right_paragraph = make_paragraph_right(instance[key]["Tokenized_article"]["right"])
-        self.left_paragraph = make_paragraph_left(instance[key]["Tokenized_article"]["left"])
-
-
-        self.full_paragraph = self.left_paragraph + self.current_splitted + self.right_paragraph
-
-
-        
+sentence_splitter = SentenceSplitter(use_sent=True)
 
 
 def make_paragraph_left(left_context): 
@@ -69,6 +54,51 @@ def make_paragraph_right(right_context):
 
     return right_context_paragraph
     
+def format_current(x): 
+    replaced = re.sub(r'^([0-9]+)\s', r"\1", x)
+    return replaced 
+
+class RevisionInstance: 
+
+    def __init__(self, instance, key): 
+        
+        self.left_context = instance[key]["BaseArticle"]["left_context"]
+        self.current_line = instance[key]["BaseArticle"]["current_line"]
+        self.right_context = instance[key]["BaseArticle"]["right_context"]
+
+        # the sentence_tokenized_components 
+        self.left_context_splitted = instance[key]["Tokenized_article"]["left"]
+        self.current_splitted = instance[key]["Tokenized_article"]["current"]
+        self.right_context_splitted = instance[key]["Tokenized_article"]["right"]
+
+
+        # types --> list 
+        self.right_paragraph = make_paragraph_right(instance[key]["Tokenized_article"]["right"])
+        self.left_paragraph = make_paragraph_left(instance[key]["Tokenized_article"]["left"])
+
+
+        self.full_paragraph = self.left_paragraph + self.current_splitted + self.right_paragraph
+
+
+def extract_subset(current_line, current_line_splitted, index_of_original): 
+    # if there are several sentences on the same line, take them (up to two)
+
+    # "We said the previous (up to) 2 sentences (if there are previous sentences on the same line)"
+
+    current_line_splitted = sentence_splitter.tokenize(current_line) 
+
+    #if len(current_line_splitted) 
+
+
+    print(current_line_splitted)
+    
+    print("==============================")
+    
+
+
+        
+
+
 
 
 
@@ -77,11 +107,59 @@ def main():
     counter = 0 
     for key, _ in data.items(): 
         revision_object = RevisionInstance(data, key)
+
+        
+        print("======================================")
+        if len(sentence_splitter.tokenize(revision_object.current_line)) == 1:
+
+            # if there are no sentences on the same line, then take the previous two sentences 
+
+           if revision_object.left_paragraph: 
+              title = revision_object.left_paragraph[0] 
+                    
+              previous_two_sentences = revision_object.left_context_splitted[-2:]
+
+           else: 
+               title = ""
+               previous_two_sentences = []
+  
+
+           if "BaseSentence" not in data[key].keys(): 
+               
+               #TODO: solve this problem 
+               try: 
+                    original_sentence = data[key]["Base_Sentence"]
+               except KeyError: 
+                   pdb.set_trace()
+              
+           else: 
+              original_sentence = data[key]["BaseSentence"]
+
+            
+
+           if revision_object.right_context_splitted: 
+               next_sentence = [revision_object.right_context_splitted[0]]
+           else: 
+               next_sentence = []
+
+           print("full paragraph")
+           print(revision_object.full_paragraph)
+
+           print("subset")
+           part_from_context = [title] + previous_two_sentences + [original_sentence] + next_sentence
+           print(part_from_context)
+           print("Base Sentence")
         
         
-        print(revision_object.full_paragraph) 
-        print(data[key]["RevisedSentence"])
-        print("============================")
+
+        # TODO: the rest 
+
+
+
+
+        
+   
+       #extract_subset(revision_object.current_line, revision_object.current_splitted)
 
 
 main() 
