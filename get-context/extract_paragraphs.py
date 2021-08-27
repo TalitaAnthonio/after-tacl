@@ -39,6 +39,7 @@ def make_paragraph_left(left_context):
     """
 
         Make paragraphs for left context. 
+        left_context {list} : list with sentences  
     """ 
 
     paragraph_reverse = []
@@ -54,6 +55,8 @@ def make_paragraph_left(left_context):
 def make_paragraph_right(right_context): 
     """
         Make paragraphs for right context 
+
+        right_context {list}: list with sentences 
     """
     right_context_paragraph = []
     for index, sentence in enumerate(right_context,0): 
