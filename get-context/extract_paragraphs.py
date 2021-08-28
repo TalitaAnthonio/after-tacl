@@ -130,7 +130,7 @@ def main():
                try: 
                     original_sentence = data[key]["Base_Sentence"]
                except KeyError: 
-                   pdb.set_trace()
+                   original_sentence = " ".join(data[key]["base_tokenized"])
               
            else: 
               original_sentence = data[key]["BaseSentence"]
@@ -148,7 +148,7 @@ def main():
            print("subset")
            part_from_context = [title] + previous_two_sentences + [original_sentence] + next_sentence
            print(part_from_context)
-           print("Base Sentence")
+           print(original_sentence)
         
         
 
