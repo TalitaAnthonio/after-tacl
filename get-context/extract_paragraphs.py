@@ -169,15 +169,6 @@ def main():
         else: 
             index_of_current = data[key]["index_of_sentence_in_context"]
 
-
-            # there are sentences before the current line 
-            #pdb.set_trace()
-
-
-         
-
-            # there are sentences before and after the current line 
-
             # SCENARIO 2: there are only sentences after the current line on the line. 
             if index_of_current == 0: 
 
@@ -203,9 +194,32 @@ def main():
                # take the previous two sentences from the left context 
 
 
+            # SCENARIO 3: there are only sentences before the current line 
+
+            elif index_of_current == (len(sentence_splitter.tokenize(revision_object.current_line)) - 1): 
+
+                
+                previous_sentence_first = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-1]]
+               
+                 
+
+                try: 
+                    previous_sentence_second = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-1]]
+                except IndexError: 
+                    if revision_object.left_paragraph: 
+
+                        previous_sentence_second = [revision_object.left_context[-1]]
+                    else: 
+                        previous_sentence_second = []
+            
 
 
+                if revision_object.right_paragraph: 
+                    next_sentence = [revision_object.right_paragraph[0]]
 
+                else: 
+                    next_sentence = []
 
-
-main() 
+                
+                part_from_context = [title] + something_in_between + previous_sentence_first + previous_sentence_second +  [original_sentence] + next_sentence 
+main()  
