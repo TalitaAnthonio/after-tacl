@@ -6,10 +6,13 @@ import pdb
 
 import json
 from logging import currentframe 
-import re 
+import re
+
+from nltk.util import Index
+from numpy import index_exp 
 from tools import SentenceSplitter, correct_splitter
 
-PATH_TO_FILE = "filtered_set_train_articles_tokenized_context.json"
+PATH_TO_FILE = "filtered_set_train_articles_tokenized_context_latest.json"
 
 with open(PATH_TO_FILE, "r") as json_in: 
      data = json.load(json_in)
@@ -108,44 +111,46 @@ def main():
     for key, _ in data.items(): 
         revision_object = RevisionInstance(data, key)
 
-        
-        print("======================================")
-        if len(sentence_splitter.tokenize(revision_object.current_line)) == 1:
-
-            # if there are no sentences on the same line, then take the previous two sentences 
-
-           if revision_object.left_paragraph: 
-              title = revision_object.left_paragraph[0] 
-                    
-              previous_two_sentences = revision_object.left_context_splitted[-2:]
-
-              
-              try: 
-                if previous_two_sentences[-3] == title: 
-                    something_in_between = []
-                else: 
-                    something_in_between = ["(...)"]
-              except IndexError: 
-                  something_in_between = ["(...)"]
-
-            
-
-           else: 
-               title = ""
-               previous_two_sentences = []
-  
-
-           if "BaseSentence" not in data[key].keys(): 
+        if "BaseSentence" not in data[key].keys(): 
                
                #TODO: solve this problem 
                try: 
                     original_sentence = data[key]["Base_Sentence"]
                except KeyError: 
                    original_sentence = " ".join(data[key]["base_tokenized"])
+                   
               
-           else: 
-              original_sentence = data[key]["BaseSentence"]
+        else: 
+            original_sentence = data[key]["BaseSentence"]
+        print("======================================")
 
+
+        if revision_object.left_paragraph: 
+            title = revision_object.left_paragraph[0] 
+                    
+            previous_two_sentences = revision_object.left_context_splitted[-2:]
+
+              
+            try: 
+                if previous_two_sentences[-3] == title: 
+                    something_in_between = []
+                else: 
+                    something_in_between = ["(...)"]
+            except IndexError: 
+                  something_in_between = ["(...)"]
+
+            
+
+        else: 
+            title = ""
+            previous_two_sentences = []
+  
+
+
+        # SCENARIO 1: there are no sentences on the same line 
+
+        if len(sentence_splitter.tokenize(revision_object.current_line)) == 1:
+   
             
 
            if revision_object.right_context_splitted: 
@@ -161,16 +166,46 @@ def main():
            print(part_from_context)
            print(original_sentence)
         
-        
-
-        # TODO: the rest 
-
+        else: 
+            index_of_current = data[key]["index_of_sentence_in_context"]
 
 
+            # there are sentences before the current line 
+            #pdb.set_trace()
 
-        
-   
-       #extract_subset(revision_object.current_line, revision_object.current_splitted)
+
+         
+
+            # there are sentences before and after the current line 
+
+            # SCENARIO 2: there are only sentences after the current line on the line. 
+            if index_of_current == 0: 
+
+               # If there is just one sentence after the original sentence on the current line, then take that one. 
+               # If there are two sentences after the original sentence on the current line, then take those two. 
+               next_sentence_first = [sentence_splitter.tokenize(revision_object.current_line)[1]]
+               if len(sentence_splitter.tokenize(revision_object.current_line)) >= 3: 
+                  next_sentence_second = [sentence_splitter.tokenize(revision_object.current_line)[2]]
+               else: 
+                   next_sentence_second = []
+               
+
+               part_from_context = [title] + something_in_between + previous_two_sentences + [original_sentence] + next_sentence_first + next_sentence_second
+               
+               print("subset new")
+               print(part_from_context)
+               print(original_sentence)
+
+
+                
+
+
+               # take the previous two sentences from the left context 
+
+
+
+
+
 
 
 main() 
