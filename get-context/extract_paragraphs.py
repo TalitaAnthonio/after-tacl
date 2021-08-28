@@ -222,4 +222,28 @@ def main():
 
                 
                 part_from_context = [title] + something_in_between + previous_sentence_first + previous_sentence_second +  [original_sentence] + next_sentence 
+
+
+            # SCENARIO: there are sentences before and after 
+            else: 
+                # the sentence before 
+                previous_sentence_first = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-1]]
+
+                try: 
+                    previous_sentence_second = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-2]]
+
+                except IndexError: 
+                    if revision_object.left_context: 
+                        previous_sentence_second = [revision_object.left_context[-1]]
+                    else: 
+                        previous_sentence_second = []
+                
+
+                next_sentence = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current+1]]
+
+                
+                part_from_context = [title] + something_in_between + previous_sentence_first + previous_sentence_second +  [original_sentence] + next_sentence 
+
+
+
 main()  
