@@ -119,6 +119,17 @@ def main():
                     
               previous_two_sentences = revision_object.left_context_splitted[-2:]
 
+              
+              try: 
+                if previous_two_sentences[-3] == title: 
+                    something_in_between = []
+                else: 
+                    something_in_between = ["(...)"]
+              except IndexError: 
+                  something_in_between = ["(...)"]
+
+            
+
            else: 
                title = ""
                previous_two_sentences = []
@@ -146,7 +157,7 @@ def main():
            print(revision_object.full_paragraph)
 
            print("subset")
-           part_from_context = [title] + previous_two_sentences + [original_sentence] + next_sentence
+           part_from_context = [title] + something_in_between + previous_two_sentences + [original_sentence] + next_sentence
            print(part_from_context)
            print(original_sentence)
         
