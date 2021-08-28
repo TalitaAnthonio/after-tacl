@@ -108,6 +108,7 @@ def extract_subset(current_line, current_line_splitted, index_of_original):
 def main(): 
 
     counter = 0 
+    d = {}
     for key, _ in data.items(): 
         revision_object = RevisionInstance(data, key)
 
@@ -122,8 +123,6 @@ def main():
               
         else: 
             original_sentence = data[key]["BaseSentence"]
-        print("======================================")
-
 
         if revision_object.left_paragraph: 
             title = revision_object.left_paragraph[0] 
@@ -246,4 +245,10 @@ def main():
 
 
 
+        d[key] = data[key]
+        d[key].update({"FullParagraph": revision_object.full_paragraph, "ContextForAnnotation": part_from_context})
+
+
+        with open("train_set_with_context_subset.json", "w") as json_out: 
+             json.dump(d, json_out)
 main()  
