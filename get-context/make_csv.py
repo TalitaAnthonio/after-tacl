@@ -8,10 +8,11 @@ with open("train_set_with_context_subset.json", "r") as json_in:
 with open("../word-embeddings/kmeans_k=5_dev.json", "r") as json_in: 
      clusters = json.load(json_in)
 
-d = {"Filename": [], "BaseSentence": [],  "RevisedSentence": [], "Reference": [],  "FullParagraph": [], "ContextForAnnotation": []}
+d = {"key": [], "Filename": [], "BaseSentence": [],  "RevisedSentence": [], "Reference": [],  "FullParagraph": [], "ContextForAnnotation": []}
 for key, _ in data.items(): 
 
     print(data[key]["Split"])
+    d["key"].append(key)
     d["Filename"].append(data[key]["Filename"])
     d["FullParagraph"].append(data[key]["FullParagraph"]) 
     if "BaseSentence" in data[key].keys(): 
