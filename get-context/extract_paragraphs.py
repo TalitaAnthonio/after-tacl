@@ -224,7 +224,7 @@ def main():
                     next_sentence = []
 
                 
-                part_from_context = [title] + something_in_between + previous_sentence_first + previous_sentence_second +  [original_sentence] + next_sentence 
+                part_from_context = [title] + something_in_between + previous_sentence_second + previous_sentence_first  +  [original_sentence] + next_sentence 
 
 
             # SCENARIO: there are sentences before and after 
