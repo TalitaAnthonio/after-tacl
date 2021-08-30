@@ -249,6 +249,6 @@ def main():
         d[key].update({"FullParagraph": revision_object.full_paragraph, "ContextForAnnotation": part_from_context})
 
 
-        with open("train_set_with_context_subset.json", "w") as json_out: 
-             json.dump(d, json_out)
+    with open("train_set_with_context_subset.json", "w") as json_out: 
+            json.dump(d, json_out)
 main()  
