@@ -97,6 +97,8 @@ if __name__ == '__main__':
 
     # connect to amazon 
     client = connect_mturk(CONFIG)
+
+    print(client.get_account_balance()['AvailableBalance'])
     hit_ids = get_all_hits(client)
     for hit_id in hit_ids: 
         assignments = get_assignments(client, hit_id, ["Submitted"])
@@ -111,4 +113,3 @@ if __name__ == '__main__':
 
             print(assignment_with_parsed_time)
 
-    print(client.get_account_balance()['AvailableBalance'])
