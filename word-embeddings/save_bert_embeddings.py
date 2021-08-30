@@ -93,10 +93,10 @@ def main():
         
 
     
-    #np.save("bert_vectors_FINAL_dev_top100_nouns_only.npy", d)
+    np.save("filtered_train_preds_final_nouns_only_embeddings.npy", d)
 
-    #with open("bert_vectors_FINAL_dev_top100_nouns_only.pickle", "wb") as pickle_out: 
-    #     pickle.dump(d, pickle_out)
+    with open("filtered_train_preds_final_nouns_only_embeddings.pickle", "wb") as pickle_out: 
+         pickle.dump(d, pickle_out)
     
 
  
