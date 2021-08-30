@@ -50,11 +50,14 @@ class RevisionInstance:
 
 
 def correct_splitter(context): 
+    """
+        Hier zit een fout in. 
+    """
 
     # correct the problem with remaining *.
     formatted = []
     for i in range(len(context)): 
-        formatted = context 
+        formatted = context
         if context[i].startswith('#'): 
             pattern = re.findall(r"[0-9]+.$", context[i])
             if pattern != [] and i != len(context)-1: 
@@ -65,8 +68,7 @@ def correct_splitter(context):
                     i += 1 
 
         else: 
-            formatted.append(context[i])
-    
+            formatted[i] = context[i]
     
     # fix the remaining problem with the stars 
     context_new = []
@@ -103,9 +105,8 @@ def main():
         current_line_tokenized = revision_instance.current_line_splitted
     
         right_context = correct_splitter(revision_instance.right_context_splitted) 
-      
-  
-        
+
+
         
         if len(current_line_tokenized) > 1: 
             print("===========================")
@@ -158,8 +159,8 @@ def main():
         #print(par)
 
 
-        with open("filtered_set_train_articles_tokenized_context_latest.json", "w") as json_out: 
-            json.dump(d, json_out)     
+        #with open("filtered_set_train_articles_tokenized_context_latest.json", "w") as json_out: 
+        #    json.dump(d, json_out)     
 
         
 main()
