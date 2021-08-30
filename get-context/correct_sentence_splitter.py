@@ -159,8 +159,8 @@ def main():
         #print(par)
 
 
-        #with open("filtered_set_train_articles_tokenized_context_latest.json", "w") as json_out: 
-        #    json.dump(d, json_out)     
+        with open("filtered_set_train_articles_tokenized_context_latest.json", "w") as json_out: 
+            json.dump(d, json_out)     
 
         
 main()
