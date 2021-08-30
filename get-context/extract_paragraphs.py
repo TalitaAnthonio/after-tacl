@@ -100,7 +100,7 @@ def extract_subset(current_line, current_line_splitted, index_of_original):
 
 
         
-
+    
 
 
 
@@ -109,6 +109,8 @@ def main():
 
     counter = 0 
     d = {}
+
+
     for key, _ in data.items(): 
         revision_object = RevisionInstance(data, key)
 
@@ -169,7 +171,9 @@ def main():
             index_of_current = data[key]["index_of_sentence_in_context"]
 
             # SCENARIO 2: there are only sentences after the current line on the line. 
+
             if index_of_current == 0: 
+               print("scenario 2")
 
                # If there is just one sentence after the original sentence on the current line, then take that one. 
                # If there are two sentences after the original sentence on the current line, then take those two. 
@@ -197,13 +201,13 @@ def main():
 
             elif index_of_current == (len(sentence_splitter.tokenize(revision_object.current_line)) - 1): 
 
-                
+                print("scenario 3")
                 previous_sentence_first = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-1]]
                
                  
 
                 try: 
-                    previous_sentence_second = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-1]]
+                    previous_sentence_second = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-2]]
                 except IndexError: 
                     if revision_object.left_paragraph: 
 
@@ -225,7 +229,8 @@ def main():
 
             # SCENARIO: there are sentences before and after 
             else: 
-                # the sentence before 
+                # the sentence before
+                print("scenario final") 
                 previous_sentence_first = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-1]]
 
                 try: 
