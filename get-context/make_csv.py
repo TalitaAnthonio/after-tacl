@@ -8,7 +8,7 @@ with open("train_set_with_context_subset.json", "r") as json_in:
 with open("../word-embeddings/kmeans_k=5_dev.json", "r") as json_in: 
      clusters = json.load(json_in)
 
-d = {"key": [], "Filename": [], "BaseSentence": [],  "RevisedSentence": [], "Reference": [],  "FullParagraph": [], "ContextForAnnotation": []}
+d = {"key": [], "Filename": [], "BaseSentence": [],  "RevisedSentence": [], "Reference": [],  "FullParagraph": [], "ContextForAnnotation": [], "Scenario": []}
 for key, _ in data.items(): 
 
     print(data[key]["Split"])
@@ -25,6 +25,7 @@ for key, _ in data.items():
     d["RevisedSentence"].append(data[key]["revised_sentence"])
     d["ContextForAnnotation"].append(data[key]["ContextForAnnotation"])
     d["Reference"].append(data[key]["Reference"]) 
+    d["Scenario"].append(data[key]["Scenario"])
     #d["Fillers"].append(clusters[key]["Centroids_with_revised"])
 
 
