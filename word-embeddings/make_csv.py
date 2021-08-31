@@ -14,12 +14,15 @@ from collections import Counter
 
 
 
-PATH_TO_FILE = "../coreference/filtered_dev_preds_final_nouns_only.json"
-PATH_TO_EMBEDDINGS = "bert_vectors_FINAL_dev_top100_nouns_only.pickle"
+#PATH_TO_FILE = "../coreference/filtered_dev_preds_final_nouns_only.json"
+
+PATH_TO_FILE = "../data-cleaning/filtered_set_train.json" 
+PATH_TO_EMBEDDINGS = "../word-embeddings/filtered_train_preds_final_nouns_only_embeddings.pickle" 
+#PATH_TO_EMBEDDINGS = "bert_vectors_FINAL_dev_top100_nouns_only.pickle"
 NUM_OF_PRED = 20
 NUM_CLUSTERS = 5 
-PATH_TO_CLUSTERS = "kmeans_k=5_dev.json"
-PATH_TO_FILE_OUT = "dev_set_new.csv"
+PATH_TO_CLUSTERS = "test.json"
+PATH_TO_FILE_OUT = "train_set_filtered.csv"
 
 
 with open(PATH_TO_CLUSTERS, "r") as json_in: 
@@ -32,17 +35,17 @@ with open(PATH_TO_FILE, "r") as json_in:
 
 def main(): 
 
-    d = {"Id": [], "RevisedSentence": [], "Paragraph": [], "Reference": [],  "Cluster0": [], "Cluster1": [], "Cluster2": [], "Cluster3": [], "Cluster4": [], "Centroids": [], "Centroids_with_revised": [], "Centroids_with_prob": []}
+    d = {"Id": [], "RevisedSentence": [], "Paragraph": [], "Reference": [],  "Cluster0": [], "Cluster1": [], "Cluster2": [], "Cluster3": [], "Cluster4": [], "Centroids": [], "Centroids_with_revised": []}
     
     freqdict = Counter()
     lens = []
     for key, _ in data.items(): 
 
-        d["RevisedSentence"].append(data[key]["RevisedSentence"])
-        d["Reference"].append(data[key]["CorrectReference"])
+        d["RevisedSentence"].append(data[key]["revised_sentence"])
+        d["Reference"].append(data[key]["Reference"])
         d["Paragraph"].append(data[key]["par"])
         d["Id"].append(key)
-        d["Centroids_with_prob"].append(" ".join([cluster + "\n" for cluster in clusters[key]["centroids_by_prob"]]))
+        #d["Centroids_with_prob"].append(" ".join([cluster + "\n" for cluster in clusters[key]["centroids_by_prob"]]))
 
     
         sents_for_0 = []

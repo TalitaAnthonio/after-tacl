@@ -14,15 +14,19 @@ import pickle
 
 
 #PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
-# PATH_TO_FILE = "../coreference/filtered_train_preds_final.json"
+PATH_TO_FILE = "../data-cleaning/filtered_set_train.json"
 
-PATH_TO_FILE = "../coreference/filtered_dev_preds_final_nouns_only.json"
-PATH_TO_EMBEDDINGS = "bert_vectors_FINAL_dev_top100_nouns_only.pickle"
+#PATH_TO_FILE = "../data-cleaning/filtered_set_train.json" 
+PATH_TO_EMBEDDINGS = "../word-embeddings/filtered_train_preds_final_nouns_only_embeddings.pickle" 
 NUM_OF_PRED = 20
 NUM_CLUSTERS = 5 
-PATH_TO_FILE_OUT = "kmeans_k=5_dev.json".format(NUM_OF_PRED)
+PATH_TO_FILE_OUT = "test.json".format(NUM_OF_PRED)
 
 
+with open("../data-cleaning/filtered_set_train.json", "r") as json_in: 
+     subset = json.load(json_in)
+
+keys = list(subset.keys())
 
 
 with open(PATH_TO_EMBEDDINGS, "rb") as pickle_in: 
@@ -137,101 +141,102 @@ def get_index_of_revised(predictions, correct_reference):
 def main(): 
     d = {}
     for key, _ in data.items():  
-        print("------------------- {0} ------------------------------".format(key))
+        if key in keys: 
+            print("------------------- {0} ------------------------------".format(key))
 
-        revised_sentence = data[key]["RevisedSentence"]
+            revised_sentence = data[key]["RevisedSentence"]
 
-        if type(data[key]["CorrectReference"]) == list: 
-            reference = " ".join(reference)
-        else: 
-            reference = data[key]["CorrectReference"]
-        
-
-
-        index_of_revised = get_index_of_revised(embeddings[key]["filtered_fillers"], reference)
-        
-
-
-        if index_of_revised != []: 
-            index_of_revised = index_of_revised[0]
-            if index_of_revised in [i for i in range(0,NUM_OF_PRED)]:
-                print("index in range")
-                filtered_predictions = embeddings[key]["filtered_fillers"][0:NUM_OF_PRED]
-                vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED]
-                sentences = embeddings[key]["sentences"][0:NUM_OF_PRED]
-
-
-        
-            # otherwise, add the revised sentence to the predictions 
+            if type(data[key]["Reference"]) == list: 
+                reference = " ".join(reference)
             else: 
-                print("index not in range")
+                reference = data[key]["Reference"]
+            
+
+
+            index_of_revised = get_index_of_revised(embeddings[key]["filtered_fillers"], reference)
+            
+
+
+            if index_of_revised != []: 
+                index_of_revised = index_of_revised[0]
+                if index_of_revised in [i for i in range(0,NUM_OF_PRED)]:
+                    print("index in range")
+                    filtered_predictions = embeddings[key]["filtered_fillers"][0:NUM_OF_PRED]
+                    vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED]
+                    sentences = embeddings[key]["sentences"][0:NUM_OF_PRED]
+
+
+            
+                # otherwise, add the revised sentence to the predictions 
+                else: 
+                    print("index not in range")
+                    filtered_predictions = embeddings[key]["filtered_fillers"][0:NUM_OF_PRED-1]
+                    vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
+                    sentences = embeddings[key]["sentences"][0:NUM_OF_PRED-1]
+
+                    revised_sentence_vector = embeddings[key]["revised_sentence_embedding"]
+                    revised_sentence_repr = embeddings[key]["revised_sentence"]
+
+                    sentences = sentences + [revised_sentence_repr]
+                    vectorized_sentences = np.append(vectorized_sentences, revised_sentence_vector, axis=0)
+                    index_of_revised = 19 
+
+            else: 
+                print("prediction not in top")
                 filtered_predictions = embeddings[key]["filtered_fillers"][0:NUM_OF_PRED-1]
+
+                # length = 19 and length = 19 
                 vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
                 sentences = embeddings[key]["sentences"][0:NUM_OF_PRED-1]
 
+
                 revised_sentence_vector = embeddings[key]["revised_sentence_embedding"]
                 revised_sentence_repr = embeddings[key]["revised_sentence"]
-
-                sentences = sentences + [revised_sentence_repr]
-                vectorized_sentences = np.append(vectorized_sentences, revised_sentence_vector, axis=0)
                 index_of_revised = 19 
+                
 
-        else: 
-            print("prediction not in top")
-            filtered_predictions = embeddings[key]["filtered_fillers"][0:NUM_OF_PRED-1]
-
-            # length = 19 and length = 19 
-            vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
-            sentences = embeddings[key]["sentences"][0:NUM_OF_PRED-1]
-
-
-            revised_sentence_vector = embeddings[key]["revised_sentence_embedding"]
-            revised_sentence_repr = embeddings[key]["revised_sentence"]
-            index_of_revised = 19 
             
 
-        
+                if vectorized_sentences == []: 
+                    sentences  = [revised_sentence]
+                    vectorized_sentences = revised_sentence_vector
+                else: 
+                    sentences = sentences + [revised_sentence_repr]
+                    vectorized_sentences = np.append(vectorized_sentences, revised_sentence_vector, axis=0)
 
-            if vectorized_sentences == []: 
-                sentences  = [revised_sentence]
-                vectorized_sentences = revised_sentence_vector
-            else: 
-                sentences = sentences + [revised_sentence_repr]
-                vectorized_sentences = np.append(vectorized_sentences, revised_sentence_vector, axis=0)
+            
 
-        
+            try: 
+                assert len(sentences) == len(vectorized_sentences)
+                assert index_of_revised != []
+            except AssertionError: 
+                pdb.set_trace()
 
-        try: 
-            assert len(sentences) == len(vectorized_sentences)
-            assert index_of_revised != []
-        except AssertionError: 
-            pdb.set_trace()
-
-        print(len(vectorized_sentences))
-        cluster_dict, cluster_centers, closest_data_indexes, centroids_by_prob, centroids_with_revised = get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of_revised, NUM_CLUSTERS)
+            print(len(vectorized_sentences))
+            cluster_dict, cluster_centers, closest_data_indexes, centroids_by_prob, centroids_with_revised = get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of_revised, NUM_CLUSTERS)
 
 
 
-        
-        print("revised", revised_sentence)
-        for cluster_id, _ in cluster_dict.items(): 
-            print("======= cluster {0} ==========".format(cluster_id))
-            for sent in cluster_dict[cluster_id]: 
-                print(sent)
+            
+            print("revised", revised_sentence)
+            for cluster_id, _ in cluster_dict.items(): 
+                print("======= cluster {0} ==========".format(cluster_id))
+                for sent in cluster_dict[cluster_id]: 
+                    print(sent)
 
 
-        closest_to_centroids =  [sentences[index] for index in closest_data_indexes]
-        centroids_with_revised_sents = [sentences[index] for index in centroids_with_revised]
+            closest_to_centroids =  [sentences[index] for index in closest_data_indexes]
+            centroids_with_revised_sents = [sentences[index] for index in centroids_with_revised]
 
 
-        d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids, "centroids_by_prob": centroids_by_prob, "Centroids_with_revised": centroids_with_revised_sents}
+            d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids, "centroids_by_prob": centroids_by_prob, "Centroids_with_revised": centroids_with_revised_sents}
 
 
-        print("centroids with revised", centroids_with_revised_sents)
+            print("centroids with revised", centroids_with_revised_sents)
 
 
-        with open(PATH_TO_FILE_OUT, "w") as json_out: 
-                 json.dump(d,json_out)
- 
+    with open(PATH_TO_FILE_OUT, "w") as json_out: 
+                json.dump(d,json_out)
+
 
 main()
