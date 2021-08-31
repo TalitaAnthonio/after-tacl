@@ -23,7 +23,7 @@ def make_qualification(mturk, questionqual_xml):
     response = mturk.create_qualification_type(
         Name='TaskNotDoneBefore_DataProtv1.3',
         Keywords='data protection',
-        Description='Please read our data protection policy and accept it',
+        Description='Please do this simplified version of our HITs before participating.',
         QualificationTypeStatus='Active',
         RetryDelayInSeconds=123,
         Test=question,
@@ -50,7 +50,7 @@ def update_qualification(mturk, qualtypeID, questionqual_xml):
         
     response = mturk.update_qualification_type(
         QualificationTypeId=qualtypeID,
-        Description='Please read our data protection policy and accept it',
+        Description='Please do this simplified version of our HITs before participating.',
         QualificationTypeStatus='Active',
         RetryDelayInSeconds=123,
         Test=question,
