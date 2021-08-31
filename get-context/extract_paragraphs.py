@@ -114,6 +114,9 @@ def main():
     for key, _ in data.items(): 
         revision_object = RevisionInstance(data, key)
 
+    
+
+
         if "BaseSentence" not in data[key].keys(): 
                
                #TODO: solve this problem 
@@ -152,7 +155,7 @@ def main():
 
         if len(sentence_splitter.tokenize(revision_object.current_line)) == 1:
    
-            
+           scenario = "SCENARIO 1"
 
            if revision_object.right_context_splitted: 
                next_sentence = [revision_object.right_context_splitted[0]]
@@ -171,7 +174,7 @@ def main():
             index_of_current = data[key]["index_of_sentence_in_context"]
 
             # SCENARIO 2: there are only sentences after the current line on the line. 
-
+            scenario = "SCENARIO 2"
             if index_of_current == 0: 
                print("scenario 2")
 
@@ -202,16 +205,17 @@ def main():
             elif index_of_current == (len(sentence_splitter.tokenize(revision_object.current_line)) - 1): 
 
                 print("scenario 3")
+                scenario = "SCENARIO 3"
                 previous_sentence_first = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-1]]
                
                  
 
-                try: 
+                if (index_of_current-2) in [i for i in range(len(sentence_splitter.tokenize(revision_object.current_line)))]:  
                     previous_sentence_second = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-2]]
-                except IndexError: 
+                else: 
                     if revision_object.left_paragraph: 
 
-                        previous_sentence_second = [revision_object.left_context[-1]]
+                        previous_sentence_second = [revision_object.left_context_splitted[-2]]
                     else: 
                         previous_sentence_second = []
             
@@ -227,10 +231,12 @@ def main():
                 part_from_context = [title] + something_in_between + previous_sentence_second + previous_sentence_first  +  [original_sentence] + next_sentence 
 
 
+                
             # SCENARIO: there are sentences before and after 
             else: 
                 # the sentence before
                 print("scenario final") 
+                scenario = "SCENARIO 4"
                 previous_sentence_first = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-1]]
 
                 try: 
@@ -251,9 +257,11 @@ def main():
 
 
         d[key] = data[key]
-        d[key].update({"FullParagraph": revision_object.full_paragraph, "ContextForAnnotation": part_from_context})
+        d[key].update({"FullParagraph": revision_object.full_paragraph, "ContextForAnnotation": part_from_context, "Scenario": scenario})
 
 
     with open("train_set_with_context_subset.json", "w") as json_out: 
             json.dump(d, json_out)
+
+    
 main()  

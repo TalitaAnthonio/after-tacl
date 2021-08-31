@@ -1,6 +1,6 @@
 import json 
 
-with open("filtered_set_train_articles_tokenized_context.json", "r") as json_in: 
+with open("filtered_set_train_articles_tokenized_context_latest.json", "r") as json_in: 
      data = json.load(json_in)
 
 
