@@ -108,8 +108,6 @@ def main():
     
         right_context = revision_instance.right_context_splitted
 
-        print(right_context)
-
         
         if len(current_line_tokenized) > 1: 
             print("===========================")
@@ -154,16 +152,15 @@ def main():
             "index_of_sentence_in_context": res["index_of_sentence_in_context"]})
 
 
-            #par = left_context + current_sent + right_context
             
         else:
             d[key].update({"Tokenized_article": {"left": left_context, "current": current_line_tokenized, "right": right_context}}) 
-    
-            #print(par)
+        
+                #print(par)
 
 
-        with open("filtered_set_train_articles_tokenized_context_latest.json", "w") as json_out: 
-            json.dump(d, json_out)     
+    with open("filtered_set_train_articles_tokenized_context_latest.json", "w") as json_out: 
+        json.dump(d, json_out)     
 
         
 main()
