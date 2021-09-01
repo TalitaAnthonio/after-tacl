@@ -1,5 +1,6 @@
 
 import json
+from typing import final
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.translate.bleu_score import sentence_bleu
 from progress.bar import Bar
@@ -45,9 +46,12 @@ def remove_html_tags(line):
     # remove images
     line = re.sub(r"\[\[Image:[^]]*]]", "", line)
     line = re.sub(r"\[\[[^|]*\|([^]]*)]]", "", line) 
+    line = re.sub(r"[[.*]]", "", line) 
     line = re.sub(r"__[A-Z]+__", "", line)
+    final_line = re.sub(r"__[A-Z]+[a-z]__", "", line)
 
-    return line 
+
+    return final_line 
 
 def sentence_splitter(document, sent=False):
     """
