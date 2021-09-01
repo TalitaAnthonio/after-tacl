@@ -91,6 +91,7 @@ def main():
     counter = 0 
     d = {}
     for key, _ in data.items(): 
+    
 
         
         d[key] = data[key]
@@ -99,13 +100,15 @@ def main():
 
         # correct remaining errors with the splitter    
         # type is a list 
-          
+        
         left_context = correct_splitter(revision_instance.left_context_splitted)
         
+
         current_line_tokenized = revision_instance.current_line_splitted
     
-        right_context = correct_splitter(revision_instance.right_context_splitted) 
+        right_context = revision_instance.right_context_splitted
 
+        print(right_context)
 
         
         if len(current_line_tokenized) > 1: 
@@ -155,8 +158,8 @@ def main():
             
         else:
             d[key].update({"Tokenized_article": {"left": left_context, "current": current_line_tokenized, "right": right_context}}) 
- 
-        #print(par)
+    
+            #print(par)
 
 
         with open("filtered_set_train_articles_tokenized_context_latest.json", "w") as json_out: 
