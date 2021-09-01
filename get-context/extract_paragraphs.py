@@ -83,21 +83,19 @@ class RevisionInstance:
         self.full_paragraph = self.left_paragraph + self.current_splitted + self.right_paragraph
 
 
-def extract_subset(current_line, current_line_splitted, index_of_original): 
-    # if there are several sentences on the same line, take them (up to two)
 
-    # "We said the previous (up to) 2 sentences (if there are previous sentences on the same line)"
+        if "BaseSentence" not in instance[key].keys(): 
+               
+               try: 
+                    original_sentence = data[key]["Base_Sentence"]
+               except KeyError: 
+                   original_sentence = " ".join(data[key]["base_tokenized"])
+                   
+              
+        else: 
+            original_sentence = data[key]["BaseSentence"]
 
-    current_line_splitted = sentence_splitter.tokenize(current_line) 
-
-    #if len(current_line_splitted) 
-
-
-    print(current_line_splitted)
-    
-    print("==============================")
-    
-
+        self.original_sentence = original_sentence
 
         
     
@@ -113,22 +111,8 @@ def main():
 
     for key, _ in data.items(): 
         revision_object = RevisionInstance(data, key)
+        original_sentence = revision_object.original_sentence
 
-    
-
-
-        if "BaseSentence" not in data[key].keys(): 
-               
-               #TODO: solve this problem 
-               try: 
-                    original_sentence = data[key]["Base_Sentence"]
-               except KeyError: 
-                   original_sentence = " ".join(data[key]["base_tokenized"])
-                   
-              
-        else: 
-            original_sentence = data[key]["BaseSentence"]
-        
 
         if revision_object.left_paragraph: 
             title = revision_object.left_paragraph[0] 
@@ -137,7 +121,9 @@ def main():
 
               
             try: 
-                if previous_two_sentences[-3] == title: 
+                if previous_two_sentences[0] == title: 
+                    print(previous_two_sentences[0], "equal to title")
+                    previous_two_sentences = revision_object.left_paragraph[-1:]
                     something_in_between = []
                 else: 
                     something_in_between = ["(...)"]
@@ -170,10 +156,10 @@ def main():
            part_from_context = [title] + something_in_between + previous_two_sentences + [original_sentence] + next_sentence
            print(part_from_context)
            print("original", original_sentence)
-           print("left", revision_object.left_paragraph)
+           #print("left", revision_object.left_paragraph)
 
 
-           print("========================")
+           #print("========================")
         
         """
         else: 
