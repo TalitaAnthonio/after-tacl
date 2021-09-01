@@ -128,11 +128,12 @@ def main():
               
         else: 
             original_sentence = data[key]["BaseSentence"]
+        
 
         if revision_object.left_paragraph: 
             title = revision_object.left_paragraph[0] 
                     
-            previous_two_sentences = revision_object.left_context_splitted[-2:]
+            previous_two_sentences = revision_object.left_paragraph[-2:]
 
               
             try: 
@@ -152,7 +153,7 @@ def main():
 
 
         # SCENARIO 1: there are no sentences on the same line 
-
+    
         if len(sentence_splitter.tokenize(revision_object.current_line)) == 1:
    
            scenario = "SCENARIO 1"
@@ -168,8 +169,13 @@ def main():
            print("subset")
            part_from_context = [title] + something_in_between + previous_two_sentences + [original_sentence] + next_sentence
            print(part_from_context)
-           print(original_sentence)
+           print("original", original_sentence)
+           print("left", revision_object.left_paragraph)
+
+
+           print("========================")
         
+        """
         else: 
             index_of_current = data[key]["index_of_sentence_in_context"]
 
@@ -263,5 +269,6 @@ def main():
     with open("train_set_with_context_subset.json", "w") as json_out: 
             json.dump(d, json_out)
 
+    """
     
 main()  

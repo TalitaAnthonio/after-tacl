@@ -75,7 +75,6 @@ def sentence_splitter(document, sent=False):
         sentence = next(sentences)
         while sentence:
             if re.match(pattern, sentence):
-                print(pattern, sentence)
                 try:
                     next_sentence = next(sentences)
                 except StopIteration:
@@ -83,7 +82,6 @@ def sentence_splitter(document, sent=False):
                 merged = f"{sentence} {next_sentence}"
                 merged_item_sents.append(merged)
             else:
-                print("in else")
                 merged_item_sents.append(sentence)
 
             try:
@@ -168,10 +166,8 @@ class SentenceSplitter:
     
     def tokenize(self, document): 
         tokenized_text = sentence_splitter_new(document, self.use_sent)
-        print("tokenized", tokenized_text)
         # if use_current = true, then use the sentence 
         corrected_tokenized_text = correct_sentence_splitter(tokenized_text, self.use_sent)
-        print("corrected", corrected_tokenized_text)
         return corrected_tokenized_text 
 
 
