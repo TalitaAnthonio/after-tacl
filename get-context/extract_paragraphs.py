@@ -99,6 +99,26 @@ class RevisionInstance:
 
         
     
+def format_original_sentence(original_sentence, original_sentence_splitted): 
+    #assert len(original_sentence_splitted) == 1
+    starts_with_number = re.findall(r"^[0-9]+.", " ".join(original_sentence_splitted))
+    if starts_with_number: 
+        #print(original_sentence)
+        #print(original_sentence_splitted)
+        original_sentence_new =  " ".join(starts_with_number) + " " +  original_sentence
+        #print(original_sentence_new)
+
+
+    else: 
+          starts_with_bullet = re.findall(r"^\*", " ".join(original_sentence_splitted))
+          if starts_with_bullet: 
+            #print(original_sentence)
+            #print(original_sentence_splitted)
+            original_sentence_new =  " ".join(starts_with_bullet) + " " +  original_sentence
+            #print(original_sentence_new)
+          else: 
+              original_sentence_new = original_sentence
+    return original_sentence_new
 
 
 
@@ -110,10 +130,12 @@ def main():
 
 
     for key, _ in data.items(): 
+       
         revision_object = RevisionInstance(data, key)
-        original_sentence = revision_object.original_sentence
-
-
+        original_sentence_raw = revision_object.original_sentence
+        original_sentence_in_context = revision_object.current_splitted
+        original_sentence = format_original_sentence(original_sentence_raw, original_sentence_in_context)
+        
         if revision_object.left_paragraph: 
             title = revision_object.left_paragraph[0] 
                     
@@ -122,8 +144,11 @@ def main():
               
             try: 
                 if previous_two_sentences[0] == title: 
-                    print(previous_two_sentences[0], "equal to title")
                     previous_two_sentences = revision_object.left_paragraph[-1:]
+                    something_in_between = []
+
+                # if the title comes after the two previous sentences 
+                elif revision_object.left_paragraph[-3] == title: 
                     something_in_between = []
                 else: 
                     something_in_between = ["(...)"]
@@ -133,30 +158,44 @@ def main():
             
 
         else: 
-            title = ""
+            title = []
             previous_two_sentences = []
-  
+            something_in_between = []
 
+        
+        
+        if title == []: 
+           title = []
+        else: 
+           title = [title]
 
+        
         # SCENARIO 1: there are no sentences on the same line 
     
         if len(sentence_splitter.tokenize(revision_object.current_line)) == 1:
-   
+           print("=================================================================")
+           print(key)
            scenario = "SCENARIO 1"
 
            if revision_object.right_context_splitted: 
                next_sentence = [revision_object.right_context_splitted[0]]
+               if revision_object.right_context_splitted[0].startswith('#'): 
+                   next_sentence = []
            else: 
                next_sentence = []
 
            print("full paragraph")
-           print(revision_object.full_paragraph)
+           for elem in revision_object.full_paragraph: 
+               print(elem)
 
+           print("--------------------------------------------------------")
            print("subset")
-           part_from_context = [title] + something_in_between + previous_two_sentences + [original_sentence] + next_sentence
-           print(part_from_context)
+           part_from_context = title + something_in_between + previous_two_sentences + [original_sentence] + next_sentence
            print("original", original_sentence)
            #print("left", revision_object.left_paragraph)
+
+           for elem in part_from_context: 
+               print(elem)
 
 
            #print("========================")
