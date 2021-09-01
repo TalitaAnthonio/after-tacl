@@ -37,12 +37,17 @@ def tokenize_with_spacy(list_with_string_sentences):
     return [token.text for token in tagger(list_with_string_sentences)]
 
 
-def remove_html_tags(text):
+def remove_html_tags(line):
     """Remove html tags from a string"""
-    import re
-    clean = re.compile('<.*?>')
-    return re.sub(clean, '', text)
+    # remove HTML tags
+    line = re.sub(r"<[^>]*>", "", line)
 
+    # remove images
+    line = re.sub(r"\[\[Image:[^]]*]]", "", line)
+    line = re.sub(r"\[\[[^|]*\|([^]]*)]]", "", line) 
+    line = re.sub(r"__[A-Z]+__", "", line)
+
+    return line 
 
 def sentence_splitter(document, sent=False):
     """
