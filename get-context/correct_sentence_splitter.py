@@ -102,12 +102,18 @@ def main():
         # type is a list 
         
         left_context = correct_splitter(revision_instance.left_context_splitted)
-        
+
 
         current_line_tokenized = revision_instance.current_line_splitted
     
-        right_context = revision_instance.right_context_splitted
+        right_context = correct_splitter(revision_instance.right_context_splitted)
 
+        print(left_context)
+        print(right_context)
+        print("\n")
+
+
+        
         
         if len(current_line_tokenized) > 1: 
             print("===========================")
@@ -162,5 +168,7 @@ def main():
     with open("filtered_set_train_articles_tokenized_context_latest.json", "w") as json_out: 
         json.dump(d, json_out)     
 
-        
+    
+    
+
 main()
