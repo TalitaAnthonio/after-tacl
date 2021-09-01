@@ -69,12 +69,13 @@ def sentence_splitter(document, sent=False):
 
         # currently because base_tokenized has
         # ''2 . Be patient -> space between bullet point
-        pattern = re.compile(r"^[0-9]\s+\.$")
+        pattern = re.compile(r"^[0-9]+\s+\.$")
         merged_item_sents = []
 
         sentence = next(sentences)
         while sentence:
             if re.match(pattern, sentence):
+                print(pattern, sentence)
                 try:
                     next_sentence = next(sentences)
                 except StopIteration:
@@ -82,6 +83,7 @@ def sentence_splitter(document, sent=False):
                 merged = f"{sentence} {next_sentence}"
                 merged_item_sents.append(merged)
             else:
+                print("in else")
                 merged_item_sents.append(sentence)
 
             try:
@@ -124,7 +126,8 @@ def correct_sentence_splitter(sentence_splitted_par, use_current=True):
                # the "if" "else" deal with this annoying case ("INDEX  2562")
                if sent_index != len(sentence_splitted_par)-1:
                     if len(sentence_splitted_par[sent_index]) == 3: 
-                        merged_sent = "{0}{1}".format(sentence_splitted_par[sent_index][0], sentence_splitted_par[sent_index][2]) + ' ' +  sentence_splitted_par[sent_index+1]
+                        merged_sent = "{0}{1}".format(sentence_splitted_par[sent_index][:-1], sentence_splitted_par[sent_index][-1]) + ' ' +  sentence_splitted_par[sent_index+1]
+                     
                         new_list.append(merged_sent)
                         next(sentence_splitted_par_iter)
                     else: 
@@ -165,8 +168,10 @@ class SentenceSplitter:
     
     def tokenize(self, document): 
         tokenized_text = sentence_splitter_new(document, self.use_sent)
+        print("tokenized", tokenized_text)
         # if use_current = true, then use the sentence 
         corrected_tokenized_text = correct_sentence_splitter(tokenized_text, self.use_sent)
+        print("corrected", corrected_tokenized_text)
         return corrected_tokenized_text 
 
 
