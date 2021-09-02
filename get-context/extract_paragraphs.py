@@ -188,19 +188,7 @@ def main():
                else: 
                   context_before = revision_object.title + ["(...)"] + [sentence_before_preceding] + [sentence_before] 
 
-               print("========= full par ======")
-               for elem in revision_object.full_paragraph: 
-                   print(elem)
-               
 
-               print("subset")
-               print(context_before)
-               print(original_sentence_raw)
-               print(context_after)
-            
-                  
-
-            
             else: 
                 print("there are no preceding sentences")
 
