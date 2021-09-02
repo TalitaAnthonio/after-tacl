@@ -68,10 +68,11 @@ class RevisionInstance:
         self.left_context = instance[key]["BaseArticle"]["left_context"]
         self.current_line = instance[key]["BaseArticle"]["current_line"]
         self.right_context = instance[key]["BaseArticle"]["right_context"]
+        self.current_line_raw_splitted = sentence_splitter.tokenize([sent for sent in instance[key]["BaseArticle"]["current_line"] if "Timestamp" not in sent])
 
         # the sentence_tokenized_components 
         self.left_context_splitted = instance[key]["Tokenized_article"]["left"]
-        self.current_splitted = instance[key]["Tokenized_article"]["current"]
+        self.original_in_article = instance[key]["Tokenized_article"]["current"]
         self.right_context_splitted = instance[key]["Tokenized_article"]["right"]
 
 
@@ -80,9 +81,12 @@ class RevisionInstance:
         self.left_paragraph = make_paragraph_left(instance[key]["Tokenized_article"]["left"])
 
 
-        self.full_paragraph = self.left_paragraph + self.current_splitted + self.right_paragraph
+        self.full_paragraph = self.left_paragraph + self.original_in_article + self.right_paragraph
 
-
+        if self.left_paragraph: 
+            self.title = [self.left_paragraph[0]] 
+        else: 
+            self.title = []
 
         if "BaseSentence" not in instance[key].keys(): 
                
@@ -97,7 +101,11 @@ class RevisionInstance:
 
         self.original_sentence = original_sentence
 
-        
+
+        if "index_of_sentence_in_context" in instance[key].keys(): 
+            self.index = data[key]["index_of_sentence_in_context"]
+        else: 
+            self.index = []
     
 def format_original_sentence(original_sentence, original_sentence_splitted): 
     #assert len(original_sentence_splitted) == 1
@@ -120,8 +128,26 @@ def format_original_sentence(original_sentence, original_sentence_splitted):
               original_sentence_new = original_sentence
     return original_sentence_new
 
+def get_right_context(current_line_splitted, right_context_splitted, index_of_sentence): 
 
-
+    # if there are no other lines on current_line_splitted 
+    if index_of_sentence == []: 
+       if right_context_splitted: 
+          context_after = right_context_splitted[0]
+       else: 
+          context_after = []
+    else: 
+        # if the original sentence is the last one on the line 
+        # then take the first sentence of the right context 
+        if index_of_sentence == len(current_line_splitted)-1: 
+           if right_context_splitted: 
+              context_after = right_context_splitted[0] 
+           else: 
+              context_after = []
+        else: 
+            context_after = current_line_splitted[index_of_sentence+1]
+           
+    return context_after
 
 def main(): 
 
@@ -133,167 +159,54 @@ def main():
        
         revision_object = RevisionInstance(data, key)
         original_sentence_raw = revision_object.original_sentence
-        original_sentence_in_context = revision_object.current_splitted
-        original_sentence = format_original_sentence(original_sentence_raw, original_sentence_in_context)
+        original_sentence_in_article = revision_object.original_in_article
+        original_sentence = format_original_sentence(original_sentence_raw, original_sentence_in_article)
+        title = revision_object.title
+        context_after = get_right_context(revision_object.current_line_raw_splitted, revision_object.right_context_splitted, revision_object.index)
         
-        if revision_object.left_paragraph: 
-            title = revision_object.left_paragraph[0] 
-                    
-            previous_two_sentences = revision_object.left_paragraph[-2:]
-
-              
-            try: 
-                if previous_two_sentences[0] == title: 
-                    previous_two_sentences = revision_object.left_paragraph[-1:]
-                    something_in_between = []
-
-                # if the title comes after the two previous sentences 
-                elif revision_object.left_paragraph[-3] == title: 
-                    something_in_between = []
-                else: 
-                    something_in_between = ["(...)"]
-            except IndexError: 
-                  something_in_between = ["(...)"]
-
+        print("============================")
+        print(original_sentence) 
+        print(revision_object.current_line_raw_splitted)
+        
+        if revision_object.index == [] or revision_object.index == 0: 
+           print("there are no sentences before on the same line.")
+        
+        else: 
             
+            if revision_object.index == 1: 
+               sentence_before = revision_object.left_context_splitted[-1]
+               print("there is just a sentence before")
+            
+            # there are two sentences on the same line 
+            elif revision_object.index == 2: 
+               sentence_before = revision_object.current_line_raw_splitted[1]
+               sentence_before_preceding = revision_object.current_line_raw_splitted[0]
 
-        else: 
-            title = []
-            previous_two_sentences = []
-            something_in_between = []
-
-        
-        
-        if title == []: 
-           title = []
-        else: 
-           title = [title]
-
-        
-        # SCENARIO 1: there are no sentences on the same line 
-    
-        if len(sentence_splitter.tokenize(revision_object.current_line)) == 1:
-           print("=================================================================")
-           print(key)
-           scenario = "SCENARIO 1"
-
-           if revision_object.right_context_splitted: 
-               next_sentence = [revision_object.right_context_splitted[0]]
-               if revision_object.right_context_splitted[0].startswith('#'): 
-                   next_sentence = []
-           else: 
-               next_sentence = []
-
-           print("full paragraph")
-           for elem in revision_object.full_paragraph: 
-               print(elem)
-
-           print("--------------------------------------------------------")
-           print("subset")
-           part_from_context = title + something_in_between + previous_two_sentences + [original_sentence] + next_sentence
-           print("original", original_sentence)
-           #print("left", revision_object.left_paragraph)
-
-           for elem in part_from_context: 
-               print(elem)
-
-
-           #print("========================")
-        
-        """
-        else: 
-            index_of_current = data[key]["index_of_sentence_in_context"]
-
-            # SCENARIO 2: there are only sentences after the current line on the line. 
-            scenario = "SCENARIO 2"
-            if index_of_current == 0: 
-               print("scenario 2")
-
-               # If there is just one sentence after the original sentence on the current line, then take that one. 
-               # If there are two sentences after the original sentence on the current line, then take those two. 
-               next_sentence_first = [sentence_splitter.tokenize(revision_object.current_line)[1]]
-               if len(sentence_splitter.tokenize(revision_object.current_line)) >= 3: 
-                  next_sentence_second = [sentence_splitter.tokenize(revision_object.current_line)[2]]
+               # if the sentence before preceding is the title, then only use the title 
+               if sentence_before_preceding == revision_object.title:
+                  context_before = revision_object.title + sentence_before
                else: 
-                   next_sentence_second = []
+                  context_before = revision_object.title + ["(...)"] + [sentence_before_preceding] + [sentence_before] 
+
+               print("========= full par ======")
+               for elem in revision_object.full_paragraph: 
+                   print(elem)
                
 
-               part_from_context = [title] + something_in_between + previous_two_sentences + [original_sentence] + next_sentence_first + next_sentence_second
-               
-               print("subset new")
-               print(part_from_context)
-               print(original_sentence)
-
-
-                
-
-
-               # take the previous two sentences from the left context 
-
-
-            # SCENARIO 3: there are only sentences before the current line 
-
-            elif index_of_current == (len(sentence_splitter.tokenize(revision_object.current_line)) - 1): 
-
-                print("scenario 3")
-                scenario = "SCENARIO 3"
-                previous_sentence_first = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-1]]
-               
-                 
-
-                if (index_of_current-2) in [i for i in range(len(sentence_splitter.tokenize(revision_object.current_line)))]:  
-                    previous_sentence_second = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-2]]
-                else: 
-                    if revision_object.left_paragraph: 
-
-                        previous_sentence_second = [revision_object.left_context_splitted[-2]]
-                    else: 
-                        previous_sentence_second = []
+               print("subset")
+               print(context_before)
+               print(original_sentence_raw)
+               print(context_after)
             
+                  
 
-
-                if revision_object.right_paragraph: 
-                    next_sentence = [revision_object.right_paragraph[0]]
-
-                else: 
-                    next_sentence = []
-
-                
-                part_from_context = [title] + something_in_between + previous_sentence_second + previous_sentence_first  +  [original_sentence] + next_sentence 
-
-
-                
-            # SCENARIO: there are sentences before and after 
+            
             else: 
-                # the sentence before
-                print("scenario final") 
-                scenario = "SCENARIO 4"
-                previous_sentence_first = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-1]]
+                print("there are no preceding sentences")
 
-                try: 
-                    previous_sentence_second = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current-2]]
-
-                except IndexError: 
-                    if revision_object.left_context: 
-                        previous_sentence_second = [revision_object.left_context[-1]]
-                    else: 
-                        previous_sentence_second = []
-                
-
-                next_sentence = [sentence_splitter.tokenize(revision_object.current_line)[index_of_current+1]]
-
-                
-                part_from_context = [title] + something_in_between + previous_sentence_first + previous_sentence_second +  [original_sentence] + next_sentence 
+        
 
 
 
-        d[key] = data[key]
-        d[key].update({"FullParagraph": revision_object.full_paragraph, "ContextForAnnotation": part_from_context, "Scenario": scenario})
-
-
-    with open("train_set_with_context_subset.json", "w") as json_out: 
-            json.dump(d, json_out)
-
-    """
     
 main()  
