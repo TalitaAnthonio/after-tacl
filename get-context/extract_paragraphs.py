@@ -200,16 +200,20 @@ def main():
         print(original_sentence) 
         print(revision_object.current_line_raw_splitted)
         
+        # TODO: take the previous two sentences 
         if revision_object.index == [] or revision_object.index == 0: 
            print("there are no sentences before on the same line.")
         
         else: 
             
+            # TODO: take the previous sentence or just one from the first step 
             if revision_object.index == 1: 
                sentence_before = revision_object.left_context_splitted[-1]
                print("there is just a sentence before")
             
             # there are two sentences on the same line 
+
+            # DONE: there are two sentences on the same line 
             elif revision_object.index == 2: 
                sentence_before = revision_object.current_line_raw_splitted[1]
                sentence_before_preceding = revision_object.current_line_raw_splitted[0]
@@ -223,8 +227,7 @@ def main():
 
             else: 
                 
-                # there are no preceding sentences on the same line 
-                print("there are no preceding sentences")
+                # DONE: there are no preceding sentences on the same line 
                 # check first if there is something in the paragraph 
                 if revision_object.left_paragraph: 
                    print("left paragraph")
