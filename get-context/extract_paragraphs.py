@@ -199,6 +199,7 @@ def main():
         
  
         
+        print(key)
         # TODO: take the previous two sentences 
         if revision_object.index == [] or revision_object.index == 0: 
             print("there are no sentences before on the same line.")
@@ -268,8 +269,9 @@ def main():
                 
 
                     # if the sentence of the paragraph starts with a digit 
-                
+                 
                     if revision_object.left_paragraph[1][0].isdigit(): 
+
                         sentence_before_preceding = sentence_with_digit(revision_object.left_paragraph)
                         context_before = revision_object.title + ["(...)"] + sentence_before_preceding + [sentence_before] 
                         # if there is no close sentence with a digit, then take the previous line 
@@ -278,25 +280,29 @@ def main():
                             # if the second p
                             second_previous_sentence = revision_object.left_context[-2]
                             # if the second previous sentence is the title 
-                            if [second_previous_sentence] == revision_object.title: 
+                            if [second_previous_sentence] == revision_object.title or " ".join(second_previous_sentence).startswith("#"):
                                 context_before = revision_object.title + ["(...)"] + [sentence_before] 
                             else: 
                                 context_before = revision_object.title + ["(...)"]  + [second_previous_sentence] + [sentence_before]
+                        
+                     
                     else: 
                         if len(last_line_of_left_context_splitted) >= 2: 
+
                             second_previous_sentence = last_line_of_left_context_splitted[-2]
-                            if [second_previous_sentence] == revision_object.title:
+                            if [second_previous_sentence] == revision_object.title or " ".join(second_previous_sentence).startswith("#"):
                                 context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-1]]
                             else: 
                                 context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-2]] + [last_line_of_left_context_splitted[-1]]
                         
                         else: 
                             second_previous_sentence = [second_last_line_of_left_context_splitted]
-                            if [second_previous_sentence] == revision_object.title:
+                            if [second_previous_sentence] == revision_object.title or " ".join(second_previous_sentence).startswith("#"):
                                 context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-1]]
                             else: 
                                 context_before = revision_object.title + ["(...)"]  + second_previous_sentence + [last_line_of_left_context_splitted[-1]]
-            
+
+              
                 else: 
                     context_before = revision_object.title 
 
