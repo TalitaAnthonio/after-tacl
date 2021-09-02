@@ -10,7 +10,8 @@ import re
 
 from nltk.util import Index
 from numpy import index_exp 
-from tools import SentenceSplitter, correct_splitter
+from tools import SentenceSplitter
+from correct_sentence_splitter import correct_splitter
 
 PATH_TO_FILE = "filtered_set_train_articles_tokenized_context_latest.json"
 
@@ -149,6 +150,37 @@ def get_right_context(current_line_splitted, right_context_splitted, index_of_se
            
     return context_after
 
+
+def sentence_with_digit(left_paragraph_context): 
+    """
+        * if that one starts with an ordinal number like "1." or "5044.", then start with the line right before the 
+        line with the target sentence and go up until you have found a line that also starts with an ordinal number (regex "\d+\.")
+		* else: just take the previous line
+
+    """
+    # skip the title 
+    left_paragraph_context = left_paragraph_context[1:]
+    # skip the last sentence (because that one is already taken)
+    left_paragraph_context = left_paragraph_context[:-1]
+    left_paragraph_context.reverse() 
+    
+    context_to_return = []
+    for index, sent in enumerate(left_paragraph_context,0): 
+        if re.findall(r"^\d+\.", sent): 
+           # if it's the first sentence, then just return the sentence 
+           if index == 0: 
+              context_to_return.append(sent)
+
+           # if it's not the first sentence, then add a context marker
+           else: 
+              context_to_return = [sent, "(...)"]
+           break 
+    
+    return context_to_return
+              
+           
+
+
 def main(): 
 
     counter = 0 
@@ -190,7 +222,59 @@ def main():
 
 
             else: 
+                
+                # there are no preceding sentences on the same line 
                 print("there are no preceding sentences")
+                # check first if there is something in the paragraph 
+                if revision_object.left_paragraph: 
+                   print("left paragraph")
+
+                   # the format is a string here 
+                   last_line_of_left_context = revision_object.left_context[-1]
+                   last_line_of_left_context_splitted = correct_splitter(sentence_splitter.tokenize([last_line_of_left_context])) 
+                   second_last_line_of_left_context_splitted = correct_splitter(sentence_splitter.tokenize(revision_object.left_context[-2])) 
+
+                   sentence_before = last_line_of_left_context_splitted[-1]
+                
+
+                   # if the sentence of the paragraph starts with a digit 
+                   if revision_object.left_paragraph[1][0].isdigit(): 
+                      sentence_before_preceding = sentence_with_digit(revision_object.left_paragraph)
+                      context_before = revision_object.title + ["(...)"] + sentence_before_preceding + [sentence_before] 
+                      # if there is no close sentence with a digit, then take the previous line 
+                      if not sentence_before_preceding: 
+                         
+                         # if the second p
+                         second_previous_sentence = revision_object.left_context[-2]
+                         # if the second previous sentence is the title 
+                         if [second_previous_sentence] == revision_object.title: 
+                            context_before = revision_object.title + ["(...)"] + [sentence_before] 
+                         else: 
+                             context_before = revision_object.title + ["(...)"]  + second_previous_sentence + [sentence_before]
+                   else: 
+                       if len(last_line_of_left_context_splitted) >= 2: 
+                            second_previous_sentence = last_line_of_left_context_splitted[-2]
+                            if [second_previous_sentence] == revision_object.title:
+                               context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-1]]
+                            else: 
+                                context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-2]] + [last_line_of_left_context_splitted[-1]]
+                      
+                       else: 
+                            second_previous_sentence = second_last_line_of_left_context_splitted
+                            if [second_previous_sentence] == revision_object.title:
+                               context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-1]]
+                            else: 
+                                context_before = revision_object.title + ["(...)"]  + second_previous_sentence + [last_line_of_left_context_splitted[-1]]
+                      
+
+                
+                   print(context_before)
+                      
+                      
+
+                   
+
+            
 
         
 
