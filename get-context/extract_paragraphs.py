@@ -188,6 +188,7 @@ def main():
 
 
     for key, _ in data.items(): 
+        
        
         revision_object = RevisionInstance(data, key)
         original_sentence_raw = revision_object.original_sentence
@@ -196,21 +197,111 @@ def main():
         title = revision_object.title
         context_after = get_right_context(revision_object.current_line_raw_splitted, revision_object.right_context_splitted, revision_object.index)
         
-        print("============================")
-        print(original_sentence) 
-        print(revision_object.current_line_raw_splitted)
+ 
         
         # TODO: take the previous two sentences 
         if revision_object.index == [] or revision_object.index == 0: 
-           print("there are no sentences before on the same line.")
+            print("there are no sentences before on the same line.")
+
+            if revision_object.left_paragraph and len(revision_object.left_paragraph) > 1: 
+
+                # the format is a string here 
+                last_line_of_left_context = revision_object.left_context[-1]
+                last_line_of_left_context_splitted = correct_splitter(sentence_splitter.tokenize([last_line_of_left_context])) 
+                second_last_line_of_left_context_splitted = correct_splitter(sentence_splitter.tokenize([revision_object.left_context[-2]]))[-1] 
+
+                # the sentence before the current line 
+                sentence_before = last_line_of_left_context_splitted[-1]
+            
+
+                # if the sentence of the paragraph starts with a digit 
+               
+                if revision_object.left_paragraph[1][0].isdigit(): 
+                    sentence_before_preceding = sentence_with_digit(revision_object.left_paragraph)
+                    context_before = revision_object.title + ["(...)"] + sentence_before_preceding + [sentence_before] 
+                    # if there is no close sentence with a digit, then take the previous line 
+                    if not sentence_before_preceding: 
+                        
+                        # if the second p
+                        second_previous_sentence = revision_object.left_context[-2]
+                        # if the second previous sentence is the title 
+                        if [second_previous_sentence] == revision_object.title: 
+                            context_before = revision_object.title + ["(...)"] + [sentence_before] 
+                        else: 
+                            context_before = revision_object.title + ["(...)"]  + [second_previous_sentence] + [sentence_before]
+                else: 
+                    if len(last_line_of_left_context_splitted) >= 2: 
+                        second_previous_sentence = last_line_of_left_context_splitted[-2]
+                        if [second_previous_sentence] == revision_object.title:
+                            context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-1]]
+                        else: 
+                            context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-2]] + [last_line_of_left_context_splitted[-1]]
+                    
+                    else: 
+                        second_previous_sentence = [second_last_line_of_left_context_splitted]
+                        if [second_previous_sentence] == revision_object.title:
+                            context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-1]]
+                        else: 
+                            context_before = revision_object.title + ["(...)"]  + second_previous_sentence + [last_line_of_left_context_splitted[-1]]
         
+            else: 
+                context_before = revision_object.title 
+
+      
+
         else: 
             
             # TODO: take the previous sentence or just one from the first step 
             if revision_object.index == 1: 
-               sentence_before = revision_object.left_context_splitted[-1]
-               print("there is just a sentence before")
+                sentence_before = revision_object.current_line_raw_splitted[0]
+                print("there is just a sentence before")
             
+
+                if revision_object.left_paragraph and len(revision_object.left_paragraph) > 1 and sentence_before != revision_object.title: 
+
+                    # the format is a string here 
+                    last_line_of_left_context = revision_object.left_context[-1]
+                    last_line_of_left_context_splitted = correct_splitter(sentence_splitter.tokenize([last_line_of_left_context])) 
+                    second_last_line_of_left_context_splitted = correct_splitter(sentence_splitter.tokenize([revision_object.left_context[-2]]))[-1] 
+         
+                    sentence_before = last_line_of_left_context_splitted[-1]
+                
+
+                    # if the sentence of the paragraph starts with a digit 
+                
+                    if revision_object.left_paragraph[1][0].isdigit(): 
+                        sentence_before_preceding = sentence_with_digit(revision_object.left_paragraph)
+                        context_before = revision_object.title + ["(...)"] + sentence_before_preceding + [sentence_before] 
+                        # if there is no close sentence with a digit, then take the previous line 
+                        if not sentence_before_preceding: 
+                            
+                            # if the second p
+                            second_previous_sentence = revision_object.left_context[-2]
+                            # if the second previous sentence is the title 
+                            if [second_previous_sentence] == revision_object.title: 
+                                context_before = revision_object.title + ["(...)"] + [sentence_before] 
+                            else: 
+                                context_before = revision_object.title + ["(...)"]  + [second_previous_sentence] + [sentence_before]
+                    else: 
+                        if len(last_line_of_left_context_splitted) >= 2: 
+                            second_previous_sentence = last_line_of_left_context_splitted[-2]
+                            if [second_previous_sentence] == revision_object.title:
+                                context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-1]]
+                            else: 
+                                context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-2]] + [last_line_of_left_context_splitted[-1]]
+                        
+                        else: 
+                            second_previous_sentence = [second_last_line_of_left_context_splitted]
+                            if [second_previous_sentence] == revision_object.title:
+                                context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-1]]
+                            else: 
+                                context_before = revision_object.title + ["(...)"]  + second_previous_sentence + [last_line_of_left_context_splitted[-1]]
+            
+                else: 
+                    context_before = revision_object.title 
+
+
+               # if the index is 1, then we need to 
             # there are two sentences on the same line 
 
             # DONE: there are two sentences on the same line 
@@ -226,61 +317,27 @@ def main():
 
 
             else: 
-                
-                # DONE: there are no preceding sentences on the same line 
-                # check first if there is something in the paragraph 
-                if revision_object.left_paragraph: 
-                   print("left paragraph")
-
-                   # the format is a string here 
-                   last_line_of_left_context = revision_object.left_context[-1]
-                   last_line_of_left_context_splitted = correct_splitter(sentence_splitter.tokenize([last_line_of_left_context])) 
-                   second_last_line_of_left_context_splitted = correct_splitter(sentence_splitter.tokenize(revision_object.left_context[-2])) 
-
-                   sentence_before = last_line_of_left_context_splitted[-1]
-                
-
-                   # if the sentence of the paragraph starts with a digit 
-                   if revision_object.left_paragraph[1][0].isdigit(): 
-                      sentence_before_preceding = sentence_with_digit(revision_object.left_paragraph)
-                      context_before = revision_object.title + ["(...)"] + sentence_before_preceding + [sentence_before] 
-                      # if there is no close sentence with a digit, then take the previous line 
-                      if not sentence_before_preceding: 
-                         
-                         # if the second p
-                         second_previous_sentence = revision_object.left_context[-2]
-                         # if the second previous sentence is the title 
-                         if [second_previous_sentence] == revision_object.title: 
-                            context_before = revision_object.title + ["(...)"] + [sentence_before] 
-                         else: 
-                             context_before = revision_object.title + ["(...)"]  + second_previous_sentence + [sentence_before]
-                   else: 
-                       if len(last_line_of_left_context_splitted) >= 2: 
-                            second_previous_sentence = last_line_of_left_context_splitted[-2]
-                            if [second_previous_sentence] == revision_object.title:
-                               context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-1]]
-                            else: 
-                                context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-2]] + [last_line_of_left_context_splitted[-1]]
-                      
-                       else: 
-                            second_previous_sentence = second_last_line_of_left_context_splitted
-                            if [second_previous_sentence] == revision_object.title:
-                               context_before = revision_object.title + ["(...)"]  + [last_line_of_left_context_splitted[-1]]
-                            else: 
-                                context_before = revision_object.title + ["(...)"]  + second_previous_sentence + [last_line_of_left_context_splitted[-1]]
-                      
-
-                
-                   print(context_before)
-                      
-                      
-
+                # DONE: There are more than two sentences before on the same line 
+                sentence_before = revision_object.current_line_raw_splitted[revision_object.index-1]
+                sentence_before_preceding = revision_object.current_line_raw_splitted[revision_object.index-1]
+                if sentence_before_preceding == revision_object.title:
+                  context_before = revision_object.title + sentence_before
+                else: 
+                  context_before = revision_object.title + ["(...)"] + [sentence_before_preceding] + [sentence_before] 
                    
+
 
             
 
         
 
+        print("==================================")
+        print(context_before)
+        print("original", original_sentence)
+        print(context_after)
+        print("\n")
+        print(revision_object.full_paragraph)
+        print("====================================")
 
 
     
