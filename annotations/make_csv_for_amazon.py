@@ -1,101 +1,151 @@
 # make csv with clusters 
 # distribution: Counter({5: 576, 1: 14, 2: 1})
 
+
 import json
 from os import read
+from nltk.util import Index
 from numpy import average, trunc 
 import pandas as pd 
 import pdb 
 from collections import Counter
 import numpy as np 
+import pdb 
+import re 
+import random 
 
-PATH_TO_FILE = "../coreference/filtered_dev_preds_final.json"
-PATH_TO_TRAIN_FILE = "../coreference/filtered_train_preds_final.json"
 
-NUM_OF_PRED = 20
-PATH_TO_CLUSTERS = "../word-embeddings/kmeans_k=5_filtered_step1_top{0}_with_rev_v2.json".format(NUM_OF_PRED)
-PATH_TO_CLUSTERS_TRAIN = "../word-embeddings/kmeans_k=5_train.json"
-PATH_TO_FILE_OUT = "./amazon_file.csv"
+PATH_TO_MAIN = "../get-context/filtered_set_train_articles_tokenized_context_latest_with_context.json"
+PATH_TO_CLUSTERS = "../word-embeddings/k_means_train_set_filtered_latest_new.json" 
+
+
+with open(PATH_TO_MAIN, "r") as json_in: 
+     data = json.load(json_in)
 
 with open(PATH_TO_CLUSTERS, "r") as json_in: 
      clusters = json.load(json_in)
- 
-
-with open(PATH_TO_FILE, "r") as json_in: 
-     data = json.load(json_in)
 
 
-with open(PATH_TO_TRAIN_FILE, "r") as json_in: 
-     train_data = json.load(json_in)
+def format_title(title): 
+    return "How to {0}".format(title.replace("_", " ").strip(".txt"))
 
-with open(PATH_TO_CLUSTERS_TRAIN, "r") as json_in: 
-     train_data_clusters = json.load(json_in)
+def format_paragaph(par): 
+    par_with_breaklines = []
+    for index, sent in enumerate(par, 0):
+        if index == 0: 
+           formatted_sent = "<b>" + " " + sent + " " + "</b>" 
+        else: 
+           formatted_sent = sent + " " + "<br>"
+        par_with_breaklines.append(formatted_sent)
+
+    return par_with_breaklines
 
 
-data.update(train_data)
-clusters.update(train_data_clusters)
+def format_revised_before_insertion(original_sentence, original_sentence_in_raw, revised_before_insertion): 
+    """ 
+
+        Original sentence: the sentence as given in the tsv file 
+        original_sentence_in_raw : the sentence in the article 
+        revised_before_insertion {str}: the part before the insertion
+    """
 
 
-with open("../../tacl/data/references_for_lm.json", "r") as json_in: 
-     all_data = json.load(json_in)
+    print("-----------------------------------")
+    print(original_sentence)
+    print(original_sentence_in_raw)
+    print(revised_before_insertion)
+    print("----------------------------------") 
 
-def format_text(title): 
-    return "<b> How to {0} </b>".format(title.replace("_", " ").strip(".txt"))
+    starts_with_bullet_point = re.findall(r"^[0-9]+\.", original_sentence_in_raw[0])
+   
+    if starts_with_bullet_point: 
+       original_sentence = " ".join(starts_with_bullet_point) + " " + original_sentence
+       revised_before_insertion = " ".join(starts_with_bullet_point) + " " + revised_before_insertion
+    elif original_sentence_in_raw[0].startswith("* "): 
+        original_sentence = "* " + original_sentence
+        revised_before_insertion = "* " + revised_before_insertion
+    
+    else: 
+        original_sentence = original_sentence
+        revised_before_insertion = revised_before_insertion
+    return revised_before_insertion
+    
 
-def trunc_par(par):
-    #print(data[key]["par"])
-    par = par.strip('\n').split('\n')[-6:]
+    
 
-    formatted = []
-    for sent in par: 
-        par_with_newline = sent + '\n'
-        formatted.append(par_with_newline)
 
-    return formatted 
+class RevisionInstance: 
+
+    def __init__(self, instance, key, clusters): 
+
+        self.instance = instance 
+        self.key = key 
+        self.clusters = clusters 
+        self.filename = instance[key]["filename"]
+
+        self.centroids_with_revised = clusters
+
+        self.context_before = instance[key]["ContextBefore"]
+        self.context_after = " ".join(instance[key]["ContextAfter"]) 
+
+
+        self.revised_before_insertion = instance[key]["RevisedBeforeInsertion"]
+        self.revised_after_insertion = instance[key]["RevisedAfterInsertion"]
+        self.original_in_article = data[key]["Tokenized_article"]["current"]
+        self.reference = data[key]["Reference"]
+
+        
+        if "BaseSentence" not in instance[key].keys(): 
+               
+               try: 
+                    self.original_sentence = data[key]["Base_Sentence"]
+               except KeyError: 
+                   self.original_sentence = " ".join(data[key]["base_tokenized"])
+                   
+              
+        else: 
+            self.original_sentence = data[key]["BaseSentence"]
+
+
+
 
 def main(): 
 
-    d  = {"Title": [], "Context": [], "Sent": [], "Reference": []} 
-    average_length = []
+    d  = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": []} 
+
     for key, _ in data.items(): 
-        if len(clusters[key]["Centroids_with_revised"]) == 5 and all_data[key]["reference"] != ["it"]: 
-            print("TITLE", format_text(all_data[key]["filename"]))
-            try: 
-                print(all_data[key]["Base_Article_Clean"]["left"])
-                print("========= currrent ====") 
-                print(all_data[key]["Base_Article_Clean"]["current"])
-                print("ref", all_data[key]["reference"])
-                print("revised sent", all_data[key]["revised_sentence"])
-                print("filtered predictions", data[key]["filtered_fillers"])
-                print("clusters", clusters[key]["Centroids_with_revised"])
-            
-            except KeyError: 
+     
+        revision_object = RevisionInstance(data, key, clusters)
+        context_before = revision_object.context_before
+        context_after = revision_object.context_after 
+        formatted_context_before = format_paragaph(context_before)
+        formatted_title = format_title(revision_object.filename) 
 
-   
-                print("========= par ===============")
-                print(all_data[key]["par"])
-                print("ref", all_data[key]["reference"])
-                print("revised sent", all_data[key]["revised_sentence"])
-                print("filtered predictions", data[key]["filtered_fillers"])
-                print("clusters", clusters[key]["Centroids_with_revised"])
-                #print("predictions", data[key]["GPT+Finetuning+P-perplexityPred"])
-                
-
-            #d["Title"].append(format_text(all_data[key]["filename"]))
-            #formatted = " ".join(trunc_par(data[key]["par"])).strip('\n')
-            #average_length.append(len(data[key]["par"].strip('\n').split('\n')))
-            #d["Context"].append(formatted.replace('\n', "<br>"))
-            #d["Sent"].append(data[key]["RevisedSentence"])
-            #d["Reference"].append(all_data[key]["reference"])
-            
-
-        print("==============")
-
-    print(np.mean(average_length))
+        
+        d["ContextBefore"].append(" ".join(context_before))
+        d["ContextAfter"].append(" ".join(context_after))
+        d["PatternName"].append("implicit_references")
+        d["Title"].append(formatted_title)
 
 
-    #df = pd.DataFrame.from_dict(d)
-    #df = df.tail(10)
-    #df.tail(10).to_csv(PATH_TO_FILE_OUT, index=False)
+        print(formatted_title)
+        for sent in formatted_context_before: 
+            print(sent)
+        print(context_after)
+        
+        print("---------- clusters ---------- ")
+        selected_centroids = clusters[key]["SelectedCentroids"]
+
+        revised_before_insertion = format_revised_before_insertion(revision_object.original_sentence, revision_object.original_in_article, revision_object.revised_before_insertion)
+        
+        fillers = selected_centroids + [revision_object.reference]
+        random.shuffle(fillers)
+        formatted_fillers = ["{0}{1}{2}".format("<u>", filler, "</u>") for filler in fillers]
+        print(formatted_fillers)
+
+        # To select batches --> to do later  
+        batch_nr = 1 
+        sent = revised_before_insertion + formatted_fillers[batch_nr] + revision_object.revised_after_insertion
+        print(sent)
 
 main()
