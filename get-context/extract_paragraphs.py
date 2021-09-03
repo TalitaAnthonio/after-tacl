@@ -19,7 +19,6 @@ with open(PATH_TO_FILE, "r") as json_in:
      data = json.load(json_in)
 
 
-
 sentence_splitter = SentenceSplitter(use_sent=True)
 
 
@@ -62,6 +61,26 @@ def format_current(x):
     replaced = re.sub(r'^([0-9]+)\s', r"\1", x)
     return replaced 
 
+def format_title(current_title): 
+    """
+        Param: 
+
+        current_title {str}: the title of the article (self.title in RevisionInstance)
+    """
+    
+    if current_title.startswith("## Steps") and current_title.strip() != "## Steps": 
+        try: 
+            title =  current_title.replace("###", "\n###").split('\n')[1]
+        except IndexError: 
+            title = current_title
+    
+    else: 
+        title = current_title
+    
+    return title 
+
+
+
 class RevisionInstance: 
 
     def __init__(self, instance, key): 
@@ -85,7 +104,7 @@ class RevisionInstance:
         self.full_paragraph = self.left_paragraph + self.original_in_article + self.right_paragraph
 
         if self.left_paragraph: 
-            self.title = [self.left_paragraph[0]] 
+            self.title = [format_title(self.left_paragraph[0])] 
         else: 
             self.title = []
 
@@ -220,6 +239,9 @@ def main():
                 if revision_object.left_paragraph[1][0].isdigit(): 
                     sentence_before_preceding = sentence_with_digit(revision_object.left_paragraph)
                     context_before = revision_object.title + ["(...)"] + sentence_before_preceding + [sentence_before] 
+                    if " ".join(sentence_before_preceding).startswith("1."): 
+                       context_before = revision_object.title + sentence_before_preceding + [sentence_before]
+                    
                     # if there is no close sentence with a digit, then take the previous line 
                     if not sentence_before_preceding: 
                         
@@ -264,8 +286,6 @@ def main():
                     last_line_of_left_context = revision_object.left_context[-1]
                     last_line_of_left_context_splitted = correct_splitter(sentence_splitter.tokenize([last_line_of_left_context])) 
                     second_last_line_of_left_context_splitted = correct_splitter(sentence_splitter.tokenize([revision_object.left_context[-2]]))[-1] 
-         
-                    sentence_before = last_line_of_left_context_splitted[-1]
                 
 
                     # if the sentence of the paragraph starts with a digit 
@@ -274,6 +294,9 @@ def main():
 
                         sentence_before_preceding = sentence_with_digit(revision_object.left_paragraph)
                         context_before = revision_object.title + ["(...)"] + sentence_before_preceding + [sentence_before] 
+                        
+                        if " ".join(sentence_before_preceding).startswith("1."): 
+                           context_before = revision_object.title + sentence_before_preceding + [sentence_before]
                         # if there is no close sentence with a digit, then take the previous line 
                         if not sentence_before_preceding: 
                             
@@ -312,6 +335,7 @@ def main():
 
             # DONE: there are two sentences on the same line 
             elif revision_object.index == 2: 
+               print("there are two sentences on the same line ")
                sentence_before = revision_object.current_line_raw_splitted[1]
                sentence_before_preceding = revision_object.current_line_raw_splitted[0]
 
@@ -324,8 +348,9 @@ def main():
 
             else: 
                 # DONE: There are more than two sentences before on the same line 
+                print("there are more then two sentences on the same line")
                 sentence_before = revision_object.current_line_raw_splitted[revision_object.index-1]
-                sentence_before_preceding = revision_object.current_line_raw_splitted[revision_object.index-1]
+                sentence_before_preceding = revision_object.current_line_raw_splitted[revision_object.index-2]
                 if sentence_before_preceding == revision_object.title:
                   context_before = revision_object.title + sentence_before
                 else: 
@@ -338,11 +363,15 @@ def main():
         
 
         print("==================================")
-        print(context_before)
+        for sent in context_before: 
+            print(sent)
+        
         print("original", original_sentence)
         print(context_after)
-        print("\n")
-        print(revision_object.full_paragraph)
+
+        print("------- full -------")
+        for elem in revision_object.full_paragraph: 
+            print(elem)
         print("====================================")
 
 
