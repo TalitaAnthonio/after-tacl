@@ -10,7 +10,7 @@ def connect_mturk(CONFIG):
     region_name = CONFIG['default']['region']
     aws_access_key_id=CONFIG['default']['id']
     aws_secret_access_key = CONFIG['default']['key']
-    endpoint_url = CONFIG['default']['sandbox']
+    endpoint_url = CONFIG['default']['amt']
 
     mturk_client = boto3.client(
         'mturk',
