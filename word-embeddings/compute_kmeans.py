@@ -11,6 +11,7 @@ import json
 import pdb 
 import numpy as np 
 import pickle 
+import pdb 
 
 
 #PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
@@ -20,7 +21,7 @@ PATH_TO_FILE = "../data-cleaning/filtered_set_train.json"
 PATH_TO_EMBEDDINGS = "../word-embeddings/filtered_train_preds_final_nouns_only_embeddings.pickle" 
 NUM_OF_PRED = 20
 NUM_CLUSTERS = 5 
-PATH_TO_FILE_OUT = "test.json".format(NUM_OF_PRED)
+PATH_TO_FILE_OUT = "k_means_train_set_filtered_latest_new.json".format(NUM_OF_PRED)
 
 
 with open("../data-cleaning/filtered_set_train.json", "r") as json_in: 
@@ -110,6 +111,7 @@ def get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of
            cluster_dict_indexes_only[cluster] = {"sents": [sent[1] for sent in sents], "revised-in-cluster": False, "index_of_revised": index_of_revised}
 
 
+    # filtered_centroids = centroids with revised 
     filtered_centroids = []
     for index in closest_data_indexes: 
         for key, _ in cluster_dict_indexes_only.items(): 
@@ -120,7 +122,6 @@ def get_clusters(sentences, vectorized_sentences, filtered_predictions, index_of
                 else: 
                     #filtered_centroids.append([key, cluster_dict_indexes_only[key]["index_of_revised"]])
                     filtered_centroids.append(cluster_dict_indexes_only[key]["index_of_revised"])
-
 
     return cluster_dict, cluster_centers, closest_data_indexes, centroids_by_prob, filtered_centroids
 
@@ -204,6 +205,7 @@ def main():
                     sentences = sentences + [revised_sentence_repr]
                     vectorized_sentences = np.append(vectorized_sentences, revised_sentence_vector, axis=0)
 
+
             
 
             try: 
@@ -228,8 +230,16 @@ def main():
             closest_to_centroids =  [sentences[index] for index in closest_data_indexes]
             centroids_with_revised_sents = [sentences[index] for index in centroids_with_revised]
 
+            print(len(filtered_predictions))
+            print(len(sentences))
 
-            d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids, "centroids_by_prob": centroids_by_prob, "Centroids_with_revised": centroids_with_revised_sents}
+            if len(sentences) != len(filtered_predictions): 
+               selected_centroids = [filtered_predictions[index] for index in centroids_with_revised if index in range(0,len(filtered_predictions))]
+            else: 
+                selected_centroids = [filtered_predictions[index] for index in centroids_with_revised]
+           
+            print(selected_centroids)
+            d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids, "centroids_by_prob": centroids_by_prob, "Centroids_with_revised": centroids_with_revised_sents, "SelectedCentroids": selected_centroids}
 
 
             print("centroids with revised", centroids_with_revised_sents)
