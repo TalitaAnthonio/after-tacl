@@ -49,13 +49,6 @@ def format_revised_before_insertion(original_sentence, original_sentence_in_raw,
         revised_before_insertion {str}: the part before the insertion
     """
 
-
-    print("-----------------------------------")
-    print(original_sentence)
-    print(original_sentence_in_raw)
-    print(revised_before_insertion)
-    print("----------------------------------") 
-
     starts_with_bullet_point = re.findall(r"^[0-9]+\.", original_sentence_in_raw[0])
    
     if starts_with_bullet_point: 
@@ -111,10 +104,10 @@ class RevisionInstance:
 
 def main(): 
 
-    d  = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": []} 
+    d  = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Clusters": [], "Id": [], "FilteredPredictions": []} 
 
     for key, _ in data.items(): 
-     
+        pdb.set_trace()
         revision_object = RevisionInstance(data, key, clusters)
         context_before = revision_object.context_before
         context_after = revision_object.context_after 
@@ -122,10 +115,12 @@ def main():
         formatted_title = format_title(revision_object.filename) 
 
         
+        d["Id"].append(key)
         d["ContextBefore"].append(" ".join(context_before))
-        d["ContextAfter"].append(" ".join(context_after))
+        d["ContextAfter"].append(context_after)
         d["PatternName"].append("implicit_references")
         d["Title"].append(formatted_title)
+        d["FilteredPredictions"].append(data[key]["FilteredPredictions"])
 
 
         print(formatted_title)
@@ -146,6 +141,14 @@ def main():
         # To select batches --> to do later  
         batch_nr = 1 
         sent = revised_before_insertion + formatted_fillers[batch_nr] + revision_object.revised_after_insertion
-        print(sent)
+        
+        d["Sent"].append(sent)
+        d["Clusters"].append(formatted_fillers)
+
+
+    df = pd.DataFrame.from_dict(d)
+    print(df)
+    df.to_csv("implicit_references.tsv", sep='\t')
+
 
 main()

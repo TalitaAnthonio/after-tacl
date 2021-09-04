@@ -377,6 +377,9 @@ def main():
 
     
         d[key] = data[key]
+
+        if type(context_after) == str: 
+           context_after = [context_after]
         d[key].update({"ContextBefore": context_before, "ContextAfter": context_after})
 
     with open("filtered_set_train_articles_tokenized_context_latest_with_context.json", "w") as json_out: 
