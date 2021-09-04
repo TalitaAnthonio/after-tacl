@@ -41,6 +41,7 @@ def format_paragaph(par):
     return par_with_breaklines
 
 
+
 def format_revised_before_insertion(original_sentence, original_sentence_in_raw, revised_before_insertion): 
     """ 
 
@@ -78,6 +79,7 @@ class RevisionInstance:
 
         self.centroids_with_revised = clusters
 
+
         self.context_before = instance[key]["ContextBefore"]
         self.context_after = " ".join(instance[key]["ContextAfter"]) 
 
@@ -107,7 +109,6 @@ def main():
     d  = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Clusters": [], "Id": [], "FilteredPredictions": []} 
 
     for key, _ in data.items(): 
-        pdb.set_trace()
         revision_object = RevisionInstance(data, key, clusters)
         context_before = revision_object.context_before
         context_after = revision_object.context_after 
@@ -116,7 +117,10 @@ def main():
 
         
         d["Id"].append(key)
-        d["ContextBefore"].append(" ".join(context_before))
+        d["ContextBefore"].append(" ".join(formatted_context_before))
+
+        if context_after.startswith("#"): 
+           context_after = "<br>"
         d["ContextAfter"].append(context_after)
         d["PatternName"].append("implicit_references")
         d["Title"].append(formatted_title)
