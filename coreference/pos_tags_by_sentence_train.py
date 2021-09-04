@@ -74,7 +74,7 @@ def filter_tags(tagged_fillers, reference_type, contains_digit):
         tags_to_include = ["NNS", "NNP", "NN"]
     words_to_exclude_unigrams = ["the", "a", "an"]
     words_to_exclude_second_bigram = ["the", "a", "an", "all"]
-
+    tags_to_exclude = ["IN", "VBZ", "VB", ".", ",", "CC"]
     if reference_type == "unigram":  
         for elem in tagged_fillers: 
             if elem != []:  
@@ -85,7 +85,7 @@ def filter_tags(tagged_fillers, reference_type, contains_digit):
          for elem in tagged_fillers: 
              pos_tags = [pos_tag[1] for pos_tag in elem]
              try: 
-                if pos_tags[1] in tags_to_include: 
+                if pos_tags[1] in tags_to_include and pos_tags[0] not in tags_to_exclude: 
                     filtered_list.append(elem)
              except IndexError: 
                  continue 
@@ -136,53 +136,62 @@ def tag_predictions(predictions, revised_untill_insertion, revised_after_inserti
 
     return tagged_predictions
 
+
+with open("../get-context/filtered_set_train_articles_tokenized_context_latest.json", "r") as json_in: 
+     filtered_set = json.load(json_in)
+
+
+keys_to_include = filtered_set.keys()
+
+
 def main(): 
     d = {}
     counter = 0 
-    for key, _ in data.items():     
-        if type(data[key]["predictions"]['generated_texts']) == list: 
+    for key, _ in data.items():    
+        if key in keys_to_include:  
+            if type(data[key]["predictions"]['generated_texts']) == list: 
 
-            counter +=1 
-            print("==============================================")
-            revision_instance = RevisionInstance(key, data[key], data[key].keys())
-            print(key, counter) 
-            tagged_predictions = tag_predictions(revision_instance.predictions, revision_instance.revised_untill_insertion, revision_instance.revised_after_insertion, revision_instance.revlength) 
-            
-            
-            print(revision_instance.revised_untill_insertion, "_____", revision_instance.revised_after_insertion)
-            print(data[key]["revised_sentence"])
-            print("all_predictions", revision_instance.predictions)
-
-            # check if the correct reference contains a digit. 
-        
-            reference = " ".join(data[key]["reference"])
-            contains_digit = any(map(str.isdigit, reference ))
-
-
-            for tagged_prediction, prediction in zip(tagged_predictions, revision_instance.predictions): 
+                counter +=1 
+                print("==============================================")
+                revision_instance = RevisionInstance(key, data[key], data[key].keys())
+                print(key, counter) 
+                tagged_predictions = tag_predictions(revision_instance.predictions, revision_instance.revised_untill_insertion, revision_instance.revised_after_insertion, revision_instance.revlength) 
                 
-                print(tagged_prediction)
-        
-            
-            filtered = filter_tags(tagged_predictions, data[key]["reference-type"], contains_digit)  
-            
-            
-            fillers_to_return = []
-            for filler in filtered: 
-                filler_tokens =  " ".join([elem[0] for elem in filler])
-                fillers_to_return.append(filler_tokens)
+                
+                print(revision_instance.revised_untill_insertion, "_____", revision_instance.revised_after_insertion)
+                print(data[key]["revised_sentence"])
+                print("all_predictions", revision_instance.predictions)
 
-            fillers_to_return_new = [filler for filler in fillers_to_return if filler not in string.punctuation]
-            print("returned_fillers") 
-            for elem in fillers_to_return_new: 
-                print(elem)
+                # check if the correct reference contains a digit. 
+            
+                reference = " ".join(data[key]["reference"])
+                contains_digit = any(map(str.isdigit, reference ))
 
-            d[key] = data[key]
-            d[key].update({"filtered_fillers": fillers_to_return_new}) 
+
+                for tagged_prediction, prediction in zip(tagged_predictions, revision_instance.predictions): 
+                    
+                    print(tagged_prediction)
+            
+                
+                filtered = filter_tags(tagged_predictions, data[key]["reference-type"], contains_digit)  
+                
+                
+                fillers_to_return = []
+                for filler in filtered: 
+                    filler_tokens =  " ".join([elem[0] for elem in filler])
+                    fillers_to_return.append(filler_tokens)
+
+                fillers_to_return_new = [filler for filler in fillers_to_return if filler not in string.punctuation]
+                print("returned_fillers") 
+                for elem in fillers_to_return_new: 
+                    print(elem)
+
+                d[key] = data[key]
+                d[key].update({"filtered_fillers": fillers_to_return_new}) 
 
 
     
-    with open("filtered_train_preds_final_nouns_only.json", "w") as json_out: 
+    with open("filtered_train_preds_final_nouns_only_new.json", "w") as json_out: 
          json.dump(d, json_out)
 
 main() 
