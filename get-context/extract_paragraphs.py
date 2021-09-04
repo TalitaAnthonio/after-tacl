@@ -87,11 +87,12 @@ class RevisionInstance:
 
     def __init__(self, instance, key): 
         
-        self.left_context = [line for line in instance[key]["BaseArticle"]["left_context"] if '### Timestamp' not in line]
+        self.left_context = [line for line in instance[key]["BaseArticle"]["left_context"] if '# Timestamp' not in line]
         self.current_line = instance[key]["BaseArticle"]["current_line"]
 
         # to make sure that there is no right context if it's a paragraph. 
-        self.right_context = [line for line in instance[key]["BaseArticle"]["right_context"] if '### Timestamp' not in line and not line.startswith("#")] 
+        self.right_context_old = [line for line in instance[key]["BaseArticle"]["right_context"] if '# Timestamp' not in line]
+        self.right_context = [line for line in self.right_context_old if line.startswith("#") == False] 
         self.current_line_raw_splitted = sentence_splitter.tokenize([sent for sent in instance[key]["BaseArticle"]["current_line"] if "Timestamp" not in sent])
 
         # the sentence_tokenized_components 
@@ -282,19 +283,25 @@ def main():
             if revision_object.index == 1: 
                 sentence_before = revision_object.current_line_raw_splitted[0]
                 print("there is just a sentence before")
+
             
                 # left paragraph should be bigger than two: the title + the sentence before 
-                if revision_object.left_paragraph and len(revision_object.left_paragraph) > 2 and sentence_before != revision_object.title: 
+                if revision_object.left_paragraph and len(revision_object.left_paragraph) > 1 and sentence_before != revision_object.title: 
+           
 
                     # the format is a string here 
                     last_line_of_left_context = revision_object.left_context[-1]
                     last_line_of_left_context_splitted = correct_splitter(sentence_splitter.tokenize([last_line_of_left_context])) 
-                    second_last_line_of_left_context_splitted = correct_splitter(sentence_splitter.tokenize([revision_object.left_context[-2]]))[-1] 
+                    if len(revision_object.left_context) > 1: 
+                        second_last_line_of_left_context_splitted = correct_splitter(sentence_splitter.tokenize([revision_object.left_context[-2]]))[-1] 
+                    else: 
+                        second_last_line_of_left_context_splitted = ""
                 
 
                     # if the sentence of the paragraph starts with a digit 
                  
                     if revision_object.left_paragraph[1][0].isdigit(): 
+                  
 
                         sentence_before_preceding = sentence_with_digit(revision_object.left_paragraph)
                         context_before = revision_object.title + ["(...)"] + sentence_before_preceding + [sentence_before] 
@@ -303,9 +310,10 @@ def main():
                            context_before = revision_object.title + sentence_before_preceding + [sentence_before]
                         # if there is no close sentence with a digit, then take the previous line 
                         if not sentence_before_preceding: 
-                            
+                        
                             # if the second p
                             second_previous_sentence = revision_object.left_context[-2]
+                            
                             # if the second previous sentence is the title 
                             if [second_previous_sentence] == revision_object.title or " ".join(second_previous_sentence).startswith("#"):
                                 context_before = revision_object.title + ["(...)"] + [sentence_before] 
@@ -384,6 +392,8 @@ def main():
 
         if type(context_after) == str: 
            context_after = [context_after]
+ 
+      
         d[key].update({"ContextBefore": context_before, "ContextAfter": context_after})
 
     with open("filtered_set_train_articles_tokenized_context_latest_with_context.json", "w") as json_out: 
