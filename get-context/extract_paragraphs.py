@@ -68,6 +68,8 @@ def format_title(current_title):
         current_title {str}: the title of the article (self.title in RevisionInstance)
     """
     
+    
+    current_title = current_title.strip()
     if current_title.startswith("## Steps") and current_title.strip() != "## Steps": 
         try: 
             title =  current_title.replace("###", "\n###").split('\n')[1]
@@ -85,9 +87,11 @@ class RevisionInstance:
 
     def __init__(self, instance, key): 
         
-        self.left_context = instance[key]["BaseArticle"]["left_context"]
+        self.left_context = [line for line in instance[key]["BaseArticle"]["left_context"] if '### Timestamp' not in line]
         self.current_line = instance[key]["BaseArticle"]["current_line"]
-        self.right_context = instance[key]["BaseArticle"]["right_context"]
+
+        # to make sure that there is no right context if it's a paragraph. 
+        self.right_context = [line for line in instance[key]["BaseArticle"]["right_context"] if '### Timestamp' not in line and not line.startswith("#")] 
         self.current_line_raw_splitted = sentence_splitter.tokenize([sent for sent in instance[key]["BaseArticle"]["current_line"] if "Timestamp" not in sent])
 
         # the sentence_tokenized_components 
@@ -279,8 +283,8 @@ def main():
                 sentence_before = revision_object.current_line_raw_splitted[0]
                 print("there is just a sentence before")
             
-
-                if revision_object.left_paragraph and len(revision_object.left_paragraph) > 1 and sentence_before != revision_object.title: 
+                # left paragraph should be bigger than two: the title + the sentence before 
+                if revision_object.left_paragraph and len(revision_object.left_paragraph) > 2 and sentence_before != revision_object.title: 
 
                     # the format is a string here 
                     last_line_of_left_context = revision_object.left_context[-1]
