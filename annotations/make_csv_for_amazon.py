@@ -15,9 +15,11 @@ import re
 import random 
 
 
+PATH_TO_FILTERED = "../coreference/filtered_train_preds_final_nouns_only_new_v2.json"
 PATH_TO_MAIN = "../get-context/filtered_set_train_articles_tokenized_context_latest_with_context.json"
 PATH_TO_CLUSTERS = "../word-embeddings/k_means_train_set_filtered_latest_new.json" 
-
+BATCH_NR = 1
+filename_to_write = "implicit_references_batch{0}_all_columns.csv".format(BATCH_NR)
 
 with open(PATH_TO_MAIN, "r") as json_in: 
      data = json.load(json_in)
@@ -26,6 +28,10 @@ with open(PATH_TO_CLUSTERS, "r") as json_in:
      clusters = json.load(json_in)
 
 
+with open(PATH_TO_FILTERED, "r") as json_in: 
+     filtered = json.load(json_in)
+ 
+
 def format_title(title): 
     return "How to {0}".format(title.replace("_", " ").strip(".txt"))
 
@@ -33,7 +39,7 @@ def format_paragaph(par):
     par_with_breaklines = []
     for index, sent in enumerate(par, 0):
         if index == 0: 
-           formatted_sent = "<b>" + " " + sent + " " + "</b>" 
+           formatted_sent = "<b>" + " " + sent + " " + "</b>" + "<br>"
         else: 
            formatted_sent = sent + " " + "<br>"
         par_with_breaklines.append(formatted_sent)
@@ -41,6 +47,14 @@ def format_paragaph(par):
     return par_with_breaklines
 
 
+# TODO: remove the ## in the title. 
+def remove_hashes(paragraph_before): 
+    cleaned = []
+    for index, sent in enumerate(paragraph_before,0): 
+        if index == 0: 
+           sent = sent.replace("#", "")
+        cleaned.append(sent)
+    return cleaned 
 
 def format_revised_before_insertion(original_sentence, original_sentence_in_raw, revised_before_insertion): 
     """ 
@@ -51,6 +65,7 @@ def format_revised_before_insertion(original_sentence, original_sentence_in_raw,
     """
 
     starts_with_bullet_point = re.findall(r"^[0-9]+\.", original_sentence_in_raw[0])
+
    
     if starts_with_bullet_point: 
        original_sentence = " ".join(starts_with_bullet_point) + " " + original_sentence
@@ -62,6 +77,11 @@ def format_revised_before_insertion(original_sentence, original_sentence_in_raw,
     else: 
         original_sentence = original_sentence
         revised_before_insertion = revised_before_insertion
+    
+
+    print(revised_before_insertion)
+    print("==================================")
+    
     return revised_before_insertion
     
 
@@ -106,53 +126,103 @@ class RevisionInstance:
 
 def main(): 
 
-    d  = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Clusters": [], "Id": [], "FilteredPredictions": []} 
+    d  = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Clusters": [], "Id": [], "FilteredPredictions": [], "Reference": []} 
+    #d = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Id": []}
 
     for key, _ in data.items(): 
-        revision_object = RevisionInstance(data, key, clusters)
-        context_before = revision_object.context_before
-        context_after = revision_object.context_after 
-        formatted_context_before = format_paragaph(context_before)
-        formatted_title = format_title(revision_object.filename) 
+        if len(clusters[key]["SelectedCentroids"]) == 5: 
+            revision_object = RevisionInstance(data, key, clusters)
+            context_before = revision_object.context_before
+            context_after = revision_object.context_after 
+            formatted_context_before = format_paragaph(context_before)
+            formatted_title = format_title(revision_object.filename) 
+
+          
 
         
-        d["Id"].append(key)
-        d["ContextBefore"].append(" ".join(formatted_context_before))
-
-        if context_after.startswith("#"): 
-           context_after = "<br>"
-        d["ContextAfter"].append(context_after)
-        d["PatternName"].append("implicit_references")
-        d["Title"].append(formatted_title)
-        d["FilteredPredictions"].append(data[key]["FilteredPredictions"])
 
 
-        print(formatted_title)
-        for sent in formatted_context_before: 
-            print(sent)
-        print(context_after)
+
+            if type(data[key]["reference"]) == list: 
+                reference = " ".join(data[key]["reference"])
+            else: 
+                reference = data[key]["reference"]
+           
+
+
+            #print(formatted_title)
+            #for sent in formatted_context_before: 
+            #    print(sent)
+            #print(context_after)
+            
+            #print("---------- clusters ---------- ")
+            selected_centroids = clusters[key]["SelectedCentroids"]
+
+            # make sure that the reference is in the centroids. 
+            to_exclude = False
+            for elem in selected_centroids: 
+                if elem.startswith("."): 
+                   to_exclude = True 
+                   break 
+                else: 
+                    to_exclude = False 
+
         
-        print("---------- clusters ---------- ")
-        selected_centroids = clusters[key]["SelectedCentroids"]
+            if reference.lower() in selected_centroids and to_exclude == False and formatted_context_before != [] and " ".join(context_before).startswith("#"): 
+                revised_before_insertion = format_revised_before_insertion(revision_object.original_sentence, revision_object.original_in_article, revision_object.revised_before_insertion)
+                
+                fillers = selected_centroids
+                random.shuffle(fillers)
+                formatted_fillers = ["{0}{1}{2}".format("<u>", filler, "</u>") for filler in fillers]
+                #print(formatted_fillers)
 
-        revised_before_insertion = format_revised_before_insertion(revision_object.original_sentence, revision_object.original_in_article, revision_object.revised_before_insertion)
-        
-        fillers = selected_centroids + [revision_object.reference]
-        random.shuffle(fillers)
-        formatted_fillers = ["{0}{1}{2}".format("<u>", filler, "</u>") for filler in fillers]
-        print(formatted_fillers)
+                # To select batches --> to do later  
+                # minus 
+                batch_nr = BATCH_NR-1
+                sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
+                sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
+                
+                
+                
+                sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
+                sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
 
-        # To select batches --> to do later  
-        batch_nr = 1 
-        sent = revised_before_insertion + formatted_fillers[batch_nr] + revision_object.revised_after_insertion
-        
-        d["Sent"].append(sent)
-        d["Clusters"].append(formatted_fillers)
+
+
+                print("current", sent)
+                
+                d["Sent"].append(sent)
+                  
+                d["Id"].append(key)
+
+                d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before)))
+                
+                d["PatternName"].append("implicit_references")
+                d["Title"].append(formatted_title)
+                d["FilteredPredictions"].append(filtered[key]["filtered_fillers2"])
+                d["Reference"].append(reference)
+                d["Clusters"].append(formatted_fillers)
+                
+
+                if context_after.startswith("#"): 
+                    context_after = "<br>"
+
+                
+                d["ContextAfter"].append(context_after)
+
+                if reference.lower() not in selected_centroids: 
+                    print(data[key]["reference"])
+                    print(key)
+                    print(selected_centroids, reference) 
+                    print("=================")
+                    
 
 
     df = pd.DataFrame.from_dict(d)
     print(df)
-    df.to_csv("implicit_references.tsv", sep='\t')
+
+
+    df.head(1000).to_csv(filename_to_write, index=False)
 
 
 main()
