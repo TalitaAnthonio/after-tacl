@@ -12,9 +12,11 @@ from sklearn.metrics import pairwise_distances_argmin_min
 
 #PATH_TO_FILE = "../coreference/filtered_train_preds_final.json" 
 
-PATH_TO_FILE = "../coreference/filtered_train_preds_final_nouns_only.json"
+#PATH_TO_FILE = "../coreference/filtered_train_preds_final_nouns_only.json"
 
 #PATH_TO_FILE = "../coreference/filtered_dev_preds_final_nouns_only.json"
+
+PATH_TO_FILE = "./filtered_train_preds_final_nouns_only_new_v2.json"
 
 with open(PATH_TO_FILE, "r") as json_in: 
      data = json.load(json_in)
@@ -55,11 +57,11 @@ def main():
         counter +=1 
         print("------------------- {0} ------------------------------".format(counter))
         revised_sentence = data[key]["revised_sentence"]
-        filtered_predictions = data[key]["filtered_fillers"]
+        filtered_predictions = data[key]["filtered_fillers2"]
 
 
         if data[key]['reference-type'] == "bigram": 
-            predictions_new = filter_second_step(data[key]["filtered_fillers"])
+            predictions_new = filter_second_step(data[key]["filtered_fillers2"])
             filtered_predictions = [predictions_new[key][0] for key, _ in predictions_new.items()]
 
 
@@ -87,7 +89,7 @@ def main():
             revised_sentence_embedding = vectorize_data([revised_sentence])
 
         d[key] = {"vectors": vectorized, "sentences": sentences_with_filler, "revised_sentence_embedding": revised_sentence_embedding, "revised_sentence": revised_sentence, 
-        "filtered_fillers": filtered_predictions}
+        "filtered_fillers2": filtered_predictions}
 
 
         
