@@ -1,5 +1,7 @@
 import pandas as pd 
 import pdb 
+import re 
+import pickle 
 
 # read the csvs 
 path_to_df1 = "./implicit_references_batch1.csv"
@@ -32,42 +34,76 @@ all_are_the_same = []
 requires_one = {}
 requires_two = {}
 
+def find_filler(string_with_filler): 
+    return " ".join(re.findall("<u>.+</u>", string_with_filler))
 
-for key, _ in d1.items(): 
-    # all of them are different 
 
-    fillers = set([d1[key], d2[key], d3[key]])
+def make_dict_with_fillers(): 
+    dict_with_fillers = {}
+    for key, _ in d1.items(): 
+        # all of them are different 
 
-    if d1[key] != d2[key] and d1[key] != d3[key] and d2[key] != d3[key]: 
-       assert len(fillers) == 3
-       completed.append(key)
+        fillers = set([d1[key], d2[key], d3[key]])
+
+        if d1[key] != d2[key] and d1[key] != d3[key] and d2[key] != d3[key]: 
+           assert len(fillers) == 3
+        
+           completed.append(key)
+        
+        # all are the same 
+        elif d3[key] == d2[key] == d1[key]: 
+            assert len(fillers) == 1
+            all_are_the_same.append(key)
+
+        # batch3 and 1 are the same 
+        elif d1[key] != d2[key] and d1[key] == d3[key]: 
+            assert len(fillers) == 2
+            batch_3_and_1_are_the_same.append(key)
+
+
+        # batch2 and 3 are the same 
+        elif d1[key] != d2[key] and d2[key] == d3[key]: 
+            assert len(fillers) == 2
+            batch_3_and_2_are_the_same.append(key)
+        
+        # batch 1 and 2 are the same 
+        elif d3[key] != d2[key] and d1[key] == d2[key]: 
+
+            assert len(fillers) == 2
+            batch_1_and_2_are_the_same.append(key)
+        
+        else: 
+            print(d1[key], d2[key], d3[key]) 
+        
+        dict_with_fillers[key] = {}
+        dict_with_fillers[key]["already_done"] = [find_filler(filler) for filler in fillers]
+        assert len(dict_with_fillers[key]["already_done"]) == len(dict_with_fillers[key])
+
+
+    return dict_with_fillers
+
+
+def main(): 
+
+    dict_with_fillers = make_dict_with_fillers()
+
     
-    # all are the same 
-    elif d3[key] == d2[key] == d1[key]: 
-        assert len(fillers) == 1
-        all_are_the_same.append(key)
-
-    # batch3 and 1 are the same 
-    elif d1[key] != d2[key] and d1[key] == d3[key]: 
-        assert len(fillers) == 2
-        #db.set_trace()
-        batch_3_and_1_are_the_same.append(key)
-
-
-
-    # batch2 and 1 are the same 
-    elif d1[key] != d2[key] and d2[key] == d3[key]: 
-        assert len(fillers) == 2
-        batch_3_and_2_are_the_same.append(key)
+    # len(dict_with_fillers[key]) == 1 (N=41) -> formatted fillers = 4
+    # len(dict_with_fillers[key]) == 2 (N=490) --> formatted fillers = 3 
+    # len(dict_with_fillers[key]) == 3 (N=469) --> formatted fillers = 2
+    counter = 0 
+    for key, _ in dict_with_fillers.items(): 
+        if len(dict_with_fillers[key]) == 3: 
+           counter +=1 
     
-    elif d3[key] != d2[key] and d1[key] == d2[key]: 
-        print(d1[key], d2[key], d3[key])
-        assert len(fillers) == 2
-        batch_1_and_2_are_the_same.append(key)
-    
-    else: 
-        print(d1[key], d2[key], d3[key]) 
-    
+    print(counter)
+main()
+
+
+
+
+
+
 
 
 """"
