@@ -72,9 +72,6 @@ def format_revised_before_insertion(original_sentence, original_sentence_in_raw,
         original_sentence = original_sentence
         revised_before_insertion = revised_before_insertion
     
-
-    print(revised_before_insertion)
-    print("==================================")
     
     return revised_before_insertion
     
@@ -126,137 +123,214 @@ def main():
 
     #d  = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Clusters": [], "Id": [], "FilteredPredictions": [], "Reference": []} 
     d = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Id": [], "BatchNr": []}
-
+    keys_to_exclude = ["Include_a_Recovering_Alcoholic_in_Social_Events_with_Alcohol5", "Knit_Entrelac25", "Make_Adjustable_Straps6"]
     counter = 0 
     # make sure to only use those that we have tried before 
     for key, _ in dict_with_fillers.items(): 
+            if key not in keys_to_exclude: 
        
-            revision_object = RevisionInstance(data, key, clusters)
-            context_before = revision_object.context_before
-            context_after = revision_object.context_after 
-            formatted_context_before = format_paragaph(context_before)
-            formatted_title = format_title(revision_object.filename) 
-            revised_before_insertion = format_revised_before_insertion(revision_object.original_sentence, revision_object.original_in_article, revision_object.revised_before_insertion)
-            
-            fillers =  clusters[key]["SelectedCentroids"]
-
-            formatted_fillers = ["{0}{1}{2}".format("<u>", filler, "</u>") for filler in fillers if "{0}{1}{2}".format("<u>", filler, "</u>") not in dict_with_fillers[key]]
-                      
-            
-
-            # if two fillers are already done, then take the last three 
-
-
-            # 490 in total: two annotations are stil needed 
-            if len(dict_with_fillers[key]) == 2: 
-                formatted_fillers = ["{0}{1}{2}".format("<u>", filler, "</u>") for filler in fillers if replacement("{0}{1}{2}".format("<u>", filler, "</u>")) not in dict_with_fillers[key]]
-
- 
-
-                # for batch 4 
-                batch_nr = 0 
-                sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
-                sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
-                sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
-                sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
-                d["Sent"].append(sent)
-                d["BatchNr"].append("4")
-                d["Id"].append(key)
-                d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
-                d["PatternName"].append("implicit_references")
-                d["Title"].append(formatted_title)
-                if context_after.startswith("#"): 
-                    context_after = "<br>"         
-                d["ContextAfter"].append(context_after)
-
-                # for batch 5 
-                batch_nr = 1 
-                sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
-                sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
-                sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
-                sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
-                d["Sent"].append(sent)
-                d["BatchNr"].append("5")
-                d["Id"].append(key)
-                d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
-                d["PatternName"].append("implicit_references")
-                d["Title"].append(formatted_title)
-                if context_after.startswith("#"): 
-                    context_after = "<br>"
-
+                revision_object = RevisionInstance(data, key, clusters)
+                context_before = revision_object.context_before
+                context_after = revision_object.context_after 
+                formatted_context_before = format_paragaph(context_before)
+                formatted_title = format_title(revision_object.filename) 
+                revised_before_insertion = format_revised_before_insertion(revision_object.original_sentence, revision_object.original_in_article, revision_object.revised_before_insertion)
                 
-                d["ContextAfter"].append(context_after)
+                fillers =  clusters[key]["SelectedCentroids"]
 
-                #assert(len(formatted_fillers)) == 3
-
-                #------------------- for batch 6 ---------------------
-                batch_nr = 2 
-                sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
-                sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
-                sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
-                sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
-                d["Sent"].append(sent)
-                d["BatchNr"].append("6")
-                d["Id"].append(key)
-                d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
-                d["PatternName"].append("implicit_references")
-                d["Title"].append(formatted_title)
-                if context_after.startswith("#"): 
-                    context_after = "<br>"
-
+                formatted_fillers = ["{0}{1}{2}".format("<u>", filler, "</u>") for filler in fillers if "{0}{1}{2}".format("<u>", filler, "</u>") not in dict_with_fillers[key]]
+                        
                 
-                d["ContextAfter"].append(context_after)
 
-            # N = 469: there are two fillers left 
-            elif len(dict_with_fillers[key]) == 3:
-                formatted_fillers = ["{0}{1}{2}".format("<u>", filler, "</u>") for filler in fillers if replacement("{0}{1}{2}".format("<u>", filler, "</u>")) not in dict_with_fillers[key]]
-                assert (len(formatted_fillers)) == 2
-       
-            
+                # if two fillers are already done, then take the last three 
 
-                # for batch 4 
-                batch_nr = 0 
-                sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
-                sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
-                sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
-                sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
-                d["Sent"].append(sent)
-                d["BatchNr"].append("4")
-                d["Id"].append(key)
-                d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
-                d["PatternName"].append("implicit_references")
-                d["Title"].append(formatted_title)
-                if context_after.startswith("#"): 
-                    context_after = "<br>"
 
+                # 490 in total: two annotations are stil needed 
+                if len(dict_with_fillers[key]) == 2: 
+                    formatted_fillers = ["{0}{1}{2}".format("<u>", filler, "</u>") for filler in fillers if replacement("{0}{1}{2}".format("<u>", filler, "</u>")) not in dict_with_fillers[key]]
+
+    
+
+                    # for batch 4 
+                    batch_nr = 0 
+                    sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
+                    sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
+                    sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
+                    sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
+                    d["Sent"].append(sent)
+                    d["BatchNr"].append("4")
+                    d["Id"].append(key)
+                    d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
+                    d["PatternName"].append("implicit_references")
+                    d["Title"].append(formatted_title)
+                    if context_after.startswith("#"): 
+                        context_after = "<br>"         
+                    d["ContextAfter"].append(context_after)
+
+                    # for batch 5 
+                    batch_nr = 1 
+                    sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
+                    sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
+                    sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
+                    sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
+                    d["Sent"].append(sent)
+                    d["BatchNr"].append("5")
+                    d["Id"].append(key)
+                    d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
+                    d["PatternName"].append("implicit_references")
+                    d["Title"].append(formatted_title)
+                    if context_after.startswith("#"): 
+                        context_after = "<br>"
+
+                    
+                    d["ContextAfter"].append(context_after)
+
+                    #assert(len(formatted_fillers)) == 3
+
+                    #------------------- for batch 6 ---------------------
+                    batch_nr = 2 
+                    sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
+                    sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
+                    sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
+                    sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
+                    d["Sent"].append(sent)
+                    d["BatchNr"].append("6")
+                    d["Id"].append(key)
+                    d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
+                    d["PatternName"].append("implicit_references")
+                    d["Title"].append(formatted_title)
+                    if context_after.startswith("#"): 
+                        context_after = "<br>"
+
+                    
+                    d["ContextAfter"].append(context_after)
+
+                # N = 469: there are two fillers left 
+                elif len(dict_with_fillers[key]) == 3:
+                    formatted_fillers = ["{0}{1}{2}".format("<u>", filler, "</u>") for filler in fillers if replacement("{0}{1}{2}".format("<u>", filler, "</u>")) not in dict_with_fillers[key]]
+                    assert (len(formatted_fillers)) == 2
+        
                 
-                d["ContextAfter"].append(context_after)
 
-                # for batch 5 
-                batch_nr = 1
-                sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
-                sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
-                sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
-                sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
-                d["Sent"].append(sent)
-                d["BatchNr"].append("5")
-                d["Id"].append(key)
-                d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
-                d["PatternName"].append("implicit_references")
-                d["Title"].append(formatted_title)
-                if context_after.startswith("#"): 
-                    context_after = "<br>"
+                    # for batch 4 
+                    batch_nr = 0 
+                    sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
+                    sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
+                    sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
+                    sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
+                    d["Sent"].append(sent)
+                    d["BatchNr"].append("4")
+                    d["Id"].append(key)
+                    d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
+                    d["PatternName"].append("implicit_references")
+                    d["Title"].append(formatted_title)
+                    if context_after.startswith("#"): 
+                        context_after = "<br>"
 
-                
-                d["ContextAfter"].append(context_after)
+                    
+                    d["ContextAfter"].append(context_after)
 
-            else: 
-                try: 
-                    assert len(dict_with_fillers[key]) == 1
-                except AssertionError: 
-                    pdb.set_trace()
-                
-                counter +=1 
+                    # for batch 5 
+                    batch_nr = 1
+                    sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
+                    sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
+                    sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
+                    sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
+                    d["Sent"].append(sent)
+                    d["BatchNr"].append("5")
+                    d["Id"].append(key)
+                    d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
+                    d["PatternName"].append("implicit_references")
+                    d["Title"].append(formatted_title)
+                    if context_after.startswith("#"): 
+                        context_after = "<br>"
+
+                    
+                    d["ContextAfter"].append(context_after)
+
+                else: 
+                    # for batch 4 
+
+                    print(len(formatted_fillers))
+                    counter +=1 
+
+
+                    
+                    batch_nr = 0
+                    sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
+                    sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
+                    sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
+                    sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
+                    d["Sent"].append(sent)
+                    d["BatchNr"].append("4")
+                    d["Id"].append(key)
+                    d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
+                    d["PatternName"].append("implicit_references")
+                    d["Title"].append(formatted_title)
+                    if context_after.startswith("#"): 
+                        context_after = "<br>"
+
+                    
+                    d["ContextAfter"].append(context_after)
+
+
+
+                    # for batch 5 
+                    batch_nr = 1
+                    sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
+                    sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
+                    sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
+                    sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
+                    d["Sent"].append(sent)
+                    d["BatchNr"].append("5")
+                    d["Id"].append(key)
+                    d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
+                    d["PatternName"].append("implicit_references")
+                    d["Title"].append(formatted_title)
+                    if context_after.startswith("#"): 
+                        context_after = "<br>"
+
+                    
+                    d["ContextAfter"].append(context_after)
+
+
+                    # for batch 6 
+                    batch_nr = 2
+                    sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
+                    sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
+                    sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
+                    sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
+                    d["Sent"].append(sent)
+                    d["BatchNr"].append("6")
+                    d["Id"].append(key)
+                    d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
+                    d["PatternName"].append("implicit_references")
+                    d["Title"].append(formatted_title)
+                    if context_after.startswith("#"): 
+                        context_after = "<br>"
+
+                    
+                    d["ContextAfter"].append(context_after)
+
+
+                    # for batch 7 
+                    batch_nr = 3
+                    sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
+                    sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
+                    sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
+                    sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
+                    d["Sent"].append(sent)
+                    d["BatchNr"].append("7")
+                    d["Id"].append(key)
+                    d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before))) 
+                    d["PatternName"].append("implicit_references")
+                    d["Title"].append(formatted_title)
+                    if context_after.startswith("#"): 
+                        context_after = "<br>"
+
+                    
+                    d["ContextAfter"].append(context_after)
+                    
     
     print(counter)
 
@@ -264,12 +338,15 @@ def main():
     df = pd.DataFrame.from_dict(d)
     batch4 = df.loc[df['BatchNr'] == "4"]
     batch5 = df.loc[df['BatchNr'] == "5"]
+
     batch6 = df.loc[df['BatchNr'] == "6"]
+    batch7 = df.loc[df['BatchNr'] == "7"]
 
 
-    batch4.to_csv("batch4.csv", index=False)
-    batch5.to_csv("batch5.csv", index=False)
-    batch6.to_csv("batch6.csv", index=False)
+    batch4.to_csv("implicit_references_batch4.csv", index=False)
+    batch5.to_csv("implicit_references_batch5.csv", index=False)
+    batch6.to_csv("implicit_references_batch6.csv", index=False)
+    batch7.to_csv("implicit_references_batch7.csv", index=False)
 
 
 
