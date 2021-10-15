@@ -15,12 +15,14 @@ import pdb
 
 
 #PATH_TO_FILE = "../coreference/filtered_predictions_step2.json"
-PATH_TO_FILE = "../data-cleaning/filtered_set_train.json"
+#PATH_TO_FILE = "../data-cleaning/filtered_set_train.json"
 
 #PATH_TO_FILE = "../data-cleaning/filtered_set_train.json" 
 PATH_TO_EMBEDDINGS = "../word-embeddings/filtered_train_preds_final_nouns_only_embeddings.pickle" 
 NUM_OF_PRED = 20
 NUM_CLUSTERS = 5 
+
+PATH_TO_FILE = "../coreference/filtered_train_preds_final_nouns_only_new_v2.json"
 PATH_TO_FILE_OUT = "k_means_train_set_filtered_latest_new.json".format(NUM_OF_PRED)
 
 
@@ -145,16 +147,16 @@ def main():
         if key in keys: 
             print("------------------- {0} ------------------------------".format(key))
 
-            revised_sentence = data[key]["RevisedSentence"]
+            revised_sentence = data[key]["revised_sentence"]
 
-            if type(data[key]["Reference"]) == list: 
-                reference = " ".join(reference)
+            if type(data[key]["reference"]) == list: 
+                reference = " ".join(data[key]["reference"])
             else: 
-                reference = data[key]["Reference"]
+                reference = data[key]["reference"]
             
 
 
-            index_of_revised = get_index_of_revised(embeddings[key]["filtered_fillers"], reference)
+            index_of_revised = get_index_of_revised(embeddings[key]["filtered_fillers2"], reference)
             
 
 
@@ -162,7 +164,7 @@ def main():
                 index_of_revised = index_of_revised[0]
                 if index_of_revised in [i for i in range(0,NUM_OF_PRED)]:
                     print("index in range")
-                    filtered_predictions = embeddings[key]["filtered_fillers"][0:NUM_OF_PRED]
+                    filtered_predictions = embeddings[key]["filtered_fillers2"][0:NUM_OF_PRED]
                     vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED]
                     sentences = embeddings[key]["sentences"][0:NUM_OF_PRED]
 
@@ -171,7 +173,7 @@ def main():
                 # otherwise, add the revised sentence to the predictions 
                 else: 
                     print("index not in range")
-                    filtered_predictions = embeddings[key]["filtered_fillers"][0:NUM_OF_PRED-1]
+                    filtered_predictions = embeddings[key]["filtered_fillers2"][0:NUM_OF_PRED-1]
                     vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
                     sentences = embeddings[key]["sentences"][0:NUM_OF_PRED-1]
 
@@ -184,7 +186,7 @@ def main():
 
             else: 
                 print("prediction not in top")
-                filtered_predictions = embeddings[key]["filtered_fillers"][0:NUM_OF_PRED-1]
+                filtered_predictions = embeddings[key]["filtered_fillers2"][0:NUM_OF_PRED-1]
 
                 # length = 19 and length = 19 
                 vectorized_sentences = embeddings[key]["vectors"][0:NUM_OF_PRED-1]
@@ -245,8 +247,8 @@ def main():
             print("centroids with revised", centroids_with_revised_sents)
 
 
-    with open(PATH_TO_FILE_OUT, "w") as json_out: 
-                json.dump(d,json_out)
+    #with open(PATH_TO_FILE_OUT, "w") as json_out: 
+    #            json.dump(d,json_out)
 
 
 main()

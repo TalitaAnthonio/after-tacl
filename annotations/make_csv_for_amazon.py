@@ -18,8 +18,8 @@ import random
 PATH_TO_FILTERED = "../coreference/filtered_train_preds_final_nouns_only_new_v2.json"
 PATH_TO_MAIN = "../get-context/filtered_set_train_articles_tokenized_context_latest_with_context.json"
 PATH_TO_CLUSTERS = "../word-embeddings/k_means_train_set_filtered_latest_new.json" 
-BATCH_NR = 1
-filename_to_write = "implicit_references_batch{0}_all_columns.csv".format(BATCH_NR)
+BATCH_NR = 5
+filename_to_write = "implicit_references_batch{0}.csv".format(BATCH_NR)
 
 with open(PATH_TO_MAIN, "r") as json_in: 
      data = json.load(json_in)
@@ -126,11 +126,12 @@ class RevisionInstance:
 
 def main(): 
 
-    d  = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Clusters": [], "Id": [], "FilteredPredictions": [], "Reference": []} 
-    #d = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Id": []}
+    #d  = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Clusters": [], "Id": [], "FilteredPredictions": [], "Reference": []} 
+    d = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Id": []}
 
+    keys_to_exclude = ["Be_a_Better_Stage_Actor110", "Crochet_a_Mermaid_Blanket1", "Create_a_Robot_Model_in_MATLAB5", "Get_a_Ph.D._in_Physics8", "Buy_an_Engagement_Ring_on_a_Budget4", "Defend_in_Football16"] 
     for key, _ in data.items(): 
-        if len(clusters[key]["SelectedCentroids"]) == 5: 
+        if len(clusters[key]["SelectedCentroids"]) == 5 and key not in keys_to_exclude: 
             revision_object = RevisionInstance(data, key, clusters)
             context_before = revision_object.context_before
             context_after = revision_object.context_after 
@@ -199,9 +200,9 @@ def main():
                 
                 d["PatternName"].append("implicit_references")
                 d["Title"].append(formatted_title)
-                d["FilteredPredictions"].append(filtered[key]["filtered_fillers2"])
-                d["Reference"].append(reference)
-                d["Clusters"].append(formatted_fillers)
+                #d["FilteredPredictions"].append(filtered[key]["filtered_fillers2"])
+                #d["Reference"].append(reference)
+                #d["Clusters"].append(formatted_fillers)
                 
 
                 if context_after.startswith("#"): 
