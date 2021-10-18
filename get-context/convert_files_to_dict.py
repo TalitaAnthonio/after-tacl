@@ -6,7 +6,7 @@ import bz2
 import os
 import pickle
 
-def get_file_to_dict_format(directory='filenames'):
+def get_file_to_dict_format(directory='dev-files'):
     """
       Param: 
         directory: name of the directory with the bz2 files 
@@ -35,7 +35,7 @@ def main():
     print("read files") 
     files_in_dict_format = get_file_to_dict_format()
 
-    with open("files_in_dict_format_filtered_train_set.pickle", "wb") as pickle_out:
+    with open("files_in_dict_format_filtered_dev_set.pickle", "wb") as pickle_out:
         files_in_dict_format = pickle.dump(files_in_dict_format, pickle_out)
 
 main()
