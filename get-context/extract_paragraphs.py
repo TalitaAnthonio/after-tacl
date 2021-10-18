@@ -13,10 +13,13 @@ from numpy import index_exp
 from tools import SentenceSplitter
 from correct_sentence_splitter import correct_splitter
 
-PATH_TO_FILE = "filtered_set_train_articles_tokenized_context_latest.json"
+PATH_TO_FILE = "filtered_set_dev_articles_tokenized_context_latest.json" 
 
 with open(PATH_TO_FILE, "r") as json_in: 
      data = json.load(json_in)
+
+with open("../../tacl/data/references_for_lm.json", "r") as json_in: 
+     all_data = json.load(json_in)
 
 
 sentence_splitter = SentenceSplitter(use_sent=True)
@@ -113,12 +116,12 @@ class RevisionInstance:
         else: 
             self.title = []
 
-        if "BaseSentence" not in instance[key].keys(): 
+        if "BaseSentence" not in all_data[key].keys(): 
                
                try: 
-                    original_sentence = data[key]["Base_Sentence"]
+                    original_sentence = all_data[key]["Base_Sentence"]
                except KeyError: 
-                   original_sentence = " ".join(data[key]["base_tokenized"])
+                   original_sentence = " ".join(all_data[key]["base_tokenized"])
                    
               
         else: 
@@ -396,6 +399,7 @@ def main():
       
         d[key].update({"ContextBefore": context_before, "ContextAfter": context_after})
 
-    with open("filtered_set_train_articles_tokenized_context_latest_with_context.json", "w") as json_out: 
+
+    with open("filtered_set_dev_articles_tokenized_context_latest_with_context.json", "w") as json_out: 
             json.dump(d, json_out)
 main()  

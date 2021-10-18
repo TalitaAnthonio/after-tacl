@@ -1,4 +1,4 @@
-# This script was used to remove the instances for which the human-inserted reference was a pronoun. 
+# This script was used to remove the instances for which the human-inserted reference was a pronoun.
 
 import json 
 import pdb 

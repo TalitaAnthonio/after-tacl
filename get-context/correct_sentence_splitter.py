@@ -10,8 +10,12 @@ import re
 
 sentence_splitter = SentenceSplitter(use_sent=True)
 
-with open("filtered_set_train_articles.json", "r") as json_in: 
+with open("filtered_set_dev_articles.json", "r") as json_in: 
      data = json.load(json_in)
+
+with open("../../tacl/data/references_for_lm.json", "r") as json_in: 
+     all_data = json.load(json_in)
+
 
 def format_current(x): 
     """
@@ -125,10 +129,10 @@ def main():
         
     
 
-            if "Base_Sentence" not in data[key].keys():
-                original_sentence = " ".join(data[key]["base_tokenized"])
+            if "Base_Sentence" not in all_data[key].keys():
+                original_sentence = " ".join(all_data[key]["base_tokenized"])
             else: 
-                original_sentence =  data[key]["Base_Sentence"]
+                original_sentence =  all_data[key]["Base_Sentence"]
             
         
             res = get_matching_sent_context(current_line_tokenized, original_sentence)
@@ -165,7 +169,7 @@ def main():
                 #print(par)
 
 
-    with open("filtered_set_train_articles_tokenized_context_latest.json", "w") as json_out: 
+    with open("filtered_set_dev_articles_tokenized_context_latest.json", "w") as json_out: 
         json.dump(d, json_out)     
 
     

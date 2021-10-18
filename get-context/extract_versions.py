@@ -42,7 +42,8 @@ def get_right_timestamp(res, lower_part, all_indexes):
 
 
 def main():
- 
+
+
     collection_with_articles = {}
     counter = 0 
     for key, _ in subset.items():
