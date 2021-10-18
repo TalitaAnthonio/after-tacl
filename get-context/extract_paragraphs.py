@@ -398,6 +398,7 @@ def main():
  
       
         d[key].update({"ContextBefore": context_before, "ContextAfter": context_after})
+        d[key].update(all_data[key])
 
 
     with open("filtered_set_dev_articles_tokenized_context_latest_with_context.json", "w") as json_out: 
