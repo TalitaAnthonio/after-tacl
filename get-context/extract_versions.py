@@ -100,6 +100,8 @@ def main():
 
             collection_with_articles[key] = subset[key]
             collection_with_articles[key].update({"BaseArticle": article_dict})
+            pdb.set_trace()
+            collection_with_articles[key].update(data[key])
         
 
         with open(FILEOUT, 'w') as json_out:
