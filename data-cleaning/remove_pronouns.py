@@ -1,4 +1,4 @@
-# Merge the files with embeddings and clusters together 
+# This script was used to remove the instances for which the human-inserted reference was a pronoun. 
 
 import json 
 import pdb 
@@ -27,7 +27,7 @@ def check_filler_length(fillers, reference):
 
 
 unique_references = []
-pronouns = ["all", '"', "i", "our", "we", "of", "yours", "it", "your", "he", "she", "him", "her", "they", "them", "these", ",", "their", "yourself", "me", "its", "herself", "you"]
+pronouns = ["all", '"',  "i", "our", "we", "of", "yours", "it", "your", "he", "she", "him", "her", "they", "them", "these", ",", "their", "yourself", "me", "its", "herself", "you"]
 counter = 0 
 filtered_set = {}
 filenames = []
