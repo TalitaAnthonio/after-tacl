@@ -29,10 +29,10 @@ PATH_TO_FILE = "../coreference/filtered_dev_preds_final_nouns_only.json"
 PATH_TO_FILE_OUT = "k_means_dev_set_filtered_latest_new.json".format(NUM_OF_PRED)
 
 
-with open("../data-cleaning/filtered_set_train.json", "r") as json_in: 
-     subset = json.load(json_in)
+with open("human_inserted_reference_not_pronoun.pickle", "rb") as pickle_in: 
+     subset = pickle.load(pickle_in)
 
-keys = list(subset.keys())
+keys = subset
 
 
 with open(PATH_TO_EMBEDDINGS, "rb") as pickle_in: 
@@ -150,12 +150,12 @@ def main():
         if key in keys: 
             print("------------------- {0} ------------------------------".format(key))
 
-            revised_sentence = data[key]["revised_sentence"]
+            revised_sentence = data[key]["RevisedSentence"]
 
-            if type(data[key]["reference"]) == list: 
-                reference = " ".join(data[key]["reference"])
+            if type(data[key]["CorrectReference"]) == list: 
+                reference = " ".join(data[key]["CorrectReference"])
             else: 
-                reference = data[key]["reference"]
+                reference = data[key]["CorrectReference"]
             
 
 
@@ -245,10 +245,10 @@ def main():
            
             print(selected_centroids)
             d[key] = {"clusters": cluster_dict, "centroids": closest_to_centroids, "centroids_by_prob": centroids_by_prob, "Centroids_with_revised": centroids_with_revised_sents, "SelectedCentroids": selected_centroids}
-
+            d[key].update(data[key])
 
             print("centroids with revised", centroids_with_revised_sents)
-
+   
 
     with open(PATH_TO_FILE_OUT, "w") as json_out: 
                 json.dump(d,json_out)
