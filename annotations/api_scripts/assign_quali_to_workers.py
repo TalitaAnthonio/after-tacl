@@ -25,7 +25,6 @@ def make_qualification(mturk, questionqual_xml):
         Keywords='data protection',
         Description='Please read our data protection policy and accept it',
         QualificationTypeStatus='Active',
-        RetryDelayInSeconds=123,
         Test=question,
         AnswerKey=answer,
         TestDurationInSeconds=300,
