@@ -186,4 +186,49 @@
   </Question>
 
 
+  <Overview> 
+   <FormattedContent><![CDATA[
+  <p><font size="5"><b>Text 4</b></font></p>
+  <p><b>Deciding What to Say or Write</b></p>
+  <p> 
+  1. Ask in person whenever possible Receiving an invitation to be a groomsman is exciting. <br/>
+  (...) <br/> 
+  2. Send a </u>birthday<u> card. Even when you are able to have the conversation in person, it's worth sending a card. <br/> 
+
+  </p> 
+  ]]></FormattedContent>
+</Overview> 
+
+
+<Question>
+    <QuestionIdentifier>q5</QuestionIdentifier>
+    <DisplayName>accept</DisplayName>
+    <IsRequired>true</IsRequired>
+    <QuestionContent>
+     <Text>
+     Question 5: Does the underlined part in text 5 make sense in the given how-to-guide? 
+    </Text>
+    </QuestionContent>
+    
+<AnswerSpecification>
+    <SelectionAnswer>
+  <StyleSuggestion>radiobutton</StyleSuggestion>
+  <Selections>
+    <Selection>
+      <SelectionIdentifier>5Y</SelectionIdentifier>
+      <Text>yes</Text>
+    </Selection>
+    <Selection>
+      <SelectionIdentifier>5N</SelectionIdentifier>
+      <Text>no</Text>
+    </Selection>
+    </Selections>
+    </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+
+
+
+
+
 </QuestionForm>
