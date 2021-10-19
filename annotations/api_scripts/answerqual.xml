@@ -64,6 +64,17 @@
     </AnswerOption>
   </Question>
 
+<Question>
+    <QuestionIdentifier>q6</QuestionIdentifier>
+    <AnswerOption>
+      <SelectionIdentifier>6Y</SelectionIdentifier>
+      <AnswerScore>1</AnswerScore>
+    </AnswerOption>   
+    <AnswerOption>
+      <SelectionIdentifier>6N</SelectionIdentifier>
+      <AnswerScore>0</AnswerScore>
+    </AnswerOption>
+  </Question>
 
 
 

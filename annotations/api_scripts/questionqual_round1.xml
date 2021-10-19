@@ -186,9 +186,11 @@
   </Question>
 
 
-  <Overview> 
+<Overview> 
    <FormattedContent><![CDATA[
-  <p><font size="5"><b>Text 4</b></font></p>
+    <p><font size="5"><b>Text 4</b></font></p>
+  <p><b>How to Ask Someone to be your Groomsman </b></p>
+  <p> 
   <p><b>Deciding What to Say or Write</b></p>
   <p> 
   1. Ask in person whenever possible Receiving an invitation to be a groomsman is exciting. <br/>
@@ -228,6 +230,46 @@
   </Question>
 
 
+<Overview> 
+   <FormattedContent><![CDATA[
+  <p><font size="5"><b>Text 5</b></font></p>
+
+    <p><b>How to Build Deck Stairs</b></p>
+  <p> 
+  <b> Finishing the Deck Stairs</b> <br/> 
+  1. Screw each stringer to <u>the top of </ul> the deck frame with a drill. <br> 
+  Use L-brackets and deck screws to attach the stringers to the deck. <br> 
+  </p> 
+  ]]></FormattedContent>
+</Overview> 
+
+
+<Question>
+    <QuestionIdentifier>q6</QuestionIdentifier>
+    <DisplayName>accept</DisplayName>
+    <IsRequired>true</IsRequired>
+    <QuestionContent>
+     <Text>
+     Question 6: Does the underlined part in text 6 make sense in the given how-to-guide? 
+    </Text>
+    </QuestionContent>
+    
+<AnswerSpecification>
+    <SelectionAnswer>
+  <StyleSuggestion>radiobutton</StyleSuggestion>
+  <Selections>
+    <Selection>
+      <SelectionIdentifier>6Y</SelectionIdentifier>
+      <Text>yes</Text>
+    </Selection>
+    <Selection>
+      <SelectionIdentifier>6N</SelectionIdentifier>
+      <Text>no</Text>
+    </Selection>
+    </Selections>
+    </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
 
 
 
