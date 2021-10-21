@@ -5,7 +5,7 @@
 import json
 from os import read
 from nltk.util import Index
-from numpy import average, trunc 
+from numpy import average, select, trunc 
 import pandas as pd 
 import pdb 
 from collections import Counter
@@ -18,7 +18,7 @@ random.seed(1)
 
 PATH_TO_MAIN = "../get-context/filtered_set_dev_articles_tokenized_context_latest_with_context.json"
 PATH_TO_CLUSTERS = "../dev-set/k_means_dev_set_filtered_latest_new.json"
-BATCH_NR = 5
+BATCH_NR = 1
 filename_to_write = "implicit_references_batch{0}_dev.csv".format(BATCH_NR)
 
 with open(PATH_TO_MAIN, "r") as json_in: 
@@ -79,8 +79,7 @@ def format_revised_before_insertion(original_sentence, original_sentence_in_raw,
         revised_before_insertion = revised_before_insertion
     
 
-    print(revised_before_insertion)
-    print("==================================")
+
     
     return revised_before_insertion
     
@@ -127,7 +126,7 @@ class RevisionInstance:
 def main(): 
 
     #d  = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Clusters": [], "Id": [], "FilteredPredictions": [], "Reference": []} 
-    d = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Id": []}
+    d = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Id": [], "BaseSentence": [], "RevisedSentence": [], }
 
     
     counter = 0 
@@ -139,85 +138,72 @@ def main():
             context_after = revision_object.context_after 
             formatted_context_before = format_paragaph(context_before)
             formatted_title = format_title(revision_object.filename) 
+            revised_before_insertion = format_revised_before_insertion(revision_object.original_sentence, revision_object.original_in_article, revision_object.revised_before_insertion)
 
-          
-
-        
-
-
-
+            # ensure that the revised sentence is there. 
             if type(data_with_context[key]["reference"]) == list: 
                 reference = " ".join(data_with_context[key]["reference"])
             else: 
                 reference = data_with_context[key]["reference"]
            
+            if reference.lower() in [cluster.lower() for cluster in clusters[key]['SelectedCentroids']]: 
+               fillers = clusters[key]['SelectedCentroids']
+               try: 
+                   assert len(fillers) == 5 
+               except AssertionError: 
+                   pdb.set_trace()
 
+            else: 
+               selected_centroids = clusters[key]['SelectedCentroids']
+               selected_centroids.append(reference) 
+               fillers = selected_centroids
 
-            #print(formatted_title)
-            #for sent in formatted_context_before: 
-            #    print(sent)
-            #print(context_after)
+            random.shuffle(fillers)
+            print(fillers)
+
+            formatted_fillers = ["{0}{1}{2}".format("<u>", filler, "</u>") for filler in fillers]
+            #print(formatted_fillers)
+
+            # To select batches --> to do later  
+            # minus 
+            batch_nr = BATCH_NR-1
+            sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
+            sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
             
-            #print("---------- clusters ---------- ")
-            selected_centroids = clusters[key]["SelectedCentroids"]
+            
+            
+            sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
+            sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
 
-            # make sure that the reference is in the centroids. 
-            to_exclude = False
-            for elem in selected_centroids: 
-                if elem.startswith("."): 
-                   to_exclude = True 
-                   break 
-                else: 
-                    to_exclude = False 
 
-        
-            if reference.lower() in selected_centroids and to_exclude == False and formatted_context_before != [] and " ".join(context_before).startswith("#"): 
-                revised_before_insertion = format_revised_before_insertion(revision_object.original_sentence, revision_object.original_in_article, revision_object.revised_before_insertion)
+            print("current", sent)
                 
-                fillers = selected_centroids
-                random.shuffle(fillers)
-                formatted_fillers = ["{0}{1}{2}".format("<u>", filler, "</u>") for filler in fillers]
-                #print(formatted_fillers)
-
-                # To select batches --> to do later  
-                # minus 
-                batch_nr = BATCH_NR-1
-                sent = revised_before_insertion + " " + formatted_fillers[batch_nr] + " " + revision_object.revised_after_insertion + "<br>"
-                sent = sent.replace(" .", ".").replace(" ,", ",").replace(" '", "'").replace(" ?", "?").replace(" !", "!").replace(" :", ":").replace(" ;", ";").replace(' "', '"') 
+            d["Sent"].append(sent)
                 
-                
-                
-                sent = sent.replace("ca n’t", "can’t").replace("do n’t", "don’t").replace("does n’t", "doesn’t").replace("is n’t", "isn’t").replace("are n’t", "aren’t").replace(" ’re", "’re")
-                sent = sent.replace("Ca n’t", "can’t").replace("Do n’t", "don’t").replace("Does n’t", "doesn’t").replace("Is n’t", "Isn’t").replace("Are n’t", "Aren’t")
+            d["Id"].append(key)
 
+            d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before)))
+            
+            d["PatternName"].append("implicit_references")
+            d["Title"].append(formatted_title)
+            d["RevisedSentence"].append(data_with_context[key]["RevisedSentence"])
+            d["BaseSentence"].append(revision_object.original_sentence)
+            #d["FilteredPredictions"].append(filtered[key]["filtered_fillers2"])
+            #d["Reference"].append(reference)
+            #d["Clusters"].append(formatted_fillers)
+            
 
+            if context_after.startswith("#"): 
+                context_after = "<br>"
 
-                print("current", sent)
-                
-                d["Sent"].append(sent)
-                  
-                d["Id"].append(key)
+            
+            d["ContextAfter"].append(context_after)
 
-                d["ContextBefore"].append(" ".join(remove_hashes( formatted_context_before)))
-                
-                d["PatternName"].append("implicit_references")
-                d["Title"].append(formatted_title)
-                #d["FilteredPredictions"].append(filtered[key]["filtered_fillers2"])
-                #d["Reference"].append(reference)
-                #d["Clusters"].append(formatted_fillers)
-                
-
-                if context_after.startswith("#"): 
-                    context_after = "<br>"
-
-                
-                d["ContextAfter"].append(context_after)
-
-                if reference.lower() not in selected_centroids: 
-                    print(data_with_context[key]["reference"])
-                    print(key)
-                    print(selected_centroids, reference) 
-                    print("=================")
+            if reference.lower() not in selected_centroids: 
+                print(data_with_context[key]["reference"])
+                print(key)
+                print(selected_centroids, reference) 
+                print("=================")
                     
 
 
@@ -227,6 +213,9 @@ def main():
 
 
     df.head(1000).to_csv(filename_to_write, index=False)
+
+
+
 
 
 main()
