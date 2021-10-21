@@ -18,7 +18,7 @@ random.seed(1)
 
 PATH_TO_MAIN = "../get-context/filtered_set_dev_articles_tokenized_context_latest_with_context.json"
 PATH_TO_CLUSTERS = "../dev-set/k_means_dev_set_filtered_latest_new.json"
-BATCH_NR = 1
+BATCH_NR = 5
 filename_to_write = "implicit_references_batch{0}_dev.csv".format(BATCH_NR)
 
 with open(PATH_TO_MAIN, "r") as json_in: 
@@ -126,7 +126,7 @@ class RevisionInstance:
 def main(): 
 
     #d  = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Clusters": [], "Id": [], "FilteredPredictions": [], "Reference": []} 
-    d = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Id": [], "BaseSentence": [], "RevisedSentence": [], }
+    d = {"Title": [], "ContextBefore": [], "ContextAfter": [], "Sent": [], "PatternName": [], "Id": []}
 
     
     counter = 0 
@@ -186,8 +186,6 @@ def main():
             
             d["PatternName"].append("implicit_references")
             d["Title"].append(formatted_title)
-            d["RevisedSentence"].append(data_with_context[key]["RevisedSentence"])
-            d["BaseSentence"].append(revision_object.original_sentence)
             #d["FilteredPredictions"].append(filtered[key]["filtered_fillers2"])
             #d["Reference"].append(reference)
             #d["Clusters"].append(formatted_fillers)
@@ -212,7 +210,7 @@ def main():
     print(df)
 
 
-    df.head(1000).to_csv(filename_to_write, index=False)
+    df.head(125).to_csv(filename_to_write, index=False)
 
 
 
