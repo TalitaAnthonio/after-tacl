@@ -21,11 +21,10 @@ def make_qualification(mturk, questionqual_xml):
     print(answer)
         
     response = mturk.create_qualification_type(
-        Name='TaskNotDoneBefore_DataProtv1.3',
-        Keywords='data protection',
+        Name='QualificationTest',
+        Keywords='qualification test',
         Description='Please do this simplified version of our HITs before participating.',
         QualificationTypeStatus='Active',
-        RetryDelayInSeconds=123,
         Test=question,
         AnswerKey=answer,
         TestDurationInSeconds=300,
@@ -52,7 +51,6 @@ def update_qualification(mturk, qualtypeID, questionqual_xml):
         QualificationTypeId=qualtypeID,
         Description='Please do this simplified version of our HITs before participating.',
         QualificationTypeStatus='Active',
-        RetryDelayInSeconds=123,
         Test=question,
         AnswerKey=answer,
         TestDurationInSeconds=300,
