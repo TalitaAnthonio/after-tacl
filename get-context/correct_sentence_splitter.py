@@ -10,11 +10,10 @@ import re
 
 sentence_splitter = SentenceSplitter(use_sent=True)
 
-with open("filtered_set_dev_articles.json", "r") as json_in: 
+with open("filtered_set_test_articles.json", "r") as json_in: 
      data = json.load(json_in)
 
-with open("../../tacl/data/references_for_lm.json", "r") as json_in: 
-     all_data = json.load(json_in)
+all_data = data 
 
 
 def format_current(x): 
@@ -169,7 +168,7 @@ def main():
                 #print(par)
 
 
-    with open("filtered_set_dev_articles_tokenized_context_latest.json", "w") as json_out: 
+    with open("filtered_set_test_articles_tokenized_context_latest.json", "w") as json_out: 
         json.dump(d, json_out)     
 
     

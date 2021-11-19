@@ -13,13 +13,12 @@ from numpy import index_exp
 from tools import SentenceSplitter
 from correct_sentence_splitter import correct_splitter
 
-PATH_TO_FILE = "filtered_set_dev_articles_tokenized_context_latest.json" 
+PATH_TO_FILE = "filtered_set_test_articles_tokenized_context_latest.json" 
 
 with open(PATH_TO_FILE, "r") as json_in: 
      data = json.load(json_in)
 
-with open("../../tacl/data/references_for_lm.json", "r") as json_in: 
-     all_data = json.load(json_in)
+all_data = data 
 
 
 sentence_splitter = SentenceSplitter(use_sent=True)
@@ -401,6 +400,6 @@ def main():
         d[key].update(all_data[key])
 
 
-    with open("filtered_set_dev_articles_tokenized_context_latest_with_context.json", "w") as json_out: 
+    with open("filtered_set_test_articles_tokenized_context_latest_with_context.json", "w") as json_out: 
             json.dump(d, json_out)
 main()  
