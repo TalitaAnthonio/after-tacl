@@ -8,12 +8,19 @@ import pdb
 
 
 TestPredictions = "/Users/talita/Documents/PhD/tacl/language-modeling/results-on-test-set-reranked-context-finetuned.json"
+FILE_WITH_LINE_NRS = "/Users/talita/Documents/PhD/corpora/rulebook_diffs/2019-09-23/boardgame_scripts/wikihow/data/wikihow-with-line-numbers.json"
+
+with open(FILE_WITH_LINE_NRS, "r") as json_in: 
+     bigger_file = json.load(json_in)
 
 with open("../../tacl/data/references_for_lm.json", "r") as json_in: 
      all_data = json.load(json_in)
 
 with open(TestPredictions, "r") as json_in: 
      predictions = json.load(json_in)
+
+
+
 
 counter = 0 
 d = {}
@@ -31,12 +38,15 @@ for key, _ in all_data.items():
         
        if len(all_data[key]['reference']) > 1: 
            d[key] = all_data[key]
-           d[key].update({"predictions": preds_by_lm})
+           d[key].update({"predictions": preds_by_lm, "BaseNr": bigger_file[key]["Source_Line_Nr"][0]})
+           print(all_data[key]['filename'])
        else: 
            if " ".join(all_data[key]['reference']).lower() not in pronouns: 
               d[key] = all_data[key]
-              d[key].update({"predictions": preds_by_lm})
- 
+              d[key].update({"predictions": preds_by_lm, "BaseNr": bigger_file[key]["Source_Line_Nr"][0]})
+              print(all_data[key]['filename'])
+
+print("write test_set_all_info.json")
 with open("test_set_all_info.json", "w") as json_out: 
      json.dump(d, json_out)
 
