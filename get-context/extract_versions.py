@@ -6,19 +6,15 @@ import os
 import pickle
 import pdb 
 
-SUBSET = "../dev-set/k_means_dev_set_filtered_latest_new.json"
-ARTICLES_IN_DICT_FORMAT = './files_in_dict_format_filtered_dev_set.pickle'
-FILEOUT = "filtered_set_dev_articles.json"
+SUBSET = "../test-set/test_set_all_info_filtered_predictions.json"
+ARTICLES_IN_DICT_FORMAT = './files_in_dict_format_filtered_test_set.pickle'
+FILEOUT = "filtered_set_test_articles.json"
 
 with open(SUBSET, "r") as json_in: 
      subset = json.load(json_in)
 
 with open(ARTICLES_IN_DICT_FORMAT, "rb") as pickle_in: 
      articles_in_dict_format = pickle.load(pickle_in)
-
-with open("../data-cleaning/all_references.json", "r") as json_in: 
-     data = json.load(json_in) 
-
 
 
 
@@ -50,10 +46,10 @@ def main():
         counter +=1 
         print(counter)
         
-        line_number_for_base = data[key]["BaseNr"]
+        line_number_for_base = subset[key]["BaseNr"]
      
 
-        filename = data[key]["Filename"].strip(".txt")
+        filename = subset[key]["filename"].strip(".txt")
 
         if filename in articles_in_dict_format.keys(): 
         # make a list of the lines starting from the base sentence 
@@ -101,8 +97,7 @@ def main():
 
             collection_with_articles[key] = subset[key]
             collection_with_articles[key].update({"BaseArticle": article_dict})
-            pdb.set_trace()
-            collection_with_articles[key].update(data[key])
+            collection_with_articles[key].update(subset[key])
         
 
         with open(FILEOUT, 'w') as json_out:
