@@ -1,4 +1,7 @@
-# Make a test set file with the predictions and the rest together. 
+# Make a test set file with the predictions and the rest together + only with those were 
+# the predictions are not pronouns. 
+# 253 out of 546 have human-inserted references that are not pronouns. 
+
 
 import json 
 import pdb 
@@ -14,19 +17,26 @@ with open(TestPredictions, "r") as json_in:
 
 counter = 0 
 d = {}
+pronouns = ['we', 'me', 'you', 'yourself', 'this', 'her', 'them', 'his', 'it', 'he','they', 'their', 'itself', 'him','your']
+
 for key, _ in all_data.items(): 
     if all_data[key]['Split'] == 'TEST': 
-       counter +=1 
        # get the predictions from the lm 
        preds_by_lm = [pred.strip() for pred in predictions[key]["predictions"]["generated_texts"]]
        if 'coref' in all_data[key].keys(): 
             del all_data[key]['coref']
             del all_data[key]['sents']
+    
+       
         
-       d[key] = all_data[key]
-       d[key].update({"predictions": preds_by_lm})
-print(counter)
-
+       if len(all_data[key]['reference']) > 1: 
+           d[key] = all_data[key]
+           d[key].update({"predictions": preds_by_lm})
+       else: 
+           if " ".join(all_data[key]['reference']).lower() not in pronouns: 
+              d[key] = all_data[key]
+              d[key].update({"predictions": preds_by_lm})
+ 
 with open("test_set_all_info.json", "w") as json_out: 
      json.dump(d, json_out)
 
