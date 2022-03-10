@@ -4,7 +4,8 @@ import pdb
 
 # file with predictions 
 PATH_TO_DEV_FILE_PRED = "../coreference/filtered_dev_preds_final.json"
-PATH_TO_TRAIN_FILE_PRED = "../coreference/filtered_train_preds_final.json"
+#PATH_TO_TRAIN_FILE_PRED = "../coreference/filtered_train_preds_final.json"
+PATH_TO_TRAIN_FILE_PRED = "../coreference/filtered_train_preds_final_nouns_only_new_v2.json"
 FILE_WITH_LINE_NRS = "/Users/talita/Documents/PhD/corpora/rulebook_diffs/2019-09-23/boardgame_scripts/wikihow/data/wikihow-with-line-numbers.json"
 
 with open(FILE_WITH_LINE_NRS, "r") as json_in: 
@@ -16,12 +17,12 @@ with open("../../tacl/data/references_for_lm.json", "r") as json_in:
 
 
 with open(PATH_TO_DEV_FILE_PRED, "r") as json_in: 
-     predictions = json.load(json_in)
+     predictions_dev = json.load(json_in)
 
 with open(PATH_TO_TRAIN_FILE_PRED, "r") as json_in: 
     predictions_data =  json.load(json_in)
 
-predictions_data.update(predictions)
+predictions_data.update(predictions_dev)
 # dict_keys(['predictions', 'key', 'revised_sentence', 
 # 'insertion', 'coref', 'sents', 'filename', 'base_tokenized', 
 # 'id', 'revised_tokenized', 'insertion_phrases', 
@@ -70,6 +71,7 @@ for key, _ in predictions_data.items():
         pdb.set_trace()
 
     simplified_dict[key] = {"predictions": [prediction.lstrip() for prediction in predictions]}
+
     other_info = {"RevisedSentence": revised_sentence, 
     "Reference": reference, 
     "Par": all_data[key]["par"], 
@@ -80,8 +82,10 @@ for key, _ in predictions_data.items():
     "RevisedBeforeInsertion": predictions_data[key]["revised_untill_insertion"], 
     "RevisedAfterInsertion": revised_after_insertion, 
     "LanguageModelText": predictions_data[key]["language_model_text"], 
-    "FilteredPredictions": predictions_data[key]['filtered_fillers']}
+    "FilteredPredictions": predictions_data[key]['filtered_fillers'], 
+    "Insertion": all_data[key]["insertion"]}
 
+    
 
 
     simplified_dict[key].update(other_info)
